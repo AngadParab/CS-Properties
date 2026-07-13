@@ -15,47 +15,41 @@ function Footer() {
               <span className="text-lg font-bold tracking-tight">Credit Solutions Goa</span>
             </div>
             <p className="text-sm text-gray-300">
-              Transforming your financial aspirations into reality. We offer transparent, professional loan advisory services with 0% commission, direct from 30+ leading banks.
+              Providing transparent, professional real estate consulting and premium property listings in Goa. Discover direct buyer-seller deals with 0% brokerage fees.
             </p>
           </div>
 
-          {/* Quick Links: Services */}
+          {/* Quick Links: Properties */}
           <div>
-            <h3 className="text-sm font-semibold text-brand-gold uppercase tracking-wider mb-4">Our Services</h3>
+            <h3 className="text-sm font-semibold text-brand-gold uppercase tracking-wider mb-4">Goa Properties</h3>
             <ul className="space-y-2">
               <li>
-                <Link to="/services" className="text-sm text-gray-300 hover:text-brand-gold transition-colors">Business Loans</Link>
+                <Link to="/properties" className="text-sm text-gray-300 hover:text-brand-gold transition-colors">Residential Apartments</Link>
               </li>
               <li>
-                <Link to="/services" className="text-sm text-gray-300 hover:text-brand-gold transition-colors">Mortgage Loans</Link>
+                <Link to="/properties" className="text-sm text-gray-300 hover:text-brand-gold transition-colors">Luxury Beach Villas</Link>
               </li>
               <li>
-                <Link to="/services" className="text-sm text-gray-300 hover:text-brand-gold transition-colors">Loan Against Property</Link>
+                <Link to="/properties" className="text-sm text-gray-300 hover:text-brand-gold transition-colors">Commercial Offices</Link>
               </li>
               <li>
-                <Link to="/services" className="text-sm text-gray-300 hover:text-brand-gold transition-colors">Personal Loans</Link>
+                <Link to="/properties" className="text-sm text-gray-300 hover:text-brand-gold transition-colors">Plots & Development Land</Link>
               </li>
             </ul>
           </div>
 
-          {/* Quick Links: Pages */}
+          {/* Quick Links: Navigation */}
           <div>
-            <h3 className="text-sm font-semibold text-brand-gold uppercase tracking-wider mb-4">Company</h3>
+            <h3 className="text-sm font-semibold text-brand-gold uppercase tracking-wider mb-4">Navigation</h3>
             <ul className="space-y-2">
               <li>
                 <Link to="/" className="text-sm text-gray-300 hover:text-brand-gold transition-colors">Home</Link>
               </li>
               <li>
-                <Link to="/properties" className="text-sm text-gray-300 hover:text-brand-gold transition-colors">Properties</Link>
+                <Link to="/properties" className="text-sm text-gray-300 hover:text-brand-gold transition-colors">Browse Properties</Link>
               </li>
               <li>
-                <Link to="/wheels" className="text-sm text-gray-300 hover:text-brand-gold transition-colors">Wheels Financing</Link>
-              </li>
-              <li>
-                <Link to="/calculator" className="text-sm text-gray-300 hover:text-brand-gold transition-colors">EMI Calculator</Link>
-              </li>
-              <li>
-                <Link to="/contact" className="text-sm text-gray-300 hover:text-brand-gold transition-colors">Contact Us</Link>
+                <Link to="/contact" className="text-sm text-gray-300 hover:text-brand-gold transition-colors">Get in Touch</Link>
               </li>
             </ul>
           </div>
@@ -90,9 +84,9 @@ function Footer() {
         <div className="flex flex-col sm:flex-row justify-between items-center text-xs text-gray-400">
           <p>&copy; {new Date().getFullYear()} Credit Solutions Goa. All rights reserved.</p>
           <div className="mt-2 sm:mt-0 flex space-x-4">
-            <span className="text-brand-gold font-medium">0% Commission Loan Advisory</span>
+            <span className="text-brand-gold font-medium">0% Brokerage Deals</span>
             <span>|</span>
-            <span>Regulated by Professional Standards</span>
+            <span>Direct Buyer-Seller Representation</span>
           </div>
         </div>
 

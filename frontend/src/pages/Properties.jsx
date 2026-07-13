@@ -6,7 +6,7 @@ function Properties() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedLocation, setSelectedLocation] = useState('All');
   const [selectedType, setSelectedType] = useState('All');
-  const [maxBudget, setMaxBudget] = useState(15000000); // 1.5 Crores default max
+  const [maxBudget, setMaxBudget] = useState(50000000); // 5.0 Crores default max
 
   const locations = ['All', 'Margao', 'Panaji', 'Calangute', 'Vasco', 'Mapusa'];
   const types = ['All', 'Apartment', 'Villa', 'Commercial', 'Plot'];
@@ -103,7 +103,7 @@ function Properties() {
       <div className="text-center space-y-3">
         <h1 className="text-4xl font-extrabold text-brand-navy">Properties in Goa</h1>
         <p className="max-w-2xl mx-auto text-brand-text-muted">
-          Browse our premier residential, commercial, and land plot portfolios. We help you choose the right property and secure a fast, 0% commission mortgage.
+          Browse our premier residential, commercial, and land plot portfolios. We represent you directly to get the best deal with 0% brokerage fees.
         </p>
       </div>
 
@@ -169,15 +169,15 @@ function Properties() {
             <input
               type="range"
               min={2500000} // 25 Lakhs
-              max={20000000} // 2 Crores
-              step={500000}
+              max={50000000} // 5 Crores
+              step={1000000}
               value={maxBudget}
               onChange={(e) => setMaxBudget(Number(e.target.value))}
               className="w-full accent-brand-navy cursor-pointer"
             />
             <div className="flex justify-between text-[10px] text-brand-text-muted">
               <span>₹25 Lakhs</span>
-              <span>₹2 Crores</span>
+              <span>₹5 Crores</span>
             </div>
           </div>
         </aside>
@@ -233,13 +233,13 @@ function Properties() {
                 {/* Card footer/CTA */}
                 <div className="px-5 pb-5 pt-2 border-t border-slate-50 flex items-center justify-between">
                   <span className="text-[10px] font-bold text-emerald-500 uppercase bg-emerald-50 px-2.5 py-1 rounded-full">
-                    Pre-Approved Loan Eligible
+                    Clear Title Documented
                   </span>
                   <Link
-                    to={`/apply?property=${encodeURIComponent(prop.title)}&loan=mortgage`}
+                    to={`/apply?propertyName=${encodeURIComponent(prop.title)}&propertyLocation=${encodeURIComponent(prop.location)}&propertyPrice=${prop.price}`}
                     className="bg-brand-navy hover:bg-blue-900 text-white font-bold px-4 py-2 rounded-md transition-colors text-xs"
                   >
-                    Get Loan Quote
+                    Inquire Deal
                   </Link>
                 </div>
 

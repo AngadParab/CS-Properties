@@ -8,10 +8,7 @@ function Navbar() {
 
   const navItems = [
     { name: 'Home', path: '/' },
-    { name: 'Services', path: '/services' },
     { name: 'Properties', path: '/properties' },
-    { name: 'Wheels', path: '/wheels' },
-    { name: 'EMI Calculator', path: '/calculator' },
     { name: 'Contact', path: '/contact' },
   ];
 
