@@ -1,0 +1,19 @@
+# Dependencies
+frontend/node_modules/
+node_modules/
+
+# Production Build outputs
+frontend/dist/
+dist/
+
+# Local Environment Variables (CRITICAL: Do not upload API keys!)
+frontend/.env
+.env
+*.local
+*.log
+
+# Editor & OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
