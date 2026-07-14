@@ -8,20 +8,23 @@ export default {
     extend: {
       colors: {
         brand: {
-          navy: '#1E3A8A',      // Primary Navy Blue
-          gold: '#F59E0B',      // Secondary Gold/Amber
-          bg: '#F8FAFC',        // Neutral Background (slate-50)
-          surface: '#FFFFFF',   // Card & Form Container White
+          navy: '#1C1C1C',       // Soft Jet Black
+          gold: '#C5A880',       // Muted Ochre / Warm Tan Accent
+          bg: '#F4F3EF',         // Warm Sand Background
+          surface: '#FFFFFF',    // Crisp White Cards
           text: {
-            primary: '#0F172A', // Dark Slate for main text
-            muted: '#64748B',   // Muted Slate for secondary text
+            primary: '#1C1C1C',  // Soft Jet Black
+            muted: '#8E8C84',    // Ghost Grey / Muted Taupe
           },
-          success: '#10B981',   // Success Emerald
-          error: '#EF4444',     // Error Red
+          charcoal: '#272727',   // Dark Charcoal for intense contrast
+          sandDark: '#EFECE6',   // Secondary Off-White/Sand
+          success: '#10B981',    // Success Green
+          error: '#EF4444',      // Error Red
         }
       },
       fontFamily: {
-        sans: ['Inter', 'sans-serif'],
+        sans: ['Plus Jakarta Sans', 'Inter', 'sans-serif'],
+        syne: ['Syne', 'sans-serif'],
       }
     },
   },
