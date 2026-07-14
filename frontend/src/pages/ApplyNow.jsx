@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { User, Landmark, FileText, CheckCircle2, ChevronRight, ChevronLeft, Calendar } from 'lucide-react';
+import { User, Landmark, Briefcase, FileText, CheckCircle2, ChevronRight, ChevronLeft, Calendar } from 'lucide-react';
 import { submitLead } from '../services/api';
 
 function ApplyNow() {
@@ -11,11 +11,14 @@ function ApplyNow() {
     fullName: '',
     phone: '',
     email: '',
-    propertyName: '',
-    propertyLocation: 'Panaji',
-    propertyType: 'Villa',
-    propertyPrice: '',
-    preferredDate: '',
+    location: '', // Goa Residence Location
+    loanType: 'Business Loan',
+    amount: '',
+    tenureYears: '5',
+    employmentType: 'Salaried',
+    monthlyIncome: '',
+    existingEmis: '0',
+    preferredDate: '', // For property visits
     notes: '',
   });
 
@@ -25,19 +28,38 @@ function ApplyNow() {
 
   // Pre-fill from URL params
   useEffect(() => {
-    const propName = query.get('propertyName');
-    const propLoc = query.get('propertyLocation');
-    const propPrice = query.get('propertyPrice');
-    const typeParam = query.get('type');
-    const locationParam = query.get('location');
-    const budgetParam = query.get('budget');
+    const amountParam = query.get('amount');
+    const tenureParam = query.get('tenure');
+    const propertyParam = query.get('property');
+    const vehicleParam = query.get('vehicle');
+    const loanParam = query.get('loan');
+
+    let notesText = '';
+    let selectedLoan = formData.loanType;
+
+    if (propertyParam) {
+      notesText += `Interested in property: ${propertyParam}. `;
+      selectedLoan = 'Property Inquiry';
+    }
+    if (vehicleParam) {
+      notesText += `Interested in vehicle: ${vehicleParam}. `;
+      selectedLoan = 'Vehicle Loan';
+    }
+    if (loanParam) {
+      if (loanParam === 'mortgage') selectedLoan = 'Mortgage Loan';
+      if (loanParam === 'personal') selectedLoan = 'Personal Loan';
+      if (loanParam === 'business') selectedLoan = 'Business Loan';
+      if (loanParam === 'lap') selectedLoan = 'Loan Against Property';
+      if (loanParam === 'vehicle') selectedLoan = 'Vehicle Loan';
+      if (loanParam === 'property') selectedLoan = 'Property Inquiry';
+    }
 
     setFormData((prev) => ({
       ...prev,
-      propertyName: propName || prev.propertyName || '',
-      propertyLocation: propLoc || locationParam || prev.propertyLocation,
-      propertyPrice: propPrice || (budgetParam ? String(parseFloat(budgetParam) * 10000000) : prev.propertyPrice),
-      propertyType: typeParam || prev.propertyType,
+      amount: amountParam || prev.amount,
+      tenureYears: tenureParam || prev.tenureYears,
+      loanType: selectedLoan,
+      notes: notesText || prev.notes,
     }));
   }, []);
 
@@ -57,15 +79,21 @@ function ApplyNow() {
       } else if (!/^\d{10}$/.test(formData.phone.trim())) {
         stepErrors.phone = 'Please enter a valid 10-digit phone number.';
       }
+      if (!formData.location.trim()) stepErrors.location = 'Goa Location is required.';
     } else if (step === 2) {
-      if (!formData.propertyName.trim()) stepErrors.propertyName = 'Property/Listing Name is required.';
-      if (!formData.propertyLocation.trim()) stepErrors.propertyLocation = 'Location is required.';
-      if (!formData.propertyPrice || Number(formData.propertyPrice) <= 0) {
-        stepErrors.propertyPrice = 'Please enter a valid estimated budget or price.';
+      if (!formData.amount || Number(formData.amount) <= 0) {
+        stepErrors.amount = formData.loanType === 'Property Inquiry' 
+          ? 'Please enter a valid estimated budget.' 
+          : 'Please enter a valid positive loan amount.';
+      }
+      if (formData.loanType === 'Property Inquiry' && !formData.preferredDate) {
+        stepErrors.preferredDate = 'Please select a preferred site visit date.';
       }
     } else if (step === 3) {
-      if (!formData.preferredDate) {
-        stepErrors.preferredDate = 'Please select a preferred date for site visit / office consultation.';
+      if (formData.loanType !== 'Property Inquiry') {
+        if (!formData.monthlyIncome || Number(formData.monthlyIncome) <= 0) {
+          stepErrors.monthlyIncome = 'Net monthly income is required.';
+        }
       }
     }
 
@@ -75,12 +103,20 @@ function ApplyNow() {
 
   const nextStep = () => {
     if (validateStep()) {
-      setStep((prev) => prev + 1);
+      if (step === 2 && formData.loanType === 'Property Inquiry') {
+        setStep(4);
+      } else {
+        setStep((prev) => prev + 1);
+      }
     }
   };
 
   const prevStep = () => {
-    setStep((prev) => prev - 1);
+    if (step === 4 && formData.loanType === 'Property Inquiry') {
+      setStep(2);
+    } else {
+      setStep((prev) => prev - 1);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -93,30 +129,40 @@ function ApplyNow() {
         fullName: formData.fullName,
         phone: formData.phone,
         email: formData.email,
-        location: formData.propertyLocation,
-        loanType: formData.propertyType,
-        amount: Number(formData.propertyPrice),
-        tenureYears: 1,
-        employmentType: 'Salaried',
-        monthlyIncome: 0,
-        notes: `[Property: ${formData.propertyName}] [Preferred Visit Date: ${formData.preferredDate}] ${formData.notes}`
+        location: formData.location,
+        loanType: formData.loanType,
+        amount: Number(formData.amount),
+        tenureYears: formData.loanType === 'Property Inquiry' ? 1 : Number(formData.tenureYears),
+        employmentType: formData.loanType === 'Property Inquiry' ? 'Salaried' : formData.employmentType,
+        monthlyIncome: formData.loanType === 'Property Inquiry' ? 0 : Number(formData.monthlyIncome),
+        existingEmis: formData.loanType === 'Property Inquiry' ? 0 : Number(formData.existingEmis || 0),
+        notes: formData.loanType === 'Property Inquiry' && formData.preferredDate
+          ? `[Preferred Site Visit Date: ${formData.preferredDate}] ${formData.notes}`
+          : formData.notes,
       };
       
       await submitLead(payload);
       setIsSuccess(true);
     } catch (error) {
-      setErrors({ apiError: error.message || 'Failed to submit inquiry. Please try again.' });
+      setErrors({ apiError: error.message || 'Failed to submit application. Please try again.' });
     } finally {
       setIsSubmitting(false);
     }
   };
 
   // Step names & icons
-  const stepsList = [
-    { number: 1, label: 'Contact Details', icon: <User className="w-5 h-5" /> },
-    { number: 2, label: 'Property Prefs', icon: <Landmark className="w-5 h-5" /> },
-    { number: 3, label: 'Schedule Review', icon: <FileText className="w-5 h-5" /> },
-  ];
+  const stepsList = formData.loanType === 'Property Inquiry'
+    ? [
+        { number: 1, label: 'Personal Info', icon: <User className="w-5 h-5" /> },
+        { number: 2, label: 'Property Specs', icon: <Landmark className="w-5 h-5" /> },
+        { number: 4, label: 'Review Details', icon: <FileText className="w-5 h-5" /> },
+      ]
+    : [
+        { number: 1, label: 'Personal Info', icon: <User className="w-5 h-5" /> },
+        { number: 2, label: 'Loan Specs', icon: <Landmark className="w-5 h-5" /> },
+        { number: 3, label: 'Financials', icon: <Briefcase className="w-5 h-5" /> },
+        { number: 4, label: 'Review Details', icon: <FileText className="w-5 h-5" /> },
+      ];
 
   const formatCurrency = (val) => {
     return new Intl.NumberFormat('en-IN', {
@@ -131,9 +177,9 @@ function ApplyNow() {
       
       {/* Title Header */}
       <div className="text-center space-y-2">
-        <h1 className="text-3xl font-extrabold text-brand-navy">Property Inquiry & Consultation</h1>
+        <h1 className="text-3xl font-extrabold text-brand-navy">Apply Now</h1>
         <p className="text-brand-text-muted text-sm max-w-md mx-auto">
-          Complete our 3-step property inquiry wizard. We process documents directly with 0% brokerage commission.
+          Complete our digital onboarding form. No application fee. No commission charges.
         </p>
       </div>
 
@@ -144,29 +190,36 @@ function ApplyNow() {
         {/* Active Line Progress overlay */}
         <div
           className="absolute top-1/2 left-0 h-0.5 bg-brand-gold -translate-y-1/2 z-0 hidden sm:block mx-12 transition-all duration-300"
-          style={{ width: `${((step - 1) / (stepsList.length - 1)) * 80}%` }}
+          style={{ width: `${formData.loanType === 'Property Inquiry' 
+            ? ((step === 4 ? 2 : step - 1) / 2) * 80 
+            : ((step - 1) / 3) * 80}%` }}
         ></div>
 
-        {stepsList.map((s) => (
-          <div key={s.number} className="relative z-10 flex flex-col items-center space-y-2 text-center">
-            <div
-              className={`w-10 h-10 rounded-full flex items-center justify-center border transition-colors ${
-                step === s.number
-                  ? 'bg-brand-navy border-brand-navy text-brand-gold font-bold ring-4 ring-blue-50'
-                  : step > s.number
-                  ? 'bg-brand-navy border-brand-navy text-white'
-                  : 'bg-white border-slate-200 text-slate-400'
-              }`}
-            >
-              {s.icon}
+        {stepsList.map((s) => {
+          const stepNum = s.number;
+          const displayNum = stepNum === 4 && formData.loanType === 'Property Inquiry' ? 3 : (stepNum === 4 ? 4 : stepNum);
+          
+          return (
+            <div key={stepNum} className="relative z-10 flex flex-col items-center space-y-2 text-center">
+              <div
+                className={`w-10 h-10 rounded-full flex items-center justify-center border transition-colors ${
+                  step === stepNum
+                    ? 'bg-brand-navy border-brand-navy text-brand-gold font-bold ring-4 ring-blue-50'
+                    : step > stepNum || (stepNum === 4 && step === 4)
+                    ? 'bg-brand-navy border-brand-navy text-white'
+                    : 'bg-white border-slate-200 text-slate-400'
+                }`}
+              >
+                {s.icon}
+              </div>
+              <span className={`text-[10px] font-bold uppercase tracking-wider hidden sm:inline ${
+                step === stepNum ? 'text-brand-navy' : 'text-brand-text-muted'
+              }`}>
+                {s.label}
+              </span>
             </div>
-            <span className={`text-[10px] font-bold uppercase tracking-wider hidden sm:inline ${
-              step === s.number ? 'text-brand-navy' : 'text-brand-text-muted'
-            }`}>
-              {s.label}
-            </span>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* Main Form Box */}
@@ -175,9 +228,9 @@ function ApplyNow() {
         {isSuccess ? (
           <div className="text-center py-10 space-y-6 max-w-md mx-auto">
             <CheckCircle2 className="w-16 h-16 text-brand-success mx-auto" />
-            <h2 className="text-2xl font-bold text-brand-navy">Inquiry Registered!</h2>
+            <h2 className="text-2xl font-bold text-brand-navy">Application Received!</h2>
             <p className="text-xs text-brand-text-muted leading-relaxed">
-              Your inquiry has been successfully registered on Firestore. Our property consultants will verify documentation papers and contact you within 24 hours to schedule the site visit.
+              Your submission has been successfully logged on Firestore. Our advisors will run audits and contact you within 24 hours.
             </p>
             <button
               onClick={() => {
@@ -187,17 +240,20 @@ function ApplyNow() {
                   fullName: '',
                   phone: '',
                   email: '',
-                  propertyName: '',
-                  propertyLocation: 'Panaji',
-                  propertyType: 'Villa',
-                  propertyPrice: '',
+                  location: '',
+                  loanType: 'Business Loan',
+                  amount: '',
+                  tenureYears: '5',
+                  employmentType: 'Salaried',
+                  monthlyIncome: '',
+                  existingEmis: '0',
                   preferredDate: '',
                   notes: '',
                 });
               }}
               className="bg-brand-navy text-white text-xs font-semibold px-6 py-2.5 rounded-lg hover:bg-blue-900 transition-colors"
             >
-              Inquire Another Property
+              Submit Another Inquiry
             </button>
           </div>
         ) : (
@@ -208,7 +264,7 @@ function ApplyNow() {
               </div>
             )}
             
-            {/* STEP 1: Contact Details */}
+            {/* STEP 1: Personal Details */}
             {step === 1 && (
               <div className="space-y-4">
                 <h3 className="text-base font-bold text-brand-navy border-b border-slate-50 pb-2">Contact Details</h3>
@@ -245,126 +301,79 @@ function ApplyNow() {
                   </div>
                 </div>
 
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-brand-navy">Email Address</label>
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    placeholder="e.g. angad@example.com"
-                    className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white"
-                  />
-                </div>
-              </div>
-            )}
-
-            {/* STEP 2: Property Preferences */}
-            {step === 2 && (
-              <div className="space-y-4">
-                <h3 className="text-base font-bold text-brand-navy border-b border-slate-50 pb-2">Property Preferences</h3>
-                
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-brand-navy">Property / Listing Name *</label>
+                    <label className="text-xs font-bold text-brand-navy">Email Address</label>
+                    <input
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      placeholder="e.g. angad@example.com"
+                      className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white"
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-brand-navy">Goa Residence Location *</label>
                     <input
                       type="text"
-                      name="propertyName"
-                      value={formData.propertyName}
+                      name="location"
+                      value={formData.location}
                       onChange={handleChange}
-                      placeholder="e.g. Sea Breeze Apartments, or General Search"
+                      placeholder="e.g. Margao, Panaji"
                       className={`w-full px-4 py-2 text-sm border rounded-lg focus:ring-2 outline-none bg-white ${
-                        errors.propertyName ? 'border-brand-error focus:ring-red-200' : 'border-slate-200 focus:ring-blue-500'
+                        errors.location ? 'border-brand-error focus:ring-red-200' : 'border-slate-200 focus:ring-blue-500'
                       }`}
                     />
-                    {errors.propertyName && <span className="text-[10px] text-brand-error font-semibold">{errors.propertyName}</span>}
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-brand-navy">Select Property Location *</label>
-                    <select
-                      name="propertyLocation"
-                      value={formData.propertyLocation}
-                      onChange={handleChange}
-                      className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white font-semibold text-brand-navy"
-                    >
-                      <option value="Panaji">Panaji</option>
-                      <option value="Margao">Margao</option>
-                      <option value="Calangute">Calangute</option>
-                      <option value="Candolim">Candolim</option>
-                      <option value="Mapusa">Mapusa</option>
-                      <option value="Vasco">Vasco</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-brand-navy">Property Category</label>
-                    <select
-                      name="propertyType"
-                      value={formData.propertyType}
-                      onChange={handleChange}
-                      className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white font-semibold text-brand-navy"
-                    >
-                      <option value="Apartment">Apartment</option>
-                      <option value="Villa">Luxury Villa</option>
-                      <option value="Plot">Residential Plot</option>
-                      <option value="Commercial">Commercial Office/Shop</option>
-                    </select>
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-brand-navy">Budget / Price Range (INR) *</label>
-                    <input
-                      type="number"
-                      name="propertyPrice"
-                      value={formData.propertyPrice}
-                      onChange={handleChange}
-                      placeholder="e.g. 15000000 (1.5 Cr)"
-                      className={`w-full px-4 py-2 text-sm border rounded-lg focus:ring-2 outline-none bg-white ${
-                        errors.propertyPrice ? 'border-brand-error focus:ring-red-200' : 'border-slate-200 focus:ring-blue-500'
-                      }`}
-                    />
-                    {errors.propertyPrice && <span className="text-[10px] text-brand-error font-semibold">{errors.propertyPrice}</span>}
+                    {errors.location && <span className="text-[10px] text-brand-error font-semibold">{errors.location}</span>}
                   </div>
                 </div>
               </div>
             )}
 
-            {/* STEP 3: Review & Schedule Visit */}
-            {step === 3 && (
+            {/* STEP 2: Requirements */}
+            {step === 2 && (
               <div className="space-y-4">
-                <h3 className="text-base font-bold text-brand-navy border-b border-slate-50 pb-2">Review & Schedule</h3>
+                <h3 className="text-base font-bold text-brand-navy border-b border-slate-50 pb-2">Requirement Specifications</h3>
                 
-                <div className="bg-slate-50 p-5 rounded-xl text-xs sm:text-sm grid grid-cols-1 sm:grid-cols-2 gap-y-3 gap-x-6">
-                  <div>
-                    <span className="block text-brand-text-muted text-[10px] uppercase font-bold">Client Name</span>
-                    <span className="font-bold text-brand-navy">{formData.fullName}</span>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-brand-navy">Select Category</label>
+                    <select
+                      name="loanType"
+                      value={formData.loanType}
+                      onChange={handleChange}
+                      className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white font-semibold text-brand-navy"
+                    >
+                      <option value="Property Inquiry">Property Purchase Inquiry</option>
+                      <option value="Business Loan">Business Loan</option>
+                      <option value="Mortgage Loan">Mortgage/Home Loan</option>
+                      <option value="Loan Against Property">Loan Against Property (LAP)</option>
+                      <option value="Personal Loan">Personal Loan</option>
+                      <option value="Vehicle Loan">Vehicle Loan</option>
+                    </select>
                   </div>
-                  <div>
-                    <span className="block text-brand-text-muted text-[10px] uppercase font-bold">Contact Phone</span>
-                    <span className="font-bold text-brand-navy">{formData.phone}</span>
-                  </div>
-                  <div>
-                    <span className="block text-brand-text-muted text-[10px] uppercase font-bold">Target Location</span>
-                    <span className="font-bold text-brand-navy">{formData.propertyLocation}</span>
-                  </div>
-                  <div>
-                    <span className="block text-brand-text-muted text-[10px] uppercase font-bold">Listing Name</span>
-                    <span className="font-bold text-brand-navy">{formData.propertyName}</span>
-                  </div>
-                  <div>
-                    <span className="block text-brand-text-muted text-[10px] uppercase font-bold">Category</span>
-                    <span className="font-bold text-brand-navy">{formData.propertyType}</span>
-                  </div>
-                  <div>
-                    <span className="block text-brand-text-muted text-[10px] uppercase font-bold">Estimated Budget</span>
-                    <span className="font-bold text-brand-navy">{formatCurrency(formData.propertyPrice)}</span>
+
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-brand-navy">
+                      {formData.loanType === 'Property Inquiry' ? 'Estimated Budget / Price *' : 'Required Loan Amount (INR) *'}
+                    </label>
+                    <input
+                      type="number"
+                      name="amount"
+                      value={formData.amount}
+                      onChange={handleChange}
+                      placeholder={formData.loanType === 'Property Inquiry' ? 'e.g. 15000000' : 'e.g. 2500000'}
+                      className={`w-full px-4 py-2 text-sm border rounded-lg focus:ring-2 outline-none bg-white ${
+                        errors.amount ? 'border-brand-error focus:ring-red-200' : 'border-slate-200 focus:ring-blue-500'
+                      }`}
+                    />
+                    {errors.amount && <span className="text-[10px] text-brand-error font-semibold">{errors.amount}</span>}
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                {formData.loanType === 'Property Inquiry' ? (
                   <div className="space-y-1.5">
                     <label className="text-xs font-bold text-brand-navy">Preferred Site Visit Date *</label>
                     <div className="relative">
@@ -381,18 +390,135 @@ function ApplyNow() {
                     </div>
                     {errors.preferredDate && <span className="text-[10px] text-brand-error font-semibold">{errors.preferredDate}</span>}
                   </div>
+                ) : (
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-brand-navy">Preferred Tenure (Years)</label>
+                    <select
+                      name="tenureYears"
+                      value={formData.tenureYears}
+                      onChange={handleChange}
+                      className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white font-semibold text-brand-navy"
+                    >
+                      {[1, 3, 5, 7, 10, 15, 20, 25, 30].map((yr) => (
+                        <option key={yr} value={yr}>{yr} Years</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* STEP 3: Financial Profile (Only visible if not property inquiry) */}
+            {step === 3 && formData.loanType !== 'Property Inquiry' && (
+              <div className="space-y-4">
+                <h3 className="text-base font-bold text-brand-navy border-b border-slate-50 pb-2">Employment & Monthly Cashflows</h3>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-brand-navy">Employment Status</label>
+                    <select
+                      name="employmentType"
+                      value={formData.employmentType}
+                      onChange={handleChange}
+                      className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white font-semibold text-brand-navy"
+                    >
+                      <option value="Salaried">Salaried Professional</option>
+                      <option value="Self-Employed">Self-Employed Merchant</option>
+                      <option value="Business Owner">Company Director / Business</option>
+                    </select>
+                  </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-brand-navy">Additional Details (Optional)</label>
-                    <textarea
-                      name="notes"
-                      rows="3"
-                      value={formData.notes}
+                    <label className="text-xs font-bold text-brand-navy">Net Monthly Income (INR) *</label>
+                    <input
+                      type="number"
+                      name="monthlyIncome"
+                      value={formData.monthlyIncome}
                       onChange={handleChange}
-                      placeholder="Specify preferred hours, parking needs, or other questions..."
-                      className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white"
-                    ></textarea>
+                      placeholder="e.g. 60000"
+                      className={`w-full px-4 py-2 text-sm border rounded-lg focus:ring-2 outline-none bg-white ${
+                        errors.monthlyIncome ? 'border-brand-error focus:ring-red-200' : 'border-slate-200 focus:ring-blue-500'
+                      }`}
+                    />
+                    {errors.monthlyIncome && <span className="text-[10px] text-brand-error font-semibold">{errors.monthlyIncome}</span>}
                   </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-brand-navy">Current Active Monthly EMIs (If any)</label>
+                  <input
+                    type="number"
+                    name="existingEmis"
+                    value={formData.existingEmis}
+                    onChange={handleChange}
+                    placeholder="Enter total monthly obligations"
+                    className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white"
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* STEP 4: Review Details */}
+            {step === 4 && (
+              <div className="space-y-4">
+                <h3 className="text-base font-bold text-brand-navy border-b border-slate-50 pb-2">Final Review</h3>
+                
+                <div className="bg-slate-50 p-5 rounded-xl text-xs sm:text-sm grid grid-cols-1 sm:grid-cols-2 gap-y-3 gap-x-6">
+                  <div>
+                    <span className="block text-brand-text-muted text-[10px] uppercase font-bold">Client Name</span>
+                    <span className="font-bold text-brand-navy">{formData.fullName}</span>
+                  </div>
+                  <div>
+                    <span className="block text-brand-text-muted text-[10px] uppercase font-bold">Contact Phone</span>
+                    <span className="font-bold text-brand-navy">{formData.phone}</span>
+                  </div>
+                  <div>
+                    <span className="block text-brand-text-muted text-[10px] uppercase font-bold">Location</span>
+                    <span className="font-bold text-brand-navy">{formData.location}</span>
+                  </div>
+                  <div>
+                    <span className="block text-brand-text-muted text-[10px] uppercase font-bold">Inquiry Type</span>
+                    <span className="font-bold text-brand-navy">{formData.loanType}</span>
+                  </div>
+                  <div>
+                    <span className="block text-brand-text-muted text-[10px] uppercase font-bold">
+                      {formData.loanType === 'Property Inquiry' ? 'Estimated Budget' : 'Loan Amount'}
+                    </span>
+                    <span className="font-bold text-brand-navy">{formatCurrency(formData.amount)}</span>
+                  </div>
+                  {formData.loanType === 'Property Inquiry' ? (
+                    <div>
+                      <span className="block text-brand-text-muted text-[10px] uppercase font-bold">Preferred Visit Date</span>
+                      <span className="font-bold text-brand-navy">{formData.preferredDate}</span>
+                    </div>
+                  ) : (
+                    <>
+                      <div>
+                        <span className="block text-brand-text-muted text-[10px] uppercase font-bold">Tenure Preferred</span>
+                        <span className="font-bold text-brand-navy">{formData.tenureYears} Years</span>
+                      </div>
+                      <div>
+                        <span className="block text-brand-text-muted text-[10px] uppercase font-bold">Employment</span>
+                        <span className="font-bold text-brand-navy">{formData.employmentType}</span>
+                      </div>
+                      <div>
+                        <span className="block text-brand-text-muted text-[10px] uppercase font-bold">Monthly Income</span>
+                        <span className="font-bold text-brand-navy">{formatCurrency(formData.monthlyIncome)}</span>
+                      </div>
+                    </>
+                  )}
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-brand-navy">Additional Details (Optional)</label>
+                  <textarea
+                    name="notes"
+                    rows="3"
+                    value={formData.notes}
+                    onChange={handleChange}
+                    placeholder="Provide property details, vehicle descriptions or target loan parameters..."
+                    className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white"
+                  ></textarea>
                 </div>
               </div>
             )}
@@ -412,7 +538,7 @@ function ApplyNow() {
                 <div></div>
               )}
 
-              {step < stepsList.length ? (
+              {step < 4 ? (
                 <button
                   type="button"
                   onClick={nextStep}
@@ -427,7 +553,7 @@ function ApplyNow() {
                   disabled={isSubmitting}
                   className="bg-brand-gold hover:bg-yellow-500 text-brand-navy font-bold px-6 py-2.5 rounded-lg text-xs transition-colors flex items-center space-x-2 disabled:opacity-50"
                 >
-                  {isSubmitting ? 'Registering...' : 'Register Property Inquiry'}
+                  {isSubmitting ? 'Submitting...' : 'Submit Application'}
                 </button>
               )}
             </div>

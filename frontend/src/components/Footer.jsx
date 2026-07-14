@@ -7,7 +7,7 @@ function Footer() {
     <footer className="bg-brand-navy text-white pt-12 pb-8 border-t border-blue-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          
+
           {/* Brand & Description */}
           <div className="space-y-4">
             <div className="flex items-center space-x-2">
@@ -15,41 +15,47 @@ function Footer() {
               <span className="text-lg font-bold tracking-tight">Credit Solutions Goa</span>
             </div>
             <p className="text-sm text-gray-300">
-              Providing transparent, professional real estate consulting and premium property listings in Goa. Discover direct buyer-seller deals with 0% brokerage fees.
+              Transforming your financial aspirations into reality. We offer transparent, professional loan advisory services with 0% commission, direct from 30+ leading banks.
             </p>
           </div>
 
-          {/* Quick Links: Properties */}
+          {/* Quick Links: Services */}
           <div>
-            <h3 className="text-sm font-semibold text-brand-gold uppercase tracking-wider mb-4">Goa Properties</h3>
+            <h3 className="text-sm font-semibold text-brand-gold uppercase tracking-wider mb-4">Our Services</h3>
             <ul className="space-y-2">
               <li>
-                <Link to="/properties" className="text-sm text-gray-300 hover:text-brand-gold transition-colors">Residential Apartments</Link>
+                <Link to="/services" className="text-sm text-gray-300 hover:text-brand-gold transition-colors">Business Loans</Link>
               </li>
               <li>
-                <Link to="/properties" className="text-sm text-gray-300 hover:text-brand-gold transition-colors">Luxury Beach Villas</Link>
+                <Link to="/services" className="text-sm text-gray-300 hover:text-brand-gold transition-colors">Mortgage Loans</Link>
               </li>
               <li>
-                <Link to="/properties" className="text-sm text-gray-300 hover:text-brand-gold transition-colors">Commercial Offices</Link>
+                <Link to="/services" className="text-sm text-gray-300 hover:text-brand-gold transition-colors">Loan Against Property</Link>
               </li>
               <li>
-                <Link to="/properties" className="text-sm text-gray-300 hover:text-brand-gold transition-colors">Plots & Development Land</Link>
+                <Link to="/services" className="text-sm text-gray-300 hover:text-brand-gold transition-colors">Personal Loans</Link>
               </li>
             </ul>
           </div>
 
-          {/* Quick Links: Navigation */}
+          {/* Quick Links: Pages */}
           <div>
-            <h3 className="text-sm font-semibold text-brand-gold uppercase tracking-wider mb-4">Navigation</h3>
+            <h3 className="text-sm font-semibold text-brand-gold uppercase tracking-wider mb-4">Company</h3>
             <ul className="space-y-2">
               <li>
                 <Link to="/" className="text-sm text-gray-300 hover:text-brand-gold transition-colors">Home</Link>
               </li>
               <li>
-                <Link to="/properties" className="text-sm text-gray-300 hover:text-brand-gold transition-colors">Browse Properties</Link>
+                <Link to="/properties" className="text-sm text-gray-300 hover:text-brand-gold transition-colors">Properties</Link>
               </li>
               <li>
-                <Link to="/contact" className="text-sm text-gray-300 hover:text-brand-gold transition-colors">Get in Touch</Link>
+                <Link to="/wheels" className="text-sm text-gray-300 hover:text-brand-gold transition-colors">Wheels Financing</Link>
+              </li>
+              <li>
+                <Link to="/calculator" className="text-sm text-gray-300 hover:text-brand-gold transition-colors">EMI Calculator</Link>
+              </li>
+              <li>
+                <Link to="/contact" className="text-sm text-gray-300 hover:text-brand-gold transition-colors">Contact Us</Link>
               </li>
             </ul>
           </div>
@@ -84,9 +90,9 @@ function Footer() {
         <div className="flex flex-col sm:flex-row justify-between items-center text-xs text-gray-400">
           <p>&copy; {new Date().getFullYear()} Credit Solutions Goa. All rights reserved.</p>
           <div className="mt-2 sm:mt-0 flex space-x-4">
-            <span className="text-brand-gold font-medium">0% Brokerage Deals</span>
+            <span className="text-brand-gold font-medium">0% Commission Loan Advisory</span>
             <span>|</span>
-            <span>Direct Buyer-Seller Representation</span>
+            <span>Regulated by Professional Standards</span>
           </div>
         </div>
 

@@ -13,14 +13,17 @@ import {
   MapPin, 
   Quote, 
   ArrowUpRight,
-  TrendingUp,
-  Award
+  Briefcase,
+  Coins,
+  Car,
+  ChevronRight,
+  ShieldCheck
 } from 'lucide-react';
 
 function Home() {
   const navigate = useNavigate();
 
-  // Bento Search Form States (Exclusive to Properties)
+  // Properties Search State
   const [searchLocation, setSearchLocation] = useState('Panaji');
   const [searchPropertyType, setSearchPropertyType] = useState('Villa');
   const [searchBudget, setSearchBudget] = useState('1.5'); // in Crores
@@ -35,32 +38,40 @@ function Home() {
     navigate(`/properties?${query}`);
   };
 
-  const featureCards = [
+  const loanProducts = [
     {
-      title: 'Zero Brokerage Commission',
-      desc: 'Buy directly from certified owners and save the typical 2% agent commission. Complete transparency.',
-      icon: <BadgePercent className="w-6 h-6 text-brand-gold" />,
+      title: 'Business Loans',
+      desc: 'Access working capital, equipment financing, or expansion credit lines directly from 30+ leading Indian banks.',
+      icon: <Briefcase className="w-6 h-6 text-brand-gold" />,
+      link: '/services',
+      loanCode: 'business',
       span: 'md:col-span-2',
       bgGradient: 'from-blue-950/85 to-slate-900/85',
     },
     {
-      title: 'Verified Title Documents',
-      desc: 'Every listed property undergoes rigorous legal search and registry document audits.',
-      icon: <FileText className="w-6 h-6 text-brand-gold" />,
+      title: 'Home Mortgages',
+      desc: 'Finance your villa purchase, flat booking, or construction project with direct direct bank rates.',
+      icon: <Building2 className="w-6 h-6 text-brand-gold" />,
+      link: '/services',
+      loanCode: 'mortgage',
       span: 'md:col-span-1',
       bgGradient: 'from-slate-900/90 to-blue-950/75',
     },
     {
-      title: 'Premium Goa Locations',
-      desc: 'Exclusive access to beachfront villas, townhouses, and prime commercial retail spaces.',
-      icon: <MapPin className="w-6 h-6 text-brand-gold" />,
+      title: 'Loan Against Property (LAP)',
+      desc: 'Unlock equity value from your existing commercial or residential real estate holdings in Goa.',
+      icon: <Coins className="w-6 h-6 text-brand-gold" />,
+      link: '/services',
+      loanCode: 'lap',
       span: 'md:col-span-1',
       bgGradient: 'from-slate-900/90 to-blue-950/75',
     },
     {
-      title: 'End-to-End Registration Support',
-      desc: 'Our legal advisors handle draft deeds, stamp duty calculations, and represent you at the Sub-Registrar office.',
-      icon: <Award className="w-6 h-6 text-brand-gold" />,
+      title: 'Personal Credit Lines',
+      desc: 'Quick unsecured loans for personal requirements with direct approvals and flexible tenure options.',
+      icon: <User className="w-6 h-6 text-brand-gold" />,
+      link: '/services',
+      loanCode: 'personal',
       span: 'md:col-span-2',
       bgGradient: 'from-blue-950/85 to-slate-900/85',
     },
@@ -70,23 +81,23 @@ function Home() {
     {
       name: 'Sea Breeze Apartments',
       location: 'Panaji, Goa',
-      price: 14500000, // 1.45 Cr
-      type: '3 BHK Premium',
-      size: '1,850 Sq.Ft',
-    },
-    {
-      name: 'Margao Plaza Retail',
-      location: 'Margao, Goa',
-      price: 22000000, // 2.20 Cr
-      type: 'Commercial Shop',
-      size: '950 Sq.Ft',
+      price: 8500000,
+      type: 'Apartment',
+      size: '1,650 Sq.Ft',
     },
     {
       name: 'Calangute Sands Villa',
       location: 'Calangute, Goa',
-      price: 48000000, // 4.80 Cr
-      type: '4 BHK Luxury Villa',
+      price: 14500000,
+      type: 'Luxury Villa',
       size: '3,200 Sq.Ft',
+    },
+    {
+      name: 'Margao Plaza Retail',
+      location: 'Margao, Goa',
+      price: 6000000,
+      type: 'Commercial Shop',
+      size: '850 Sq.Ft',
     },
   ];
 
@@ -101,26 +112,28 @@ function Home() {
   return (
     <div className="bg-slate-50 min-h-screen space-y-0">
       
-      {/* 1. TOP SECTION: Cool Pale Blue-White Hero with Glass Bento Search */}
+      {/* ========================================================================= */}
+      {/* ZONE 1: PROPERTIES SECTION (Hero Search, Listings Portfolio)              */}
+      {/* ========================================================================= */}
+      
       <section className="relative bg-gradient-to-b from-blue-50/70 via-slate-50 to-white pt-20 pb-24 px-4 overflow-hidden">
         <div className="absolute top-0 right-0 w-[45rem] h-[45rem] bg-blue-100/30 rounded-full blur-3xl -mr-64 -mt-64 select-none"></div>
-        <div className="absolute top-1/3 left-0 w-80 h-80 bg-yellow-50/20 rounded-full blur-3xl -ml-40 select-none"></div>
-
+        
         <div className="relative max-w-7xl mx-auto space-y-12">
           
           <div className="text-center space-y-6 max-w-3xl mx-auto">
             <div className="inline-flex items-center space-x-2 bg-white/80 backdrop-blur border border-slate-100 shadow-sm text-brand-navy text-[10px] sm:text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wider">
               <Sparkles className="w-3.5 h-3.5 text-brand-gold animate-pulse" />
-              <span>Direct Property Deals in Goa</span>
+              <span>Goa Properties & Structured Finance</span>
             </div>
             
             <h1 className="text-4xl sm:text-6xl font-black text-brand-navy tracking-tight leading-none">
               Premium Goa Properties.<br />
-              <span className="bg-gradient-to-r from-brand-navy to-blue-900 bg-clip-text text-transparent">Zero Brokerage Fees.</span>
+              <span className="bg-gradient-to-r from-brand-navy to-blue-900 bg-clip-text text-transparent">Direct Deals. Zero Brokerage.</span>
             </h1>
             
             <p className="text-sm sm:text-base text-brand-text-muted leading-relaxed font-medium">
-              We connect buyers directly with property owners in Goa. Secure apartments, villas, and plots with complete document verification and sub-registrar support.
+              Find premium residential villas, coastal plots, and offices in Goa. Secure your property directly from owners with professional document support and 0% brokerage fees.
             </p>
           </div>
 
@@ -157,7 +170,7 @@ function Home() {
                   <option value="Apartment">Apartment</option>
                   <option value="Villa">Luxury Villa</option>
                   <option value="Plot">Residential Plot</option>
-                  <option value="Commercial">Commercial Shop/Office</option>
+                  <option value="Commercial">Commercial Office/Shop</option>
                 </select>
               </div>
 
@@ -191,62 +204,60 @@ function Home() {
         </div>
       </section>
 
-      {/* 2. Featured Goa Properties Section (₹ and Localized) */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 space-y-12">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 border-b border-slate-100 pb-6">
-          <div className="space-y-2">
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-brand-navy">Featured Goa Listings</h2>
-            <p className="text-xs sm:text-sm text-brand-text-muted max-w-lg">
-              Popular residential and commercial property listings currently available for direct purchase in Goa.
-            </p>
+      {/* Featured Properties Grid */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-8">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 border-b border-slate-100 pb-4">
+          <div>
+            <h2 className="text-xl sm:text-2xl font-extrabold text-brand-navy">Featured Goa Listings</h2>
+            <p className="text-xs text-brand-text-muted mt-0.5">Explore premium apartments, villas, and commercial shops.</p>
           </div>
           <Link to="/properties" className="text-xs font-bold text-brand-navy hover:text-brand-gold flex items-center space-x-1 outline-none">
-            <span>Explore Properties</span>
+            <span>View All Listings</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {featuredProperties.map((prop, idx) => (
             <div key={idx} className="bg-white border border-slate-100 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow group flex flex-col justify-between">
-              <div className="p-5 space-y-4">
+              <div className="p-5 space-y-3">
                 <div className="flex justify-between items-start gap-2">
                   <div className="space-y-1">
-                    <span className="text-[10px] font-bold text-brand-gold uppercase tracking-wider bg-yellow-50 px-2 py-0.5 rounded">
+                    <span className="text-[10px] font-bold text-brand-gold uppercase tracking-wider bg-yellow-50 px-2.5 py-0.5 rounded">
                       {prop.type}
                     </span>
-                    <h3 className="font-bold text-brand-navy text-base mt-1 group-hover:text-blue-900 transition-colors">
+                    <h3 className="font-bold text-brand-navy text-sm mt-1.5 group-hover:text-blue-900 transition-colors">
                       {prop.name}
                     </h3>
                   </div>
                   <div className="text-right">
-                    <span className="text-xs text-brand-text-muted block">Direct Price</span>
+                    <span className="text-[10px] text-brand-text-muted block font-semibold">Direct Price</span>
                     <span className="font-extrabold text-brand-navy text-sm">{formatCurrency(prop.price)}</span>
                   </div>
                 </div>
 
-                <div className="flex justify-between items-center text-xs text-brand-text-muted border-t border-slate-50 pt-3">
+                <div className="flex justify-between items-center text-xs text-brand-text-muted border-t border-slate-50 pt-2.5">
                   <span className="flex items-center space-x-1">
                     <MapPin className="w-3.5 h-3.5 text-brand-gold" />
                     <span>{prop.location}</span>
                   </span>
-                  <span>{prop.size}</span>
+                  <span className="font-semibold">{prop.size}</span>
                 </div>
               </div>
 
-              <div className="bg-slate-50/50 p-4 border-t border-slate-100 flex justify-between items-center">
+              <div className="bg-slate-50/50 p-4 border-t border-slate-100 flex justify-between items-center text-xs">
                 <Link
-                  to={`/apply?propertyName=${prop.name}&propertyLocation=${prop.location.split(',')[0]}&propertyPrice=${prop.price}`}
-                  className="text-xs font-bold text-brand-navy hover:text-brand-gold flex items-center space-x-1 outline-none"
+                  to={`/apply?property=${encodeURIComponent(prop.name)}&loan=property`}
+                  className="font-bold text-brand-navy hover:text-brand-gold flex items-center space-x-1 outline-none"
                 >
                   <span>Book Consultation</span>
                   <ArrowUpRight className="w-3 h-3" />
                 </Link>
                 <Link
-                  to={`/apply?propertyName=${prop.name}&propertyLocation=${prop.location.split(',')[0]}&propertyPrice=${prop.price}`}
+                  to={`/apply?property=${encodeURIComponent(prop.name)}&loan=property`}
                   className="bg-brand-navy text-white text-[10px] font-bold px-3 py-1.5 rounded hover:bg-blue-950 transition-colors"
                 >
-                  Inquire Now
+                  Inquire Deal
                 </Link>
               </div>
             </div>
@@ -254,34 +265,53 @@ function Home() {
         </div>
       </section>
 
-      {/* 3. MIDDLE SECTION: Asymmetric Bento Grid (Real Estate Services & Highlights) */}
-      <section className="bg-brand-navy text-white py-24 border-y border-slate-900 overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
+      {/* ========================================================================= */}
+      {/* ZONE 2: STRUCTURED LOANS SECTION (Middle Bento Grid)                      */}
+      {/* ========================================================================= */}
+      
+      <section className="bg-brand-navy text-white py-20 border-y border-slate-900 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
           
           <div className="text-center space-y-3">
-            <span className="text-[10px] font-bold text-brand-gold uppercase tracking-widest block">Core Strengths</span>
-            <h2 className="text-3xl font-extrabold tracking-tight">Direct Real Estate Representation</h2>
+            <span className="text-[10px] font-bold text-brand-gold uppercase tracking-widest block">Fintech Solutions</span>
+            <h2 className="text-3xl font-extrabold tracking-tight">Structured Banking & Loan Advisory</h2>
             <p className="max-w-xl mx-auto text-xs sm:text-sm text-gray-400">
-              Why buyers and property investors choose Credit Solutions Goa for commission-free consulting.
+              Get corporate funds, home mortgages, and equity release loans direct from 30+ leading banks with 0% advisory commission.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {featureCards.map((card, idx) => (
+            {loanProducts.map((prod, idx) => (
               <div 
                 key={idx}
-                className={`${card.span} bg-gradient-to-br ${card.bgGradient} border border-white/5 rounded-2xl p-6 sm:p-8 flex flex-col justify-between hover:border-white/20 hover:scale-[1.01] transition-all duration-300 group shadow-md backdrop-blur-sm`}
+                className={`${prod.span} bg-gradient-to-br ${prod.bgGradient} border border-white/5 rounded-2xl p-6 sm:p-8 flex flex-col justify-between hover:border-white/20 hover:scale-[1.01] transition-all duration-300 group shadow-md`}
               >
                 <div className="space-y-4">
                   <div className="p-3 bg-white/5 w-fit rounded-xl border border-white/10 group-hover:bg-brand-gold group-hover:text-brand-navy group-hover:border-transparent transition-all">
-                    {card.icon}
+                    {prod.icon}
                   </div>
                   <h3 className="text-lg sm:text-xl font-bold text-white group-hover:text-brand-gold transition-colors">
-                    {card.title}
+                    {prod.title}
                   </h3>
                   <p className="text-xs sm:text-sm text-gray-400 leading-relaxed">
-                    {card.desc}
+                    {prod.desc}
                   </p>
+                </div>
+
+                <div className="flex justify-between items-center pt-6 mt-6 border-t border-white/5">
+                  <Link 
+                    to={`/apply?loan=${prod.loanCode}`} 
+                    className="text-xs font-bold text-brand-gold hover:text-white flex items-center space-x-1 outline-none"
+                  >
+                    <span>Apply for Loan</span>
+                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                  </Link>
+                  <Link 
+                    to={prod.link} 
+                    className="text-[10px] text-gray-500 font-semibold hover:text-white"
+                  >
+                    View Criteria
+                  </Link>
                 </div>
               </div>
             ))}
@@ -290,7 +320,104 @@ function Home() {
         </div>
       </section>
 
-      {/* 4. BOTTOM SECTION: Pure Black Testimonials & Call To Action */}
+      {/* ========================================================================= */}
+      {/* ZONE 3: WHEELS FINANCING SECTION (Lower Showcase Card)                    */}
+      {/* ========================================================================= */}
+      
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 space-y-12">
+        <div className="text-center space-y-3">
+          <span className="text-[10px] font-bold text-brand-gold uppercase tracking-widest block">Auto Loans</span>
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-brand-navy">Premium Wheels Financing</h2>
+          <p className="max-w-lg mx-auto text-xs sm:text-sm text-brand-text-muted">
+            Secure fast approvals for premium passenger cars, utility vehicles, or luxury super-bikes with direct bank processing.
+          </p>
+        </div>
+
+        <div className="bg-white border border-slate-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow grid grid-cols-1 md:grid-cols-12 gap-0 max-w-5xl mx-auto">
+          {/* Visual Side */}
+          <div className="md:col-span-5 bg-gradient-to-br from-slate-900 to-blue-950 p-8 sm:p-10 flex flex-col justify-between text-white relative">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-yellow-500/10 rounded-full blur-2xl"></div>
+            <div className="space-y-4">
+              <span className="text-[9px] font-bold text-brand-gold uppercase tracking-wider bg-white/5 border border-white/10 px-2 py-0.5 rounded">
+                Auto Finance
+              </span>
+              <h3 className="text-xl sm:text-2xl font-black leading-tight">
+                Unlock Your Next Vehicle Drive.
+              </h3>
+              <p className="text-xs text-slate-400 leading-relaxed">
+                Advising on premium car financing direct from top auto lending channels.
+              </p>
+            </div>
+            
+            <div className="pt-8 flex items-center space-x-3 text-xs text-brand-gold">
+              <Car className="w-8 h-8 animate-pulse shrink-0" />
+              <div>
+                <span className="block font-bold text-white">48-Hr Approvals</span>
+                <span className="text-[10px] text-slate-500">Direct Registry Processing</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Details & CTA List Side */}
+          <div className="md:col-span-7 p-6 sm:p-8 flex flex-col justify-between space-y-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="flex items-start space-x-2 text-xs">
+                <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
+                <div>
+                  <span className="font-bold text-brand-navy block">New Car Finance</span>
+                  <span className="text-brand-text-muted text-[10px]">Processing packages from 8.5% interest.</span>
+                </div>
+              </div>
+              <div className="flex items-start space-x-2 text-xs">
+                <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
+                <div>
+                  <span className="font-bold text-brand-navy block">Used Car Approvals</span>
+                  <span className="text-brand-text-muted text-[10px]">Quick valuation checks & title checks.</span>
+                </div>
+              </div>
+              <div className="flex items-start space-x-2 text-xs">
+                <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
+                <div>
+                  <span className="font-bold text-brand-navy block">Premium Superbikes</span>
+                  <span className="text-brand-text-muted text-[10px]">Funding allocations for models above 250cc.</span>
+                </div>
+              </div>
+              <div className="flex items-start space-x-2 text-xs">
+                <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
+                <div>
+                  <span className="font-bold text-brand-navy block">0% Processing Fee Advisory</span>
+                  <span className="text-brand-text-muted text-[10px]">Verify and audit lender commissions.</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="border-t border-slate-50 pt-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+              <span className="text-xs text-brand-text-muted">
+                Pre-approved auto lending solutions.
+              </span>
+              <div className="flex items-center space-x-3 w-full sm:w-auto">
+                <Link
+                  to="/wheels"
+                  className="text-xs font-bold text-brand-navy hover:text-brand-gold px-4 py-2 border border-slate-200 rounded-lg text-center w-full sm:w-auto"
+                >
+                  Explore Catalog
+                </Link>
+                <Link
+                  to="/apply?loan=vehicle"
+                  className="bg-brand-navy text-white text-xs font-bold px-4 py-2 rounded-lg hover:bg-blue-900 transition-colors text-center w-full sm:w-auto"
+                >
+                  Apply Auto Loan
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ========================================================================= */}
+      {/* ZONE 4: TESTIMONIALS & BANK PARTNERS (Pure Black contrast bottom)         */}
+      {/* ========================================================================= */}
+      
       <section className="bg-[#050505] text-white py-24 relative overflow-hidden">
         <div className="absolute top-1/2 left-1/2 w-[40rem] h-[40rem] bg-blue-900/5 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2 select-none"></div>
 
@@ -300,9 +427,9 @@ function Home() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
             <div className="space-y-4 lg:pr-8">
               <span className="text-[10px] font-bold text-brand-gold uppercase tracking-widest">Client Testimonials</span>
-              <h2 className="text-3xl font-extrabold tracking-tight">Trusted by Home Owners & Investors</h2>
+              <h2 className="text-3xl font-extrabold tracking-tight">Real People. Real Results.</h2>
               <p className="text-xs sm:text-sm text-gray-400 leading-relaxed">
-                Read how Goa buyers and sellers secured their properties directly without paying traditional agent commissions.
+                Read how Goa residents save broker fees and secure pre-approved credit lines from leading Indian banks.
               </p>
             </div>
 
@@ -311,47 +438,39 @@ function Home() {
               <div className="bg-white/5 border border-white/5 rounded-xl p-6 space-y-4 backdrop-blur-sm shadow-md">
                 <Quote className="w-8 h-8 text-brand-gold opacity-30" />
                 <p className="text-xs sm:text-sm text-gray-300 leading-relaxed italic">
-                  "Bought a penthouse in Panaji through Credit Solutions. Dealing directly with the owner meant we saved over 3.5 Lakhs in agent fees. Extremely smooth paperwork support!"
+                  "Bought a beachfront villa in Calangute. Direct buyer representation saved us 4 Lakhs in commission, and Credit Solutions arranged a home mortgage with SBI at 8.4%!"
                 </p>
                 <div className="border-t border-white/5 pt-3">
                   <span className="font-bold text-brand-gold block text-xs">Rajesh Fernandes</span>
-                  <span className="text-[10px] text-gray-500">Penthouse Owner, Panaji</span>
+                  <span className="text-[10px] text-gray-500">Villa Owner, Calangute</span>
                 </div>
               </div>
 
               <div className="bg-white/5 border border-white/5 rounded-xl p-6 space-y-4 backdrop-blur-sm shadow-md">
                 <Quote className="w-8 h-8 text-brand-gold opacity-30" />
                 <p className="text-xs sm:text-sm text-gray-300 leading-relaxed italic">
-                  "Zero brokerage was exactly what was promised. Highly professional title checks and registration assistance. Highly recommended."
+                  "Applied for Business Loan and Vehicle Loan at the same time. The step onboarding tool is fast, and they negotiated directly with HDFC Bank to waive the processing fees."
                 </p>
                 <div className="border-t border-white/5 pt-3">
                   <span className="font-bold text-brand-gold block text-xs">Simran D'Souza</span>
-                  <span className="text-[10px] text-gray-500">Beach House Buyer, Candolim</span>
+                  <span className="text-[10px] text-gray-500">Merchant Retailer, Margao</span>
                 </div>
               </div>
 
             </div>
           </div>
 
-          {/* Bottom Call To Action Banner */}
-          <div className="bg-gradient-to-r from-blue-950/40 to-slate-900/40 border border-white/5 rounded-2xl p-8 sm:p-12 text-center space-y-6 max-w-4xl mx-auto shadow-lg backdrop-blur-sm">
-            <h3 className="text-2xl sm:text-3xl font-extrabold tracking-tight">Ready to Find Your Property in Goa?</h3>
-            <p className="max-w-md mx-auto text-xs sm:text-sm text-gray-400">
-              Get direct buyer-seller representation, transparent documentation audits, and zero broker commissions.
+          {/* Partner Bank Logos Grid */}
+          <div className="space-y-6 pt-10 border-t border-white/5">
+            <p className="text-center text-[10px] font-bold text-brand-gold uppercase tracking-wider">
+              Direct Loan Connections from 30+ Leading Partners
             </p>
-            <div className="flex flex-col sm:flex-row justify-center gap-4">
-              <Link 
-                to="/apply" 
-                className="bg-brand-gold text-brand-navy font-bold text-xs px-8 py-3 rounded-lg hover:bg-yellow-500 transition-colors shadow-md"
-              >
-                Book Office Consultation
-              </Link>
-              <Link 
-                to="/properties" 
-                className="border border-white/20 text-white font-semibold text-xs px-8 py-3 rounded-lg hover:bg-white/5 transition-colors"
-              >
-                Browse Listings Catalog
-              </Link>
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 items-center justify-items-center opacity-60 text-xs font-bold text-slate-400 select-none">
+              <span className="hover:text-white transition-colors cursor-pointer bg-white/5 px-4 py-2 rounded-lg border border-white/5 w-32 text-center">SBI</span>
+              <span className="hover:text-white transition-colors cursor-pointer bg-white/5 px-4 py-2 rounded-lg border border-white/5 w-32 text-center">HDFC BANK</span>
+              <span className="hover:text-white transition-colors cursor-pointer bg-white/5 px-4 py-2 rounded-lg border border-white/5 w-32 text-center">ICICI BANK</span>
+              <span className="hover:text-white transition-colors cursor-pointer bg-white/5 px-4 py-2 rounded-lg border border-white/5 w-32 text-center">AXIS BANK</span>
+              <span className="hover:text-white transition-colors cursor-pointer bg-white/5 px-4 py-2 rounded-lg border border-white/5 w-32 text-center">BANK OF BARODA</span>
             </div>
           </div>
 

@@ -8,7 +8,10 @@ function Navbar() {
 
   const navItems = [
     { name: 'Home', path: '/' },
+    { name: 'Services', path: '/services' },
     { name: 'Properties', path: '/properties' },
+    { name: 'Wheels', path: '/wheels' },
+    { name: 'EMI Calculator', path: '/calculator' },
     { name: 'Contact', path: '/contact' },
   ];
 
@@ -33,9 +36,8 @@ function Navbar() {
               <Link
                 key={item.name}
                 to={item.path}
-                className={`text-sm font-medium transition-colors hover:text-brand-gold ${
-                  isActive(item.path) ? 'text-brand-gold border-b-2 border-brand-gold pb-1' : 'text-gray-300'
-                }`}
+                className={`text-sm font-medium transition-colors hover:text-brand-gold ${isActive(item.path) ? 'text-brand-gold border-b-2 border-brand-gold pb-1' : 'text-gray-300'
+                  }`}
               >
                 {item.name}
               </Link>
@@ -70,11 +72,10 @@ function Navbar() {
                 key={item.name}
                 to={item.path}
                 onClick={() => setIsOpen(false)}
-                className={`block px-3 py-2 rounded-md text-base font-medium transition-colors ${
-                  isActive(item.path)
+                className={`block px-3 py-2 rounded-md text-base font-medium transition-colors ${isActive(item.path)
                     ? 'text-brand-gold bg-blue-900'
                     : 'text-gray-300 hover:text-brand-gold hover:bg-blue-900'
-                }`}
+                  }`}
               >
                 {item.name}
               </Link>
