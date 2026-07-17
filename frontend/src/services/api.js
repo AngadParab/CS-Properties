@@ -38,6 +38,30 @@ export const submitLead = async (leadData) => {
 };
 
 /**
+ * Public: Submit a new property listing to sell
+ */
+export const submitPropertyListing = async (listingData) => {
+  try {
+    const docRef = await addDoc(collection(db, 'listings'), {
+      ...listingData,
+      price: Number(listingData.price || 0),
+      size: Number(listingData.size || 0),
+      status: 'Pending Approval',
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+    });
+    
+    return {
+      status: 'success',
+      message: 'Property listing submitted successfully',
+      data: { _id: docRef.id, ...listingData },
+    };
+  } catch (error) {
+    throw new Error(error.message || 'Failed to submit property listing to Firestore');
+  }
+};
+
+/**
  * Public: Authenticate admin credentials with Firebase Auth
  */
 export const loginAdmin = async (email, password) => {

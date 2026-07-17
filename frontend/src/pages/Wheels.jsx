@@ -90,7 +90,7 @@ function Wheels() {
       <div className="text-center space-y-3">
         <h1 className="text-4xl font-extrabold text-brand-navy">Wheels & Vehicle Finance</h1>
         <p className="max-w-2xl mx-auto text-brand-text-muted">
-          Looking for a new or pre-owned car/bike? We secure instant auto financing solutions directly from top lenders with 0% brokerage.
+          Looking for a new or pre-owned car/bike? We secure instant auto financing solutions directly from top lenders with professional advisory support.
         </p>
       </div>
 

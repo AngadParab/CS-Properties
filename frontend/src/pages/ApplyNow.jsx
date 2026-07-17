@@ -277,7 +277,7 @@ function ApplyNow() {
                       name="fullName"
                       value={formData.fullName}
                       onChange={handleChange}
-                      placeholder="e.g. Angad Parab"
+                      placeholder="e.g. John Doe"
                       className={`w-full px-4 py-2 text-sm border rounded-lg focus:ring-2 outline-none bg-white ${
                         errors.fullName ? 'border-brand-error focus:ring-red-200' : 'border-slate-200 focus:ring-blue-500'
                       }`}
@@ -309,7 +309,7 @@ function ApplyNow() {
                       name="email"
                       value={formData.email}
                       onChange={handleChange}
-                      placeholder="e.g. angad@example.com"
+                      placeholder="e.g. john@example.com"
                       className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white"
                     />
                   </div>

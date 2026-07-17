@@ -143,7 +143,7 @@ function Properties() {
           Discover <span className="font-light italic font-syne text-brand-gold">exclusive spaces</span> in Goa
         </h1>
         <p className="max-w-2xl mx-auto text-xs sm:text-sm text-brand-text-muted leading-relaxed">
-          Browse our premier residential, commercial, and land plot portfolios. We represent you directly to get the best deal with 0% brokerage fees.
+          Browse our premier residential, commercial, and land plot portfolios. We provide end-to-end professional agency guidance to secure your ideal property with clear titles.
         </p>
       </motion.div>
 

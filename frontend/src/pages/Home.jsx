@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import geminiBg from '../assets/gemini.png';
 import { 
   Building2, 
   Home as HomeIcon, 
@@ -14,10 +15,10 @@ import {
   MapPin, 
   Quote, 
   ArrowUpRight,
-  Briefcase,
-  Coins,
-  Car,
-  Award
+  Award,
+  Shield,
+  ClipboardCheck,
+  Compass
 } from 'lucide-react';
 
 function Home() {
@@ -38,44 +39,7 @@ function Home() {
     navigate(`/properties?${query}`);
   };
 
-  const loanProducts = [
-    {
-      title: 'Business Loans',
-      desc: 'Access working capital, equipment financing, or expansion credit lines directly from 30+ leading Indian banks.',
-      icon: <Briefcase className="w-6 h-6 text-brand-gold" />,
-      link: '/services',
-      loanCode: 'business',
-      span: 'md:col-span-2',
-      bgGradient: 'from-brand-navy to-[#2c2c2c]',
-    },
-    {
-      title: 'Home Mortgages',
-      desc: 'Finance your villa purchase, flat booking, or construction project with direct bank rates.',
-      icon: <Building2 className="w-6 h-6 text-brand-gold" />,
-      link: '/services',
-      loanCode: 'mortgage',
-      span: 'md:col-span-1',
-      bgGradient: 'from-[#2c2c2c] to-brand-navy',
-    },
-    {
-      title: 'Loan Against Property',
-      desc: 'Unlock equity value from your existing commercial or residential real estate holdings in Goa.',
-      icon: <Coins className="w-6 h-6 text-brand-gold" />,
-      link: '/services',
-      loanCode: 'lap',
-      span: 'md:col-span-1',
-      bgGradient: 'from-[#2c2c2c] to-brand-navy',
-    },
-    {
-      title: 'Personal Credit Lines',
-      desc: 'Quick unsecured loans for personal requirements with direct approvals and flexible tenure options.',
-      icon: <User className="w-6 h-6 text-brand-gold" />,
-      link: '/services',
-      loanCode: 'personal',
-      span: 'md:col-span-2',
-      bgGradient: 'from-brand-navy to-[#2c2c2c]',
-    },
-  ];
+
 
   const featuredProperties = [
     {
@@ -140,11 +104,17 @@ function Home() {
       {/* ========================================================================= */}
       
       <section className="relative bg-gradient-to-b from-brand-bg via-brand-sandDark to-white pt-24 pb-28 px-4 overflow-hidden">
+        {/* Background Image */}
+        <div className="absolute inset-0 z-0 opacity-100 pointer-events-none select-none">
+          <img src={geminiBg} alt="Background" className="w-full h-full object-cover" />
+          {/* Subtle dark overlay wash to guarantee high text contrast */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/55 via-black/45 to-black/35"></div>
+        </div>
         {/* Soft abstract graphic elements */}
         <div className="absolute top-0 right-0 w-[40rem] h-[40rem] bg-brand-gold/5 rounded-full blur-3xl -mr-48 -mt-48 select-none pointer-events-none"></div>
         <div className="absolute bottom-0 left-0 w-80 h-80 bg-brand-gold/5 rounded-full blur-3xl -ml-40 select-none pointer-events-none"></div>
 
-        <div className="relative max-w-7xl mx-auto space-y-16">
+        <div className="relative z-10 max-w-7xl mx-auto space-y-16">
           
           <motion.div 
             initial="hidden"
@@ -153,17 +123,17 @@ function Home() {
             variants={fadeInUp}
             className="text-center space-y-6 max-w-3xl mx-auto"
           >
-            <div className="inline-flex items-center space-x-2 bg-white border border-brand-sandDark shadow-sm text-brand-navy text-[10px] sm:text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-widest">
+            <div className="inline-flex items-center space-x-2 bg-white/10 border border-white/20 shadow-sm text-white text-[10px] sm:text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-widest backdrop-blur-md">
               <Sparkles className="w-3.5 h-3.5 text-brand-gold" />
               <span>Goa Properties & Capital Advisors</span>
             </div>
             
-            <h1 className="text-4xl sm:text-6xl font-black text-brand-text-primary tracking-tight leading-[1.05]">
+            <h1 className="text-4xl sm:text-6xl font-black text-white tracking-tight leading-[1.05] drop-shadow-sm">
               Connecting you <span className="font-light italic font-syne text-brand-gold tracking-normal">to the home</span> you love
             </h1>
             
-            <p className="text-sm sm:text-base text-brand-text-muted leading-relaxed font-medium max-w-2xl mx-auto">
-              Find premium residential villas, coastal plots, and offices in Goa. Secure your property directly from owners with professional document support and 0% brokerage fees.
+            <p className="text-sm sm:text-base text-white/85 leading-relaxed font-medium max-w-2xl mx-auto">
+              Find premium residential villas, coastal plots, and offices in Goa. Discover handpicked, verified listings with professional real estate guidance and end-to-end documentation support.
             </p>
           </motion.div>
 
@@ -318,9 +288,8 @@ function Home() {
       </section>
 
       {/* ========================================================================= */}
-      {/* ZONE 2: STRUCTURED LOANS SECTION (Middle Bento Grid with off-white)       */}
+      {/* ZONE 2: OUR EXPERTISE SECTION (Warm Minimalist Services)                  */}
       {/* ========================================================================= */}
-      
       <section className="bg-brand-sandDark py-24 border-y border-brand-sandDark overflow-hidden rounded-tl-[80px] rounded-br-[80px]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
           
@@ -331,10 +300,10 @@ function Home() {
             variants={fadeInUp}
             className="text-center space-y-3"
           >
-            <span className="text-[10px] font-extrabold text-brand-gold uppercase tracking-widest block">Fintech Solutions</span>
-            <h2 className="text-3xl font-extrabold text-brand-navy tracking-tight">Structured Banking & Loan Advisory</h2>
+            <span className="text-[10px] font-extrabold text-brand-gold uppercase tracking-widest block">Core Advisory</span>
+            <h2 className="text-3xl font-extrabold text-brand-navy tracking-tight">Unrivaled Expertise in Goan Real Estate</h2>
             <p className="max-w-xl mx-auto text-xs sm:text-sm text-brand-text-muted">
-              Get corporate funds, home mortgages, and equity release loans direct from 30+ leading banks with 0% advisory commission.
+              We provide professional document auditing, clear title checking, and buyer brokerage services to secure sound investments in Goa.
             </p>
           </motion.div>
 
@@ -343,52 +312,69 @@ function Home() {
             whileInView="visible"
             viewport={{ once: true }}
             variants={staggerContainer}
-            className="grid grid-cols-1 md:grid-cols-3 gap-6"
+            className="grid grid-cols-1 md:grid-cols-3 gap-8"
           >
-            {loanProducts.map((prod, idx) => (
-              <motion.div 
-                key={idx}
-                variants={fadeInUp}
-                className={`${prod.span} bg-white border border-brand-sandDark rounded-2xl p-6 sm:p-8 flex flex-col justify-between hover:border-brand-gold hover:scale-[1.01] transition-all duration-300 group shadow-sm`}
-              >
-                <div className="space-y-4">
-                  <div className="p-3 bg-brand-bg w-fit rounded-xl border border-brand-sandDark group-hover:bg-brand-gold group-hover:text-brand-navy group-hover:border-transparent transition-all">
-                    {prod.icon}
-                  </div>
-                  <h3 className="text-lg sm:text-xl font-extrabold text-brand-navy group-hover:text-brand-gold transition-colors">
-                    {prod.title}
-                  </h3>
-                  <p className="text-xs sm:text-sm text-brand-text-muted leading-relaxed">
-                    {prod.desc}
-                  </p>
+            {/* Service 1 */}
+            <motion.div 
+              variants={fadeInUp}
+              className="bg-white border border-brand-sandDark rounded-2xl p-8 flex flex-col justify-between hover:border-brand-gold hover:scale-[1.01] transition-all duration-300 group shadow-sm"
+            >
+              <div className="space-y-4">
+                <div className="p-3 bg-brand-bg w-fit rounded-xl border border-brand-sandDark group-hover:bg-brand-gold group-hover:text-brand-navy group-hover:border-transparent transition-all">
+                  <Shield className="w-6 h-6 text-brand-gold" />
                 </div>
+                <h3 className="text-lg font-extrabold text-brand-navy group-hover:text-brand-gold transition-colors">
+                  Title & Document Auditing
+                </h3>
+                <p className="text-xs sm:text-sm text-brand-text-muted leading-relaxed">
+                  We audit title deeds, mutation records, and land tax history to guarantee the property is free of encumbrances and disputes.
+                </p>
+              </div>
+            </motion.div>
 
-                <div className="flex justify-between items-center pt-6 mt-6 border-t border-brand-sandDark">
-                  <Link 
-                    to={`/apply?loan=${prod.loanCode}`} 
-                    className="text-xs font-bold text-brand-gold hover:text-brand-navy flex items-center space-x-1 outline-none"
-                  >
-                    <span>Apply for Loan</span>
-                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-                  </Link>
-                  <Link 
-                    to={prod.link} 
-                    className="text-[10px] text-brand-text-muted font-bold hover:text-brand-navy"
-                  >
-                    View Criteria
-                  </Link>
+            {/* Service 2 */}
+            <motion.div 
+              variants={fadeInUp}
+              className="bg-white border border-brand-sandDark rounded-2xl p-8 flex flex-col justify-between hover:border-brand-gold hover:scale-[1.01] transition-all duration-300 group shadow-sm"
+            >
+              <div className="space-y-4">
+                <div className="p-3 bg-brand-bg w-fit rounded-xl border border-brand-sandDark group-hover:bg-brand-gold group-hover:text-brand-navy group-hover:border-transparent transition-all">
+                  <ClipboardCheck className="w-6 h-6 text-brand-gold" />
                 </div>
-              </motion.div>
-            ))}
+                <h3 className="text-lg font-extrabold text-brand-navy group-hover:text-brand-gold transition-colors">
+                  Market Property Valuation
+                </h3>
+                <p className="text-xs sm:text-sm text-brand-text-muted leading-relaxed">
+                  Our local valuations provide accurate pricing assessments based on zone regulations, coastal proximity, and commercial demand.
+                </p>
+              </div>
+            </motion.div>
+
+            {/* Service 3 */}
+            <motion.div 
+              variants={fadeInUp}
+              className="bg-white border border-brand-sandDark rounded-2xl p-8 flex flex-col justify-between hover:border-brand-gold hover:scale-[1.01] transition-all duration-300 group shadow-sm"
+            >
+              <div className="space-y-4">
+                <div className="p-3 bg-brand-bg w-fit rounded-xl border border-brand-sandDark group-hover:bg-brand-gold group-hover:text-brand-navy group-hover:border-transparent transition-all">
+                  <Compass className="w-6 h-6 text-brand-gold" />
+                </div>
+                <h3 className="text-lg font-extrabold text-brand-navy group-hover:text-brand-gold transition-colors">
+                  Off-Market Deal Sourcing
+                </h3>
+                <p className="text-xs sm:text-sm text-brand-text-muted leading-relaxed">
+                  Leverage our deep relations across North and South Goa to unlock exclusive residential plots, villas, and beach properties before they list.
+                </p>
+              </div>
+            </motion.div>
           </motion.div>
 
         </div>
       </section>
 
       {/* ========================================================================= */}
-      {/* ZONE 3: WHEELS FINANCING SECTION (Lower Showcase Card)                    */}
+      {/* ZONE 3: GOA NEIGHBORHOOD GUIDE SECTION                                    */}
       {/* ========================================================================= */}
-      
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 space-y-12">
         <motion.div 
           initial="hidden"
@@ -397,10 +383,10 @@ function Home() {
           variants={fadeInUp}
           className="text-center space-y-3"
         >
-          <span className="text-[10px] font-extrabold text-brand-gold uppercase tracking-widest block">Auto Loans</span>
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-brand-navy tracking-tight">Premium Wheels Financing</h2>
+          <span className="text-[10px] font-extrabold text-brand-gold uppercase tracking-widest block">Local Geography</span>
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-brand-navy tracking-tight">Explore Goa's Finest Neighborhoods</h2>
           <p className="max-w-lg mx-auto text-xs sm:text-sm text-brand-text-muted">
-            Secure fast approvals for premium passenger cars, utility vehicles, or luxury super-bikes with direct bank processing.
+            Find the perfect location for your lifestyle or investment portfolio, from bustling commercial cities to serene beach strips.
           </p>
         </motion.div>
 
@@ -408,86 +394,74 @@ function Home() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
-          variants={fadeInUp}
-          className="bg-white border border-brand-sandDark rounded-tr-[80px] rounded-bl-[80px] overflow-hidden shadow-sm hover:shadow-md transition-all grid grid-cols-1 md:grid-cols-12 gap-0 max-w-5xl mx-auto"
+          variants={staggerContainer}
+          className="grid grid-cols-1 md:grid-cols-3 gap-8"
         >
-          {/* Visual Side (Charcoal Deep Contrast) */}
-          <div className="md:col-span-5 bg-brand-charcoal p-8 sm:p-10 flex flex-col justify-between text-white relative">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-brand-gold/10 rounded-full blur-2xl"></div>
-            <div className="space-y-4">
-              <span className="text-[9px] font-bold text-brand-gold uppercase tracking-wider bg-white/5 border border-white/10 px-2.5 py-1 rounded">
-                Auto Finance
+          {/* Card 1: Panaji */}
+          <motion.div 
+            variants={fadeInUp}
+            className="bg-white border border-brand-sandDark overflow-hidden shadow-sm hover:shadow-md transition-shadow group flex flex-col justify-between rounded-tl-[50px] rounded-br-[50px]"
+          >
+            <div className="p-8 space-y-4">
+              <span className="text-[9px] font-bold text-brand-gold uppercase tracking-wider bg-brand-bg px-2.5 py-0.5 rounded">
+                Capital District
               </span>
-              <h3 className="text-xl sm:text-2xl font-black leading-tight">
-                Unlock Your Next Vehicle Drive.
-              </h3>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Advising on premium car financing direct from top auto lending channels.
+              <h3 className="text-xl font-bold text-brand-navy group-hover:text-brand-gold transition-colors">Panaji</h3>
+              <p className="text-xs text-brand-text-muted leading-relaxed">
+                Known for Portuguese heritage homes, riverside promenades, and clean residential streets. Ideal for premium city living and boutique commercial shops.
               </p>
             </div>
-            
-            <div className="pt-8 flex items-center space-x-3 text-xs text-brand-gold">
-              <Car className="w-8 h-8 animate-pulse shrink-0" />
-              <div>
-                <span className="block font-bold text-white">48-Hr Approvals</span>
-                <span className="text-[10px] text-slate-500">Direct Registry Processing</span>
-              </div>
+            <div className="bg-brand-bg p-5 border-t border-brand-sandDark flex justify-between items-center text-xs">
+              <Link to="/properties?location=Panaji" className="font-bold text-brand-navy hover:text-brand-gold flex items-center space-x-1 outline-none">
+                <span>View Listings</span>
+                <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+              </Link>
             </div>
-          </div>
+          </motion.div>
 
-          {/* Details & CTA List Side */}
-          <div className="md:col-span-7 p-8 sm:p-10 flex flex-col justify-between space-y-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              <div className="flex items-start space-x-2 text-xs">
-                <CheckCircle2 className="w-4 h-4 text-brand-gold shrink-0 mt-0.5" />
-                <div>
-                  <span className="font-bold text-brand-navy block text-sm">New Car Finance</span>
-                  <span className="text-brand-text-muted text-xs">Processing packages from 8.5% interest.</span>
-                </div>
-              </div>
-              <div className="flex items-start space-x-2 text-xs">
-                <CheckCircle2 className="w-4 h-4 text-brand-gold shrink-0 mt-0.5" />
-                <div>
-                  <span className="font-bold text-brand-navy block text-sm">Used Car Approvals</span>
-                  <span className="text-brand-text-muted text-xs">Quick valuation checks & title checks.</span>
-                </div>
-              </div>
-              <div className="flex items-start space-x-2 text-xs">
-                <CheckCircle2 className="w-4 h-4 text-brand-gold shrink-0 mt-0.5" />
-                <div>
-                  <span className="font-bold text-brand-navy block text-sm">Premium Superbikes</span>
-                  <span className="text-brand-text-muted text-xs">Funding allocations for models above 250cc.</span>
-                </div>
-              </div>
-              <div className="flex items-start space-x-2 text-xs">
-                <CheckCircle2 className="w-4 h-4 text-brand-gold shrink-0 mt-0.5" />
-                <div>
-                  <span className="font-bold text-brand-navy block text-sm">0% Processing Fees</span>
-                  <span className="text-brand-text-muted text-xs">Verify and audit lender commissions.</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="border-t border-brand-sandDark pt-5 flex flex-col sm:flex-row items-center justify-between gap-4">
-              <span className="text-xs text-brand-text-muted">
-                Pre-approved auto lending solutions.
+          {/* Card 2: Calangute & Candolim */}
+          <motion.div 
+            variants={fadeInUp}
+            className="bg-white border border-brand-sandDark overflow-hidden shadow-sm hover:shadow-md transition-shadow group flex flex-col justify-between rounded-tr-[50px] rounded-bl-[50px]"
+          >
+            <div className="p-8 space-y-4">
+              <span className="text-[9px] font-bold text-brand-gold uppercase tracking-wider bg-brand-bg px-2.5 py-0.5 rounded">
+                Coastal North
               </span>
-              <div className="flex items-center space-x-3 w-full sm:w-auto">
-                <Link
-                  to="/wheels"
-                  className="text-xs font-bold text-brand-navy hover:text-brand-gold px-4 py-2.5 border border-brand-sandDark rounded-xl text-center w-full sm:w-auto"
-                >
-                  Explore Catalog
-                </Link>
-                <Link
-                  to="/apply?loan=vehicle"
-                  className="bg-brand-navy text-white text-xs font-bold px-4 py-2.5 rounded-xl hover:bg-brand-gold hover:text-brand-navy transition-colors text-center w-full sm:w-auto"
-                >
-                  Apply Auto Loan
-                </Link>
-              </div>
+              <h3 className="text-xl font-bold text-brand-navy group-hover:text-brand-gold transition-colors">Calangute & Candolim</h3>
+              <p className="text-xs text-brand-text-muted leading-relaxed">
+                The thriving seaside heart of Goa. Features sandy beaches, fine dining, and luxury vacation villas that command high rental yields.
+              </p>
             </div>
-          </div>
+            <div className="bg-brand-bg p-5 border-t border-brand-sandDark flex justify-between items-center text-xs">
+              <Link to="/properties?location=Calangute" className="font-bold text-brand-navy hover:text-brand-gold flex items-center space-x-1 outline-none">
+                <span>View Listings</span>
+                <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+              </Link>
+            </div>
+          </motion.div>
+
+          {/* Card 3: Margao */}
+          <motion.div 
+            variants={fadeInUp}
+            className="bg-white border border-brand-sandDark overflow-hidden shadow-sm hover:shadow-md transition-shadow group flex flex-col justify-between rounded-tl-[50px] rounded-br-[50px]"
+          >
+            <div className="p-8 space-y-4">
+              <span className="text-[9px] font-bold text-brand-gold uppercase tracking-wider bg-brand-bg px-2.5 py-0.5 rounded">
+                Cultural South
+              </span>
+              <h3 className="text-xl font-bold text-brand-navy group-hover:text-brand-gold transition-colors">Margao</h3>
+              <p className="text-xs text-brand-text-muted leading-relaxed">
+                Goa's cultural and commercial capital in the South. Surrounded by green fields and traditional heritage estates, perfect for peaceful residential setups.
+              </p>
+            </div>
+            <div className="bg-brand-bg p-5 border-t border-brand-sandDark flex justify-between items-center text-xs">
+              <Link to="/properties?location=Margao" className="font-bold text-brand-navy hover:text-brand-gold flex items-center space-x-1 outline-none">
+                <span>View Listings</span>
+                <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+              </Link>
+            </div>
+          </motion.div>
         </motion.div>
       </section>
 
@@ -529,7 +503,7 @@ function Home() {
               >
                 <Quote className="w-8 h-8 text-brand-gold opacity-20" />
                 <p className="text-xs sm:text-sm text-slate-200 leading-relaxed italic">
-                  "Bought a beachfront villa in Calangute. Direct buyer representation saved us 4 Lakhs in commission, and Credit Solutions arranged a home mortgage with SBI at 8.4%!"
+                  "Bought a beachfront villa in Calangute. Their professional agency support guided us through title verification, and Credit Solutions arranged a home mortgage with SBI at 8.4%!"
                 </p>
                 <div className="border-t border-white/5 pt-4">
                   <span className="font-extrabold text-brand-gold block text-xs tracking-wider">Rajesh Fernandes</span>
