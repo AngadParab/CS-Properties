@@ -1,8 +1,8 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Search, MapPin, DollarSign, Home as HomeIcon, Filter, Layers, ArrowUpRight } from 'lucide-react';
-import propertiesList from '../data/properties.json';
+import { Search, MapPin, DollarSign, Home as HomeIcon, Filter, Layers, ArrowUpRight, Heart } from 'lucide-react';
+import { useProperties } from '../context/PropertyContext';
 
 function Properties() {
   const queryParams = new URLSearchParams(useLocation().search);
@@ -10,33 +10,41 @@ function Properties() {
   const locQuery = queryParams.get('location');
   const budgetQuery = queryParams.get('budget');
 
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedLocation, setSelectedLocation] = useState('All');
-  const [selectedType, setSelectedType] = useState('All');
-  const [maxBudget, setMaxBudget] = useState(50000000); // 5.0 Crores default max
+  const { 
+    properties, 
+    loading, 
+    searchFilters, 
+    updateFilters, 
+    favorites, 
+    toggleFavorite, 
+    setActiveModalProperty 
+  } = useProperties();
 
   // Run initial sync from home query params if they exist
   useEffect(() => {
-    if (typeQuery) setSelectedType(typeQuery);
-    if (locQuery) setSelectedLocation(locQuery);
-    if (budgetQuery) setMaxBudget(Number(budgetQuery) * 10000000);
+    const initialFilters = {};
+    if (typeQuery) initialFilters.type = typeQuery;
+    if (locQuery) initialFilters.location = locQuery;
+    if (budgetQuery) initialFilters.maxBudget = Number(budgetQuery) * 10000000;
+    
+    if (Object.keys(initialFilters).length > 0) {
+      updateFilters(initialFilters);
+    }
   }, [typeQuery, locQuery, budgetQuery]);
 
   const locations = ['All', 'Margao', 'Panaji', 'Calangute', 'Vasco', 'Mapusa'];
   const types = ['All', 'Apartment', 'Villa', 'Commercial', 'Plot'];
 
-
-
   const filteredProperties = useMemo(() => {
-    return propertiesList.filter((prop) => {
-      const matchesSearch = prop.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                            prop.desc.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesLocation = selectedLocation === 'All' || prop.location === selectedLocation;
-      const matchesType = selectedType === 'All' || prop.type === selectedType;
-      const matchesBudget = prop.price <= maxBudget;
+    return properties.filter((prop) => {
+      const matchesSearch = prop.title.toLowerCase().includes(searchFilters.query.toLowerCase()) || 
+                            prop.desc.toLowerCase().includes(searchFilters.query.toLowerCase());
+      const matchesLocation = searchFilters.location === 'All' || prop.location === searchFilters.location;
+      const matchesType = searchFilters.type === 'All' || prop.type === searchFilters.type;
+      const matchesBudget = prop.price <= searchFilters.maxBudget;
       return matchesSearch && matchesLocation && matchesType && matchesBudget;
     });
-  }, [searchQuery, selectedLocation, selectedType, maxBudget]);
+  }, [properties, searchFilters]);
 
   const formatPrice = (val) => {
     if (val >= 10000000) return `₹${(val / 10000000).toFixed(2)} Cr`;
@@ -85,9 +93,17 @@ function Properties() {
           variants={fadeInUp}
           className="lg:col-span-3 bg-white border border-brand-sandDark p-6 rounded-2xl shadow-sm h-fit space-y-6"
         >
-          <div className="flex items-center space-x-2 pb-3 border-b border-brand-sandDark text-brand-navy font-bold text-xs uppercase tracking-wider">
-            <Filter className="w-5 h-5 text-brand-goldDark" />
-            <span>Search Filters</span>
+          <div className="flex items-center justify-between pb-3 border-b border-brand-sandDark">
+            <div className="flex items-center space-x-2 text-brand-navy font-bold text-xs uppercase tracking-wider">
+              <Filter className="w-5 h-5 text-brand-goldDark" />
+              <span>Search Filters</span>
+            </div>
+            <button
+              onClick={resetFilters}
+              className="text-[10px] font-bold text-brand-goldDark hover:text-brand-navy transition-colors focus-visible:outline-none"
+            >
+              Reset
+            </button>
           </div>
 
           {/* Search bar */}
@@ -97,8 +113,8 @@ function Properties() {
               <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
               <input
                 type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                value={searchFilters.query}
+                onChange={(e) => updateFilters({ query: e.target.value })}
                 placeholder="Search..."
                 className="w-full pl-9 pr-4 py-2 border border-brand-sandDark bg-brand-bg rounded-lg text-xs font-semibold focus:ring-2 focus:ring-brand-gold outline-none"
               />
@@ -109,8 +125,8 @@ function Properties() {
           <div className="space-y-2">
             <label className="text-[10px] font-extrabold text-brand-navy uppercase tracking-widest">Location</label>
             <select
-              value={selectedLocation}
-              onChange={(e) => setSelectedLocation(e.target.value)}
+              value={searchFilters.location}
+              onChange={(e) => updateFilters({ location: e.target.value })}
               className="w-full px-3 py-2 border border-brand-sandDark bg-brand-bg rounded-lg text-xs font-semibold focus:ring-2 focus:ring-brand-gold outline-none"
             >
               {locations.map((loc) => (
@@ -123,8 +139,8 @@ function Properties() {
           <div className="space-y-2">
             <label className="text-[10px] font-extrabold text-brand-navy uppercase tracking-widest">Property Type</label>
             <select
-              value={selectedType}
-              onChange={(e) => setSelectedType(e.target.value)}
+              value={searchFilters.type}
+              onChange={(e) => updateFilters({ type: e.target.value })}
               className="w-full px-3 py-2 border border-brand-sandDark bg-brand-bg rounded-lg text-xs font-semibold focus:ring-2 focus:ring-brand-gold outline-none"
             >
               {types.map((type) => (
@@ -137,15 +153,15 @@ function Properties() {
           <div className="space-y-3">
             <div className="flex justify-between items-center">
               <label className="text-[10px] font-extrabold text-brand-navy uppercase tracking-widest">Max Budget</label>
-              <span className="text-xs font-bold text-brand-navy">{formatPrice(maxBudget)}</span>
+              <span className="text-xs font-bold text-brand-navy">{formatPrice(searchFilters.maxBudget)}</span>
             </div>
             <input
               type="range"
               min={2500000} // 25 Lakhs
               max={50000000} // 5 Crores
               step={1000000}
-              value={maxBudget}
-              onChange={(e) => setMaxBudget(Number(e.target.value))}
+              value={searchFilters.maxBudget}
+              onChange={(e) => updateFilters({ maxBudget: Number(e.target.value) })}
               className="w-full accent-brand-navy cursor-pointer"
             />
             <div className="flex justify-between text-[9px] font-bold text-brand-text-muted">
@@ -170,61 +186,86 @@ function Properties() {
             variants={staggerContainer}
             className="grid grid-cols-1 md:grid-cols-2 gap-6"
           >
-            {filteredProperties.map((prop) => (
-              <motion.article
-                key={prop.id}
-                variants={fadeInUp}
-                className={`bg-white border border-brand-sandDark overflow-hidden shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between ${prop.roundedClass}`}
-              >
-                <div>
-                  {/* Decorative visual gradient mockup */}
-                  <div className={`h-40 bg-gradient-to-br ${prop.gradient} relative p-5 flex flex-col justify-between text-white`}>
-                    <span className="bg-brand-navy/80 text-brand-gold text-[9px] uppercase tracking-wider font-extrabold px-2.5 py-1 rounded-full self-start">
-                      {prop.type}
-                    </span>
-                    <div className="flex items-center space-x-1 font-extrabold text-base drop-shadow-sm text-brand-gold">
-                      <DollarSign className="w-4 h-4 shrink-0" />
-                      <span>{prop.priceStr}</span>
+            {filteredProperties.map((prop) => {
+              const isFav = favorites.includes(prop.id);
+              return (
+                <motion.article
+                  key={prop.id}
+                  variants={fadeInUp}
+                  className={`bg-white border border-brand-sandDark overflow-hidden shadow-sm hover:shadow-md hover:scale-[1.02] transition-all duration-300 ease-in-out flex flex-col justify-between ${prop.roundedClass}`}
+                >
+                  <div>
+                    {/* Decorative visual gradient mockup */}
+                    <div className={`h-40 bg-gradient-to-br ${prop.gradient} relative p-5 flex flex-col justify-between text-white`}>
+                      <div className="flex justify-between items-center w-full">
+                        <span className="bg-brand-navy/80 text-brand-gold text-[9px] uppercase tracking-wider font-extrabold px-2.5 py-1 rounded-full self-start">
+                          {prop.type}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            toggleFavorite(prop.id);
+                          }}
+                          className="bg-black/35 hover:bg-black/50 text-white p-1.5 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-brand-goldDark"
+                          aria-label={isFav ? "Remove from favorites" : "Add to favorites"}
+                        >
+                          <Heart className={`w-3.5 h-3.5 ${isFav ? 'fill-red-500 text-red-500' : 'text-white'}`} />
+                        </button>
+                      </div>
+                      <div className="flex items-center space-x-1 font-extrabold text-base drop-shadow-sm text-brand-gold">
+                        <DollarSign className="w-4 h-4 shrink-0" />
+                        <span>{prop.priceStr}</span>
+                      </div>
+                    </div>
+
+                    {/* Core details */}
+                    <div className="p-6 space-y-3">
+                      <h3 
+                        onClick={() => setActiveModalProperty(prop)}
+                        className="text-base font-bold text-brand-navy leading-tight cursor-pointer hover:text-brand-goldDark transition-colors"
+                      >
+                        {prop.title}
+                      </h3>
+                      
+                      <div className="flex items-center space-x-4 text-xs font-semibold text-brand-text-muted">
+                        <span className="flex items-center space-x-1">
+                          <MapPin className="w-3.5 h-3.5 text-brand-goldDark" />
+                          <span>{prop.location}, Goa</span>
+                        </span>
+                        <span className="flex items-center space-x-1">
+                          <Layers className="w-3.5 h-3.5 text-brand-goldDark" />
+                          <span>{prop.details}</span>
+                        </span>
+                      </div>
+                      
+                      <p className="text-xs text-brand-text-muted leading-relaxed pt-1">
+                        {prop.desc}
+                      </p>
                     </div>
                   </div>
 
-                  {/* Core details */}
-                  <div className="p-6 space-y-3">
-                    <h3 className="text-base font-bold text-brand-navy leading-tight">{prop.title}</h3>
-                    
-                    <div className="flex items-center space-x-4 text-xs font-semibold text-brand-text-muted">
-                      <span className="flex items-center space-x-1">
-                        <MapPin className="w-3.5 h-3.5 text-brand-goldDark" />
-                        <span>{prop.location}, Goa</span>
-                      </span>
-                      <span className="flex items-center space-x-1">
-                        <Layers className="w-3.5 h-3.5 text-brand-goldDark" />
-                        <span>{prop.details}</span>
-                      </span>
-                    </div>
-                    
-                    <p className="text-xs text-brand-text-muted leading-relaxed pt-1">
-                      {prop.desc}
-                    </p>
+                  {/* Card footer/CTA */}
+                  <div className="px-6 pb-5 pt-3 border-t border-brand-sandDark flex flex-col sm:flex-row gap-3 sm:gap-0 items-center justify-between w-full">
+                    <button
+                      onClick={() => setActiveModalProperty(prop)}
+                      className="text-xs font-bold text-brand-navy hover:text-brand-goldDark transition-colors w-full sm:w-auto text-left"
+                    >
+                      Quick View
+                    </button>
+                    <Link
+                      to={`/apply?propertyName=${encodeURIComponent(prop.title)}&propertyLocation=${encodeURIComponent(prop.location)}&propertyPrice=${prop.price}&loan=property`}
+                      className="bg-brand-navy text-white text-xs font-bold px-4 py-2.5 rounded-lg hover:bg-brand-gold hover:text-brand-navy transition-colors flex items-center justify-center space-x-1 w-full sm:w-auto text-center"
+                    >
+                      <span>Inquire Deal</span>
+                      <ArrowUpRight className="w-3.5 h-3.5" />
+                    </Link>
                   </div>
-                </div>
 
-                {/* Card footer/CTA */}
-                <div className="px-6 pb-5 pt-3 border-t border-brand-sandDark flex flex-col sm:flex-row gap-3 sm:gap-0 items-center justify-between w-full">
-                  <span className="text-[10px] font-bold text-emerald-600 uppercase bg-emerald-50 px-2.5 py-1 rounded-md w-full sm:w-auto text-center">
-                    Clear Title
-                  </span>
-                  <Link
-                    to={`/apply?propertyName=${encodeURIComponent(prop.title)}&propertyLocation=${encodeURIComponent(prop.location)}&propertyPrice=${prop.price}&loan=property`}
-                    className="bg-brand-navy text-white text-xs font-bold px-4 py-2.5 rounded-lg hover:bg-brand-gold hover:text-brand-navy transition-colors flex items-center justify-center space-x-1 w-full sm:w-auto text-center"
-                  >
-                    <span>Inquire Deal</span>
-                    <ArrowUpRight className="w-3.5 h-3.5" />
-                  </Link>
-                </div>
-
-              </motion.article>
-            ))}
+                </motion.article>
+              );
+            })}
           </motion.div>
         </main>
 

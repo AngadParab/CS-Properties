@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import geminiBg from '../assets/gemini.webp';
-import propertiesData from '../data/properties.json';
+import { useProperties } from '../context/PropertyContext';
 import { 
   Building2, 
   Home as HomeIcon, 
@@ -19,7 +19,8 @@ import {
   Award,
   Shield,
   ClipboardCheck,
-  Compass
+  Compass,
+  Heart
 } from 'lucide-react';
 
 function Home() {
@@ -42,7 +43,8 @@ function Home() {
 
 
 
-  const featuredProperties = propertiesData.filter(prop => prop.featured);
+  const { properties, favorites, toggleFavorite, setActiveModalProperty } = useProperties();
+  const featuredProperties = properties.filter(prop => prop.featured);
 
   const formatCurrency = (val) => {
     return new Intl.NumberFormat('en-IN', {
@@ -212,54 +214,72 @@ function Home() {
           variants={staggerContainer}
           className="grid grid-cols-1 md:grid-cols-3 gap-8"
         >
-          {featuredProperties.map((prop, idx) => (
-            <motion.article 
-              key={idx} 
-              variants={fadeInUp}
-              className={`bg-white border border-brand-sandDark overflow-hidden shadow-sm hover:shadow-md transition-shadow group flex flex-col justify-between ${prop.roundedClass}`}
-            >
-              <div className="p-6 space-y-4">
-                <div className="flex justify-between items-start gap-2">
-                  <div className="space-y-1.5">
-                    <span className="text-[10px] font-bold text-brand-goldDark uppercase tracking-wider bg-brand-bg px-2.5 py-0.5 rounded">
-                      {prop.type}
-                    </span>
-                    <h3 className="font-bold text-brand-navy text-base mt-2 group-hover:text-brand-goldDark transition-colors">
-                      {prop.name}
-                    </h3>
+          {featuredProperties.map((prop, idx) => {
+            const isFav = favorites.includes(prop.id);
+            return (
+              <motion.article 
+                key={idx} 
+                variants={fadeInUp}
+                className="bg-white border border-brand-sandDark overflow-hidden shadow-sm hover:shadow-md hover:scale-[1.02] transition-all duration-300 ease-in-out group flex flex-col justify-between rounded-xl relative"
+              >
+                <div className="p-6 space-y-4">
+                  <div className="flex justify-between items-start gap-2">
+                    <div className="space-y-1.5 flex-grow">
+                      <div className="flex justify-between items-center">
+                        <span className="text-[10px] font-bold text-brand-goldDark uppercase tracking-wider bg-brand-bg px-2.5 py-0.5 rounded">
+                          {prop.type}
+                        </span>
+                        {/* Heart Favorite Button */}
+                        <button
+                          type="button"
+                          onClick={() => toggleFavorite(prop.id)}
+                          className="p-1.5 rounded-full hover:bg-brand-bg text-slate-400 hover:text-red-500 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-goldDark"
+                          aria-label={isFav ? "Remove from favorites" : "Add to favorites"}
+                        >
+                          <Heart className={`w-4 h-4 ${isFav ? 'fill-red-500 text-red-500' : 'text-slate-400'}`} />
+                        </button>
+                      </div>
+                      <h3 
+                        onClick={() => setActiveModalProperty(prop)}
+                        className="font-bold text-brand-navy text-base mt-2 group-hover:text-brand-goldDark transition-colors cursor-pointer"
+                      >
+                        {prop.name}
+                      </h3>
+                    </div>
                   </div>
-                  <div className="text-right">
-                    <span className="text-[10px] text-brand-text-muted block font-semibold">Direct Price</span>
-                    <span className="font-extrabold text-brand-navy text-sm">{formatCurrency(prop.price)}</span>
+                  <div className="flex justify-between items-end border-t border-brand-sandDark pt-3">
+                    <div>
+                      <span className="text-[10px] text-brand-text-muted block font-semibold">Direct Price</span>
+                      <span className="font-extrabold text-brand-navy text-sm">{formatCurrency(prop.price)}</span>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-[10px] text-brand-text-muted block font-semibold">Location</span>
+                      <span className="text-xs text-brand-text-muted font-bold flex items-center justify-end gap-0.5">
+                        <MapPin className="w-3.5 h-3.5 text-brand-goldDark" />
+                        <span>{prop.location}</span>
+                      </span>
+                    </div>
                   </div>
                 </div>
 
-                <div className="flex justify-between items-center text-xs text-brand-text-muted border-t border-brand-sandDark pt-3">
-                  <span className="flex items-center space-x-1">
-                    <MapPin className="w-3.5 h-3.5 text-brand-goldDark" />
-                    <span>{prop.location}</span>
-                  </span>
-                  <span className="font-semibold">{prop.size}</span>
+                <div className="bg-brand-bg p-5 border-t border-brand-sandDark flex flex-col sm:flex-row gap-3 sm:gap-0 justify-between items-center text-xs">
+                  <button
+                    onClick={() => setActiveModalProperty(prop)}
+                    className="font-bold text-brand-navy hover:text-brand-goldDark flex items-center justify-center space-x-1 outline-none w-full sm:w-auto text-center py-2 sm:py-0 border border-brand-sandDark sm:border-transparent rounded-lg sm:rounded-none"
+                  >
+                    <span>Quick View</span>
+                    <ArrowUpRight className="w-3 h-3" />
+                  </button>
+                  <Link
+                    to={`/apply?property=${encodeURIComponent(prop.name)}&loan=property`}
+                    className="bg-brand-navy text-white text-[10px] font-bold px-4 py-2.5 rounded-lg hover:bg-brand-gold hover:text-brand-navy transition-colors w-full sm:w-auto text-center"
+                  >
+                    Inquire Deal
+                  </Link>
                 </div>
-              </div>
-
-              <div className="bg-brand-bg p-5 border-t border-brand-sandDark flex flex-col sm:flex-row gap-3 sm:gap-0 justify-between items-center text-xs">
-                <Link
-                  to={`/apply?property=${encodeURIComponent(prop.name)}&loan=property`}
-                  className="font-bold text-brand-navy hover:text-brand-goldDark flex items-center justify-center space-x-1 outline-none w-full sm:w-auto text-center py-2 sm:py-0 border border-brand-sandDark sm:border-transparent rounded-lg sm:rounded-none"
-                >
-                  <span>Book Consultation</span>
-                  <ArrowUpRight className="w-3 h-3" />
-                </Link>
-                <Link
-                  to={`/apply?property=${encodeURIComponent(prop.name)}&loan=property`}
-                  className="bg-brand-navy text-white text-[10px] font-bold px-4 py-2.5 rounded-lg hover:bg-brand-gold hover:text-brand-navy transition-colors w-full sm:w-auto text-center"
-                >
-                  Inquire Deal
-                </Link>
-              </div>
-            </motion.article>
-          ))}
+              </motion.article>
+            );
+          })}
         </motion.div>
       </section>
 

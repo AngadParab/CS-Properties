@@ -219,14 +219,15 @@ function Sell() {
               {step === 1 && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                   <div className="space-y-2">
-                    <label className="text-[10px] font-extrabold uppercase tracking-widest text-brand-navy">Full Name *</label>
+                    <label htmlFor="fullName" className="text-[10px] font-extrabold uppercase tracking-widest text-brand-navy">Full Name *</label>
                     <input
                       type="text"
                       name="fullName"
+                      id="fullName"
                       value={formData.fullName}
                       onChange={handleInputChange}
                       placeholder="e.g. John Doe"
-                      className={`w-full px-4 py-3 border rounded-xl outline-none text-xs font-semibold bg-brand-bg focus:ring-2 focus:ring-brand-goldDark focus:border-brand-goldDark focus-visible:ring-2 focus-visible:ring-brand-goldDark ${
+                      className={`w-full px-4 py-3 border rounded-xl outline-none text-xs font-semibold bg-brand-bg focus:ring-2 focus:ring-brand-goldDark focus:border-brand-goldDark focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-goldDark focus-visible:outline-none ${
                         errors.fullName ? 'border-brand-error focus:ring-red-200' : 'border-slate-300'
                       }`}
                     />
@@ -234,12 +235,13 @@ function Sell() {
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-[10px] font-extrabold uppercase tracking-widest text-brand-navy">Your Role *</label>
+                    <label htmlFor="sellerRole" className="text-[10px] font-extrabold uppercase tracking-widest text-brand-navy">Your Role *</label>
                     <select
                       name="sellerRole"
+                      id="sellerRole"
                       value={formData.sellerRole}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 border border-slate-300 rounded-xl outline-none text-xs font-semibold bg-brand-bg focus:ring-2 focus:ring-brand-goldDark focus:border-brand-goldDark focus-visible:ring-2 focus-visible:ring-brand-goldDark"
+                      className="w-full px-4 py-3 border border-slate-300 rounded-xl outline-none text-xs font-semibold bg-brand-bg focus:ring-2 focus:ring-brand-goldDark focus:border-brand-goldDark focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-goldDark focus-visible:outline-none"
                     >
                       <option value="Owner">Property Owner</option>
                       <option value="Broker">Authorized Real Estate Broker</option>
@@ -248,14 +250,15 @@ function Sell() {
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-[10px] font-extrabold uppercase tracking-widest text-brand-navy">Phone Number *</label>
+                    <label htmlFor="phone" className="text-[10px] font-extrabold uppercase tracking-widest text-brand-navy">Phone Number *</label>
                     <input
                       type="tel"
                       name="phone"
+                      id="phone"
                       value={formData.phone}
                       onChange={handleInputChange}
                       placeholder="e.g. +91 9876543210"
-                      className={`w-full px-4 py-3 border rounded-xl outline-none text-xs font-semibold bg-brand-bg focus:ring-2 focus:ring-brand-goldDark focus:border-brand-goldDark focus-visible:ring-2 focus-visible:ring-brand-goldDark ${
+                      className={`w-full px-4 py-3 border rounded-xl outline-none text-xs font-semibold bg-brand-bg focus:ring-2 focus:ring-brand-goldDark focus:border-brand-goldDark focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-goldDark focus-visible:outline-none ${
                         errors.phone ? 'border-brand-error focus:ring-red-200' : 'border-slate-300'
                       }`}
                     />
@@ -263,14 +266,15 @@ function Sell() {
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-[10px] font-extrabold uppercase tracking-widest text-brand-navy">Email Address *</label>
+                    <label htmlFor="email" className="text-[10px] font-extrabold uppercase tracking-widest text-brand-navy">Email Address *</label>
                     <input
                       type="email"
                       name="email"
+                      id="email"
                       value={formData.email}
                       onChange={handleInputChange}
                       placeholder="e.g. john@domain.com"
-                      className={`w-full px-4 py-3 border rounded-xl outline-none text-xs font-semibold bg-brand-bg focus:ring-2 focus:ring-brand-goldDark focus:border-brand-goldDark focus-visible:ring-2 focus-visible:ring-brand-goldDark ${
+                      className={`w-full px-4 py-3 border rounded-xl outline-none text-xs font-semibold bg-brand-bg focus:ring-2 focus:ring-brand-goldDark focus:border-brand-goldDark focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-goldDark focus-visible:outline-none ${
                         errors.email ? 'border-brand-error focus:ring-red-200' : 'border-slate-300'
                       }`}
                     />
@@ -283,14 +287,15 @@ function Sell() {
               {step === 2 && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                   <div className="sm:col-span-2 space-y-2">
-                    <label className="text-[10px] font-extrabold uppercase tracking-widest text-brand-navy">Property Title *</label>
+                    <label htmlFor="propertyTitle" className="text-[10px] font-extrabold uppercase tracking-widest text-brand-navy">Property Title *</label>
                     <input
                       type="text"
                       name="propertyTitle"
+                      id="propertyTitle"
                       value={formData.propertyTitle}
                       onChange={handleInputChange}
                       placeholder="e.g. Heritage 3 BHK Villa in South Goa"
-                      className={`w-full px-4 py-3 border rounded-xl outline-none text-xs font-semibold bg-brand-bg focus:ring-2 focus:ring-brand-goldDark focus:border-brand-goldDark focus-visible:ring-2 focus-visible:ring-brand-goldDark ${
+                      className={`w-full px-4 py-3 border rounded-xl outline-none text-xs font-semibold bg-brand-bg focus:ring-2 focus:ring-brand-goldDark focus:border-brand-goldDark focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-goldDark focus-visible:outline-none ${
                         errors.propertyTitle ? 'border-brand-error focus:ring-red-200' : 'border-slate-300'
                       }`}
                     />
@@ -298,12 +303,13 @@ function Sell() {
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-[10px] font-extrabold uppercase tracking-widest text-brand-navy">Property Type *</label>
+                    <label htmlFor="propertyType" className="text-[10px] font-extrabold uppercase tracking-widest text-brand-navy">Property Type *</label>
                     <select
                       name="propertyType"
+                      id="propertyType"
                       value={formData.propertyType}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 border border-slate-300 rounded-xl outline-none text-xs font-semibold bg-brand-bg focus:ring-2 focus:ring-brand-goldDark focus:border-brand-goldDark focus-visible:ring-2 focus-visible:ring-brand-goldDark"
+                      className="w-full px-4 py-3 border border-slate-300 rounded-xl outline-none text-xs font-semibold bg-brand-bg focus:ring-2 focus:ring-brand-goldDark focus:border-brand-goldDark focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-goldDark focus-visible:outline-none"
                     >
                       <option value="Villa">Villa / Bungalow</option>
                       <option value="Apartment">Apartment / Flat</option>
@@ -313,12 +319,13 @@ function Sell() {
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-[10px] font-extrabold uppercase tracking-widest text-brand-navy">Location in Goa *</label>
+                    <label htmlFor="location" className="text-[10px] font-extrabold uppercase tracking-widest text-brand-navy">Location in Goa *</label>
                     <select
                       name="location"
+                      id="location"
                       value={formData.location}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 border border-slate-300 rounded-xl outline-none text-xs font-semibold bg-brand-bg focus:ring-2 focus:ring-brand-goldDark focus:border-brand-goldDark focus-visible:ring-2 focus-visible:ring-brand-goldDark"
+                      className="w-full px-4 py-3 border border-slate-300 rounded-xl outline-none text-xs font-semibold bg-brand-bg focus:ring-2 focus:ring-brand-goldDark focus:border-brand-goldDark focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-goldDark focus-visible:outline-none"
                     >
                       {locationsList.map((loc) => (
                         <option key={loc} value={loc}>{loc}</option>
@@ -327,12 +334,13 @@ function Sell() {
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-[10px] font-extrabold uppercase tracking-widest text-brand-navy">Size / Built-up Area (Sq.Ft) *</label>
+                    <label htmlFor="sizeSqFt" className="text-[10px] font-extrabold uppercase tracking-widest text-brand-navy">Size / Built-up Area (Sq.Ft) *</label>
                     <div className="relative">
                       <Layers className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
                       <input
                         type="number"
                         name="sizeSqFt"
+                        id="sizeSqFt"
                         value={formData.sizeSqFt}
                         onChange={handleInputChange}
                         placeholder="e.g. 2400"
@@ -345,12 +353,13 @@ function Sell() {
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-[10px] font-extrabold uppercase tracking-widest text-brand-navy">Expected Asking Price (₹) *</label>
+                    <label htmlFor="expectedPrice" className="text-[10px] font-extrabold uppercase tracking-widest text-brand-navy">Expected Asking Price (₹) *</label>
                     <div className="relative">
                       <DollarSign className="w-4 h-4 text-brand-goldDark absolute left-3.5 top-3.5" />
                       <input
                         type="number"
                         name="expectedPrice"
+                        id="expectedPrice"
                         value={formData.expectedPrice}
                         onChange={handleInputChange}
                         placeholder="e.g. 12000000"
@@ -373,9 +382,10 @@ function Sell() {
                 <div className="space-y-5">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     <div className="space-y-2">
-                      <label className="text-[10px] font-extrabold uppercase tracking-widest text-brand-navy">Construction Status</label>
+                      <label htmlFor="propertyCondition" className="text-[10px] font-extrabold uppercase tracking-widest text-brand-navy">Construction Status</label>
                       <select
                         name="propertyCondition"
+                        id="propertyCondition"
                         value={formData.propertyCondition}
                         onChange={handleInputChange}
                         className="w-full px-4 py-3 border border-slate-300 rounded-xl outline-none text-xs font-semibold bg-brand-bg focus:ring-2 focus:ring-brand-goldDark focus:border-brand-goldDark focus-visible:ring-2 focus-visible:ring-brand-goldDark"
@@ -388,9 +398,10 @@ function Sell() {
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-[10px] font-extrabold uppercase tracking-widest text-brand-navy">Listing Description *</label>
+                    <label htmlFor="description" className="text-[10px] font-extrabold uppercase tracking-widest text-brand-navy">Listing Description *</label>
                     <textarea
                       name="description"
+                      id="description"
                       rows="4"
                       value={formData.description}
                       onChange={handleInputChange}
@@ -442,9 +453,10 @@ function Sell() {
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-[10px] font-extrabold uppercase tracking-widest text-brand-navy">Internal Agent Notes (Optional)</label>
+                    <label htmlFor="notes" className="text-[10px] font-extrabold uppercase tracking-widest text-brand-navy">Internal Agent Notes (Optional)</label>
                     <textarea
                       name="notes"
+                      id="notes"
                       rows="2"
                       value={formData.notes}
                       onChange={handleInputChange}

@@ -151,48 +151,52 @@ function Contact() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-brand-navy">Full Name *</label>
+                  <label htmlFor="name" className="text-xs font-bold text-brand-navy">Full Name *</label>
                   <input
                     type="text"
                     name="name"
+                    id="name"
                     value={formData.name}
                     onChange={handleChange}
                     placeholder="Enter your name"
-                    className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white"
+                    className="w-full px-4 py-2 text-sm border border-slate-300 rounded-lg outline-none bg-white focus:ring-2 focus:ring-brand-goldDark focus:border-brand-goldDark focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-goldDark focus-visible:outline-none"
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-brand-navy">Phone Number *</label>
+                  <label htmlFor="phone" className="text-xs font-bold text-brand-navy">Phone Number *</label>
                   <input
                     type="tel"
                     name="phone"
+                    id="phone"
                     value={formData.phone}
                     onChange={handleChange}
                     placeholder="Enter your contact number"
-                    className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white"
+                    className="w-full px-4 py-2 text-sm border border-slate-300 rounded-lg outline-none bg-white focus:ring-2 focus:ring-brand-goldDark focus:border-brand-goldDark focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-goldDark focus-visible:outline-none"
                   />
                 </div>
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-brand-navy">Email Address</label>
+                <label htmlFor="email" className="text-xs font-bold text-brand-navy">Email Address</label>
                 <input
                   type="email"
                   name="email"
+                  id="email"
                   value={formData.email}
                   onChange={handleChange}
                   placeholder="name@example.com"
-                  className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white"
+                  className="w-full px-4 py-2 text-sm border border-slate-300 rounded-lg outline-none bg-white focus:ring-2 focus:ring-brand-goldDark focus:border-brand-goldDark focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-goldDark focus-visible:outline-none"
                 />
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-brand-navy">Subject</label>
+                <label htmlFor="subject" className="text-xs font-bold text-brand-navy">Subject</label>
                 <select
                   name="subject"
+                  id="subject"
                   value={formData.subject}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white"
+                  className="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg outline-none bg-white focus:ring-2 focus:ring-brand-goldDark focus:border-brand-goldDark focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-goldDark focus-visible:outline-none"
                 >
                   <option value="General Inquiry">General Inquiry</option>
                   <option value="Business Loan Setup">Business Loan Setup</option>
@@ -202,14 +206,15 @@ function Contact() {
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-brand-navy">Message / Query Details *</label>
+                <label htmlFor="message" className="text-xs font-bold text-brand-navy">Message / Query Details *</label>
                 <textarea
                   name="message"
+                  id="message"
                   rows="4"
                   value={formData.message}
                   onChange={handleChange}
                   placeholder="Explain your query in detail..."
-                  className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white"
+                  className="w-full px-4 py-2 text-sm border border-slate-300 rounded-lg outline-none bg-white focus:ring-2 focus:ring-brand-goldDark focus:border-brand-goldDark focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-goldDark focus-visible:outline-none"
                 ></textarea>
               </div>
 

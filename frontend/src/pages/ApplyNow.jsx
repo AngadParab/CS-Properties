@@ -271,30 +271,32 @@ function ApplyNow() {
                 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-brand-navy">Full Name *</label>
+                    <label htmlFor="fullName" className="text-xs font-bold text-brand-navy">Full Name *</label>
                     <input
                       type="text"
                       name="fullName"
+                      id="fullName"
                       value={formData.fullName}
                       onChange={handleChange}
                       placeholder="e.g. John Doe"
-                      className={`w-full px-4 py-2 text-sm border rounded-lg focus:ring-2 outline-none bg-white ${
-                        errors.fullName ? 'border-brand-error focus:ring-red-200' : 'border-slate-300 focus:ring-brand-goldDark focus:border-brand-goldDark focus-visible:ring-2 focus-visible:ring-brand-goldDark'
+                      className={`w-full px-4 py-2 text-sm border rounded-lg outline-none bg-white focus:ring-2 focus:ring-brand-goldDark focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-goldDark focus-visible:outline-none ${
+                        errors.fullName ? 'border-brand-error focus:ring-red-200' : 'border-slate-300'
                       }`}
                     />
                     {errors.fullName && <span className="text-[10px] text-brand-error font-semibold">{errors.fullName}</span>}
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-brand-navy">Mobile Number *</label>
+                    <label htmlFor="phone" className="text-xs font-bold text-brand-navy">Mobile Number *</label>
                     <input
                       type="tel"
                       name="phone"
+                      id="phone"
                       value={formData.phone}
                       onChange={handleChange}
                       placeholder="e.g. 9876543210"
-                      className={`w-full px-4 py-2 text-sm border rounded-lg focus:ring-2 outline-none bg-white ${
-                        errors.phone ? 'border-brand-error focus:ring-red-200' : 'border-slate-300 focus:ring-brand-goldDark focus:border-brand-goldDark focus-visible:ring-2 focus-visible:ring-brand-goldDark'
+                      className={`w-full px-4 py-2 text-sm border rounded-lg outline-none bg-white focus:ring-2 focus:ring-brand-goldDark focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-goldDark focus-visible:outline-none ${
+                        errors.phone ? 'border-brand-error focus:ring-red-200' : 'border-slate-300'
                       }`}
                     />
                     {errors.phone && <span className="text-[10px] text-brand-error font-semibold">{errors.phone}</span>}
@@ -303,27 +305,29 @@ function ApplyNow() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-brand-navy">Email Address</label>
+                    <label htmlFor="email" className="text-xs font-bold text-brand-navy">Email Address</label>
                     <input
                       type="email"
                       name="email"
+                      id="email"
                       value={formData.email}
                       onChange={handleChange}
                       placeholder="e.g. john@example.com"
-                      className="w-full px-4 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-goldDark focus:border-brand-goldDark focus-visible:ring-2 focus-visible:ring-brand-goldDark outline-none bg-white"
+                      className="w-full px-4 py-2 text-sm border border-slate-300 rounded-lg outline-none bg-white focus:ring-2 focus:ring-brand-goldDark focus:border-brand-goldDark focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-goldDark focus-visible:outline-none"
                     />
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-brand-navy">Goa Residence Location *</label>
+                    <label htmlFor="location" className="text-xs font-bold text-brand-navy">Goa Residence Location *</label>
                     <input
                       type="text"
                       name="location"
+                      id="location"
                       value={formData.location}
                       onChange={handleChange}
                       placeholder="e.g. Margao, Panaji"
-                      className={`w-full px-4 py-2 text-sm border rounded-lg focus:ring-2 outline-none bg-white ${
-                        errors.location ? 'border-brand-error focus:ring-red-200' : 'border-slate-300 focus:ring-brand-goldDark focus:border-brand-goldDark focus-visible:ring-2 focus-visible:ring-brand-goldDark'
+                      className={`w-full px-4 py-2 text-sm border rounded-lg outline-none bg-white focus:ring-2 focus:ring-brand-goldDark focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-goldDark focus-visible:outline-none ${
+                        errors.location ? 'border-brand-error focus:ring-red-200' : 'border-slate-300'
                       }`}
                     />
                     {errors.location && <span className="text-[10px] text-brand-error font-semibold">{errors.location}</span>}
@@ -339,12 +343,13 @@ function ApplyNow() {
                 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-brand-navy">Select Category</label>
+                    <label htmlFor="loanType" className="text-xs font-bold text-brand-navy">Select Category</label>
                     <select
                       name="loanType"
+                      id="loanType"
                       value={formData.loanType}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-goldDark focus:border-brand-goldDark focus-visible:ring-2 focus-visible:ring-brand-goldDark outline-none bg-white font-semibold text-brand-navy"
+                      className="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg outline-none bg-white font-semibold text-brand-navy focus:ring-2 focus:ring-brand-goldDark focus:border-brand-goldDark focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-goldDark focus-visible:outline-none"
                     >
                       <option value="Property Inquiry">Property Purchase Inquiry</option>
                       <option value="Business Loan">Business Loan</option>
@@ -356,17 +361,18 @@ function ApplyNow() {
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-brand-navy">
+                    <label htmlFor="amount" className="text-xs font-bold text-brand-navy">
                       {formData.loanType === 'Property Inquiry' ? 'Estimated Budget / Price *' : 'Required Loan Amount (INR) *'}
                     </label>
                     <input
                       type="number"
                       name="amount"
+                      id="amount"
                       value={formData.amount}
                       onChange={handleChange}
                       placeholder={formData.loanType === 'Property Inquiry' ? 'e.g. 15000000' : 'e.g. 2500000'}
-                      className={`w-full px-4 py-2 text-sm border rounded-lg focus:ring-2 outline-none bg-white ${
-                        errors.amount ? 'border-brand-error focus:ring-red-200' : 'border-slate-300 focus:ring-brand-goldDark focus:border-brand-goldDark focus-visible:ring-2 focus-visible:ring-brand-goldDark'
+                      className={`w-full px-4 py-2 text-sm border rounded-lg outline-none bg-white focus:ring-2 focus:ring-brand-goldDark focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-goldDark focus-visible:outline-none ${
+                        errors.amount ? 'border-brand-error focus:ring-red-200' : 'border-slate-300'
                       }`}
                     />
                     {errors.amount && <span className="text-[10px] text-brand-error font-semibold">{errors.amount}</span>}
@@ -375,16 +381,17 @@ function ApplyNow() {
 
                 {formData.loanType === 'Property Inquiry' ? (
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-brand-navy">Preferred Site Visit Date *</label>
+                    <label htmlFor="preferredDate" className="text-xs font-bold text-brand-navy">Preferred Site Visit Date *</label>
                     <div className="relative">
                       <Calendar className="w-4 h-4 text-brand-gold absolute left-3 top-3.5" />
                       <input
                         type="date"
                         name="preferredDate"
+                        id="preferredDate"
                         value={formData.preferredDate}
                         onChange={handleChange}
-                        className={`w-full pl-9 pr-4 py-2 text-sm border rounded-lg focus:ring-2 outline-none bg-white ${
-                          errors.preferredDate ? 'border-brand-error focus:ring-red-200' : 'border-slate-300 focus:ring-brand-goldDark focus:border-brand-goldDark focus-visible:ring-2 focus-visible:ring-brand-goldDark'
+                        className={`w-full pl-9 pr-4 py-2 text-sm border rounded-lg outline-none bg-white focus:ring-2 focus:ring-brand-goldDark focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-goldDark focus-visible:outline-none ${
+                          errors.preferredDate ? 'border-brand-error focus:ring-red-200' : 'border-slate-300'
                         }`}
                       />
                     </div>
@@ -392,12 +399,13 @@ function ApplyNow() {
                   </div>
                 ) : (
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-brand-navy">Preferred Tenure (Years)</label>
+                    <label htmlFor="tenureYears" className="text-xs font-bold text-brand-navy">Preferred Tenure (Years)</label>
                     <select
                       name="tenureYears"
+                      id="tenureYears"
                       value={formData.tenureYears}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-goldDark focus:border-brand-goldDark focus-visible:ring-2 focus-visible:ring-brand-goldDark outline-none bg-white font-semibold text-brand-navy"
+                      className="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg outline-none bg-white font-semibold text-brand-navy focus:ring-2 focus:ring-brand-goldDark focus:border-brand-goldDark focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-goldDark focus-visible:outline-none"
                     >
                       {[1, 3, 5, 7, 10, 15, 20, 25, 30].map((yr) => (
                         <option key={yr} value={yr}>{yr} Years</option>
@@ -415,12 +423,13 @@ function ApplyNow() {
                 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-brand-navy">Employment Status</label>
+                    <label htmlFor="employmentType" className="text-xs font-bold text-brand-navy">Employment Status</label>
                     <select
                       name="employmentType"
+                      id="employmentType"
                       value={formData.employmentType}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-goldDark focus:border-brand-goldDark focus-visible:ring-2 focus-visible:ring-brand-goldDark outline-none bg-white font-semibold text-brand-navy"
+                      className="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg outline-none bg-white font-semibold text-brand-navy focus:ring-2 focus:ring-brand-goldDark focus:border-brand-goldDark focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-goldDark focus-visible:outline-none"
                     >
                       <option value="Salaried">Salaried Professional</option>
                       <option value="Self-Employed">Self-Employed Merchant</option>
@@ -429,15 +438,16 @@ function ApplyNow() {
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-brand-navy">Net Monthly Income (INR) *</label>
+                    <label htmlFor="monthlyIncome" className="text-xs font-bold text-brand-navy">Net Monthly Income (INR) *</label>
                     <input
                       type="number"
                       name="monthlyIncome"
+                      id="monthlyIncome"
                       value={formData.monthlyIncome}
                       onChange={handleChange}
                       placeholder="e.g. 60000"
-                      className={`w-full px-4 py-2 text-sm border rounded-lg focus:ring-2 outline-none bg-white ${
-                        errors.monthlyIncome ? 'border-brand-error focus:ring-red-200' : 'border-slate-300 focus:ring-brand-goldDark focus:border-brand-goldDark focus-visible:ring-2 focus-visible:ring-brand-goldDark'
+                      className={`w-full px-4 py-2 text-sm border rounded-lg outline-none bg-white focus:ring-2 focus:ring-brand-goldDark focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-goldDark focus-visible:outline-none ${
+                        errors.monthlyIncome ? 'border-brand-error focus:ring-red-200' : 'border-slate-300'
                       }`}
                     />
                     {errors.monthlyIncome && <span className="text-[10px] text-brand-error font-semibold">{errors.monthlyIncome}</span>}
@@ -445,14 +455,15 @@ function ApplyNow() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-brand-navy">Current Active Monthly EMIs (If any)</label>
+                  <label htmlFor="existingEmis" className="text-xs font-bold text-brand-navy">Current Active Monthly EMIs (If any)</label>
                   <input
                     type="number"
                     name="existingEmis"
+                    id="existingEmis"
                     value={formData.existingEmis}
                     onChange={handleChange}
                     placeholder="Enter total monthly obligations"
-                    className="w-full px-4 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-goldDark focus:border-brand-goldDark focus-visible:ring-2 focus-visible:ring-brand-goldDark outline-none bg-white"
+                    className="w-full px-4 py-2 text-sm border border-slate-300 rounded-lg outline-none bg-white focus:ring-2 focus:ring-brand-goldDark focus:border-brand-goldDark focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-goldDark focus-visible:outline-none"
                   />
                 </div>
               </div>
@@ -510,14 +521,15 @@ function ApplyNow() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-brand-navy">Additional Details (Optional)</label>
+                  <label htmlFor="notes" className="text-xs font-bold text-brand-navy">Additional Details (Optional)</label>
                   <textarea
                     name="notes"
+                    id="notes"
                     rows="3"
                     value={formData.notes}
                     onChange={handleChange}
                     placeholder="Provide property details, vehicle descriptions or target loan parameters..."
-                    className="w-full px-4 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-goldDark focus:border-brand-goldDark focus-visible:ring-2 focus-visible:ring-brand-goldDark outline-none bg-white"
+                    className="w-full px-4 py-2 text-sm border border-slate-300 rounded-lg outline-none bg-white focus:ring-2 focus:ring-brand-goldDark focus:border-brand-goldDark focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-goldDark focus-visible:outline-none"
                   ></textarea>
                 </div>
               </div>
