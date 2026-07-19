@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import geminiBg from '../assets/gemini.png';
+import geminiBg from '../assets/gemini.webp';
+import propertiesData from '../data/properties.json';
 import { 
   Building2, 
   Home as HomeIcon, 
@@ -41,32 +42,7 @@ function Home() {
 
 
 
-  const featuredProperties = [
-    {
-      name: 'Sea Breeze Apartments',
-      location: 'Panaji, Goa',
-      price: 8500000,
-      type: 'Apartment',
-      size: '1,650 Sq.Ft',
-      roundedClass: 'rounded-tl-[50px] rounded-br-[50px]',
-    },
-    {
-      name: 'Calangute Sands Villa',
-      location: 'Calangute, Goa',
-      price: 14500000,
-      type: 'Luxury Villa',
-      size: '3,200 Sq.Ft',
-      roundedClass: 'rounded-tr-[50px] rounded-bl-[50px]',
-    },
-    {
-      name: 'Margao Plaza Retail',
-      location: 'Margao, Goa',
-      price: 6000000,
-      type: 'Commercial Shop',
-      size: '850 Sq.Ft',
-      roundedClass: 'rounded-tl-[50px] rounded-br-[50px]',
-    },
-  ];
+  const featuredProperties = propertiesData.filter(prop => prop.featured);
 
   const formatCurrency = (val) => {
     return new Intl.NumberFormat('en-IN', {
@@ -237,7 +213,7 @@ function Home() {
           className="grid grid-cols-1 md:grid-cols-3 gap-8"
         >
           {featuredProperties.map((prop, idx) => (
-            <motion.div 
+            <motion.article 
               key={idx} 
               variants={fadeInUp}
               className={`bg-white border border-brand-sandDark overflow-hidden shadow-sm hover:shadow-md transition-shadow group flex flex-col justify-between ${prop.roundedClass}`}
@@ -245,10 +221,10 @@ function Home() {
               <div className="p-6 space-y-4">
                 <div className="flex justify-between items-start gap-2">
                   <div className="space-y-1.5">
-                    <span className="text-[10px] font-bold text-brand-gold uppercase tracking-wider bg-brand-bg px-2.5 py-0.5 rounded">
+                    <span className="text-[10px] font-bold text-brand-goldDark uppercase tracking-wider bg-brand-bg px-2.5 py-0.5 rounded">
                       {prop.type}
                     </span>
-                    <h3 className="font-bold text-brand-navy text-base mt-2 group-hover:text-brand-gold transition-colors">
+                    <h3 className="font-bold text-brand-navy text-base mt-2 group-hover:text-brand-goldDark transition-colors">
                       {prop.name}
                     </h3>
                   </div>
@@ -260,29 +236,29 @@ function Home() {
 
                 <div className="flex justify-between items-center text-xs text-brand-text-muted border-t border-brand-sandDark pt-3">
                   <span className="flex items-center space-x-1">
-                    <MapPin className="w-3.5 h-3.5 text-brand-gold" />
+                    <MapPin className="w-3.5 h-3.5 text-brand-goldDark" />
                     <span>{prop.location}</span>
                   </span>
                   <span className="font-semibold">{prop.size}</span>
                 </div>
               </div>
 
-              <div className="bg-brand-bg p-5 border-t border-brand-sandDark flex justify-between items-center text-xs">
+              <div className="bg-brand-bg p-5 border-t border-brand-sandDark flex flex-col sm:flex-row gap-3 sm:gap-0 justify-between items-center text-xs">
                 <Link
                   to={`/apply?property=${encodeURIComponent(prop.name)}&loan=property`}
-                  className="font-bold text-brand-navy hover:text-brand-gold flex items-center space-x-1 outline-none"
+                  className="font-bold text-brand-navy hover:text-brand-goldDark flex items-center justify-center space-x-1 outline-none w-full sm:w-auto text-center py-2 sm:py-0 border border-brand-sandDark sm:border-transparent rounded-lg sm:rounded-none"
                 >
                   <span>Book Consultation</span>
                   <ArrowUpRight className="w-3 h-3" />
                 </Link>
                 <Link
                   to={`/apply?property=${encodeURIComponent(prop.name)}&loan=property`}
-                  className="bg-brand-navy text-white text-[10px] font-bold px-4 py-2 rounded-lg hover:bg-brand-gold hover:text-brand-navy transition-colors"
+                  className="bg-brand-navy text-white text-[10px] font-bold px-4 py-2.5 rounded-lg hover:bg-brand-gold hover:text-brand-navy transition-colors w-full sm:w-auto text-center"
                 >
                   Inquire Deal
                 </Link>
               </div>
-            </motion.div>
+            </motion.article>
           ))}
         </motion.div>
       </section>
@@ -300,7 +276,7 @@ function Home() {
             variants={fadeInUp}
             className="text-center space-y-3"
           >
-            <span className="text-[10px] font-extrabold text-brand-gold uppercase tracking-widest block">Core Advisory</span>
+            <span className="text-[10px] font-extrabold text-brand-goldDark uppercase tracking-widest block">Core Advisory</span>
             <h2 className="text-3xl font-extrabold text-brand-navy tracking-tight">Unrivaled Expertise in Goan Real Estate</h2>
             <p className="max-w-xl mx-auto text-xs sm:text-sm text-brand-text-muted">
               We provide professional document auditing, clear title checking, and buyer brokerage services to secure sound investments in Goa.
@@ -317,13 +293,13 @@ function Home() {
             {/* Service 1 */}
             <motion.div 
               variants={fadeInUp}
-              className="bg-white border border-brand-sandDark rounded-2xl p-8 flex flex-col justify-between hover:border-brand-gold hover:scale-[1.01] transition-all duration-300 group shadow-sm"
+              className="bg-white border border-brand-sandDark rounded-2xl p-8 flex flex-col justify-between hover:border-brand-goldDark hover:scale-[1.01] transition-all duration-300 group shadow-sm"
             >
               <div className="space-y-4">
-                <div className="p-3 bg-brand-bg w-fit rounded-xl border border-brand-sandDark group-hover:bg-brand-gold group-hover:text-brand-navy group-hover:border-transparent transition-all">
-                  <Shield className="w-6 h-6 text-brand-gold" />
+                <div className="p-3 bg-brand-bg w-fit rounded-xl border border-brand-sandDark group-hover:bg-brand-goldDark group-hover:text-brand-navy group-hover:border-transparent transition-all">
+                  <Shield className="w-6 h-6 text-brand-goldDark" />
                 </div>
-                <h3 className="text-lg font-extrabold text-brand-navy group-hover:text-brand-gold transition-colors">
+                <h3 className="text-lg font-extrabold text-brand-navy group-hover:text-brand-goldDark transition-colors">
                   Title & Document Auditing
                 </h3>
                 <p className="text-xs sm:text-sm text-brand-text-muted leading-relaxed">
@@ -335,13 +311,13 @@ function Home() {
             {/* Service 2 */}
             <motion.div 
               variants={fadeInUp}
-              className="bg-white border border-brand-sandDark rounded-2xl p-8 flex flex-col justify-between hover:border-brand-gold hover:scale-[1.01] transition-all duration-300 group shadow-sm"
+              className="bg-white border border-brand-sandDark rounded-2xl p-8 flex flex-col justify-between hover:border-brand-goldDark hover:scale-[1.01] transition-all duration-300 group shadow-sm"
             >
               <div className="space-y-4">
-                <div className="p-3 bg-brand-bg w-fit rounded-xl border border-brand-sandDark group-hover:bg-brand-gold group-hover:text-brand-navy group-hover:border-transparent transition-all">
-                  <ClipboardCheck className="w-6 h-6 text-brand-gold" />
+                <div className="p-3 bg-brand-bg w-fit rounded-xl border border-brand-sandDark group-hover:bg-brand-goldDark group-hover:text-brand-navy group-hover:border-transparent transition-all">
+                  <ClipboardCheck className="w-6 h-6 text-brand-goldDark" />
                 </div>
-                <h3 className="text-lg font-extrabold text-brand-navy group-hover:text-brand-gold transition-colors">
+                <h3 className="text-lg font-extrabold text-brand-navy group-hover:text-brand-goldDark transition-colors">
                   Market Property Valuation
                 </h3>
                 <p className="text-xs sm:text-sm text-brand-text-muted leading-relaxed">
@@ -353,13 +329,13 @@ function Home() {
             {/* Service 3 */}
             <motion.div 
               variants={fadeInUp}
-              className="bg-white border border-brand-sandDark rounded-2xl p-8 flex flex-col justify-between hover:border-brand-gold hover:scale-[1.01] transition-all duration-300 group shadow-sm"
+              className="bg-white border border-brand-sandDark rounded-2xl p-8 flex flex-col justify-between hover:border-brand-goldDark hover:scale-[1.01] transition-all duration-300 group shadow-sm"
             >
               <div className="space-y-4">
-                <div className="p-3 bg-brand-bg w-fit rounded-xl border border-brand-sandDark group-hover:bg-brand-gold group-hover:text-brand-navy group-hover:border-transparent transition-all">
-                  <Compass className="w-6 h-6 text-brand-gold" />
+                <div className="p-3 bg-brand-bg w-fit rounded-xl border border-brand-sandDark group-hover:bg-brand-goldDark group-hover:text-brand-navy group-hover:border-transparent transition-all">
+                  <Compass className="w-6 h-6 text-brand-goldDark" />
                 </div>
-                <h3 className="text-lg font-extrabold text-brand-navy group-hover:text-brand-gold transition-colors">
+                <h3 className="text-lg font-extrabold text-brand-navy group-hover:text-brand-goldDark transition-colors">
                   Off-Market Deal Sourcing
                 </h3>
                 <p className="text-xs sm:text-sm text-brand-text-muted leading-relaxed">
@@ -383,7 +359,7 @@ function Home() {
           variants={fadeInUp}
           className="text-center space-y-3"
         >
-          <span className="text-[10px] font-extrabold text-brand-gold uppercase tracking-widest block">Local Geography</span>
+          <span className="text-[10px] font-extrabold text-brand-goldDark uppercase tracking-widest block">Local Geography</span>
           <h2 className="text-2xl sm:text-3xl font-extrabold text-brand-navy tracking-tight">Explore Goa's Finest Neighborhoods</h2>
           <p className="max-w-lg mx-auto text-xs sm:text-sm text-brand-text-muted">
             Find the perfect location for your lifestyle or investment portfolio, from bustling commercial cities to serene beach strips.
@@ -403,16 +379,16 @@ function Home() {
             className="bg-white border border-brand-sandDark overflow-hidden shadow-sm hover:shadow-md transition-shadow group flex flex-col justify-between rounded-tl-[50px] rounded-br-[50px]"
           >
             <div className="p-8 space-y-4">
-              <span className="text-[9px] font-bold text-brand-gold uppercase tracking-wider bg-brand-bg px-2.5 py-0.5 rounded">
+              <span className="text-[9px] font-bold text-brand-goldDark uppercase tracking-wider bg-brand-bg px-2.5 py-0.5 rounded">
                 Capital District
               </span>
-              <h3 className="text-xl font-bold text-brand-navy group-hover:text-brand-gold transition-colors">Panaji</h3>
+              <h3 className="text-xl font-bold text-brand-navy group-hover:text-brand-goldDark transition-colors">Panaji</h3>
               <p className="text-xs text-brand-text-muted leading-relaxed">
                 Known for Portuguese heritage homes, riverside promenades, and clean residential streets. Ideal for premium city living and boutique commercial shops.
               </p>
             </div>
             <div className="bg-brand-bg p-5 border-t border-brand-sandDark flex justify-between items-center text-xs">
-              <Link to="/properties?location=Panaji" className="font-bold text-brand-navy hover:text-brand-gold flex items-center space-x-1 outline-none">
+              <Link to="/properties?location=Panaji" className="font-bold text-brand-navy hover:text-brand-goldDark flex items-center space-x-1 outline-none">
                 <span>View Listings</span>
                 <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
               </Link>
@@ -425,16 +401,16 @@ function Home() {
             className="bg-white border border-brand-sandDark overflow-hidden shadow-sm hover:shadow-md transition-shadow group flex flex-col justify-between rounded-tr-[50px] rounded-bl-[50px]"
           >
             <div className="p-8 space-y-4">
-              <span className="text-[9px] font-bold text-brand-gold uppercase tracking-wider bg-brand-bg px-2.5 py-0.5 rounded">
+              <span className="text-[9px] font-bold text-brand-goldDark uppercase tracking-wider bg-brand-bg px-2.5 py-0.5 rounded">
                 Coastal North
               </span>
-              <h3 className="text-xl font-bold text-brand-navy group-hover:text-brand-gold transition-colors">Calangute & Candolim</h3>
+              <h3 className="text-xl font-bold text-brand-navy group-hover:text-brand-goldDark transition-colors">Calangute & Candolim</h3>
               <p className="text-xs text-brand-text-muted leading-relaxed">
                 The thriving seaside heart of Goa. Features sandy beaches, fine dining, and luxury vacation villas that command high rental yields.
               </p>
             </div>
             <div className="bg-brand-bg p-5 border-t border-brand-sandDark flex justify-between items-center text-xs">
-              <Link to="/properties?location=Calangute" className="font-bold text-brand-navy hover:text-brand-gold flex items-center space-x-1 outline-none">
+              <Link to="/properties?location=Calangute" className="font-bold text-brand-navy hover:text-brand-goldDark flex items-center space-x-1 outline-none">
                 <span>View Listings</span>
                 <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
               </Link>
@@ -447,16 +423,16 @@ function Home() {
             className="bg-white border border-brand-sandDark overflow-hidden shadow-sm hover:shadow-md transition-shadow group flex flex-col justify-between rounded-tl-[50px] rounded-br-[50px]"
           >
             <div className="p-8 space-y-4">
-              <span className="text-[9px] font-bold text-brand-gold uppercase tracking-wider bg-brand-bg px-2.5 py-0.5 rounded">
+              <span className="text-[9px] font-bold text-brand-goldDark uppercase tracking-wider bg-brand-bg px-2.5 py-0.5 rounded">
                 Cultural South
               </span>
-              <h3 className="text-xl font-bold text-brand-navy group-hover:text-brand-gold transition-colors">Margao</h3>
+              <h3 className="text-xl font-bold text-brand-navy group-hover:text-brand-goldDark transition-colors">Margao</h3>
               <p className="text-xs text-brand-text-muted leading-relaxed">
                 Goa's cultural and commercial capital in the South. Surrounded by green fields and traditional heritage estates, perfect for peaceful residential setups.
               </p>
             </div>
             <div className="bg-brand-bg p-5 border-t border-brand-sandDark flex justify-between items-center text-xs">
-              <Link to="/properties?location=Margao" className="font-bold text-brand-navy hover:text-brand-gold flex items-center space-x-1 outline-none">
+              <Link to="/properties?location=Margao" className="font-bold text-brand-navy hover:text-brand-goldDark flex items-center space-x-1 outline-none">
                 <span>View Listings</span>
                 <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
               </Link>
@@ -538,12 +514,12 @@ function Home() {
             <p className="text-center text-[10px] font-extrabold text-brand-gold uppercase tracking-widest">
               Direct Loan Connections from 30+ Leading Partners
             </p>
-            <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 items-center justify-items-center opacity-60 text-xs font-extrabold text-slate-400 select-none">
-              <span className="hover:text-white transition-colors cursor-pointer bg-white/5 px-4 py-2 rounded-lg border border-white/5 w-32 text-center">SBI</span>
-              <span className="hover:text-white transition-colors cursor-pointer bg-white/5 px-4 py-2 rounded-lg border border-white/5 w-32 text-center">HDFC BANK</span>
-              <span className="hover:text-white transition-colors cursor-pointer bg-white/5 px-4 py-2 rounded-lg border border-white/5 w-32 text-center">ICICI BANK</span>
-              <span className="hover:text-white transition-colors cursor-pointer bg-white/5 px-4 py-2 rounded-lg border border-white/5 w-32 text-center">AXIS BANK</span>
-              <span className="hover:text-white transition-colors cursor-pointer bg-white/5 px-4 py-2 rounded-lg border border-white/5 w-32 text-center">BANK OF BARODA</span>
+            <div className="flex flex-wrap justify-center gap-3 sm:gap-6 opacity-60 text-xs font-extrabold text-slate-400 select-none">
+              <span className="hover:text-white transition-colors cursor-pointer bg-white/5 px-4 py-2.5 rounded-lg border border-white/5 w-28 sm:w-32 text-center">SBI</span>
+              <span className="hover:text-white transition-colors cursor-pointer bg-white/5 px-4 py-2.5 rounded-lg border border-white/5 w-28 sm:w-32 text-center">HDFC BANK</span>
+              <span className="hover:text-white transition-colors cursor-pointer bg-white/5 px-4 py-2.5 rounded-lg border border-white/5 w-28 sm:w-32 text-center">ICICI BANK</span>
+              <span className="hover:text-white transition-colors cursor-pointer bg-white/5 px-4 py-2.5 rounded-lg border border-white/5 w-28 sm:w-32 text-center">AXIS BANK</span>
+              <span className="hover:text-white transition-colors cursor-pointer bg-white/5 px-4 py-2.5 rounded-lg border border-white/5 w-28 sm:w-32 text-center">BANK OF BARODA</span>
             </div>
           </motion.div>
 

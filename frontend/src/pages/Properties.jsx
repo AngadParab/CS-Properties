@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Search, MapPin, DollarSign, Home as HomeIcon, Filter, Layers, ArrowUpRight } from 'lucide-react';
+import propertiesList from '../data/properties.json';
 
 function Properties() {
   const queryParams = new URLSearchParams(useLocation().search);
@@ -24,80 +25,7 @@ function Properties() {
   const locations = ['All', 'Margao', 'Panaji', 'Calangute', 'Vasco', 'Mapusa'];
   const types = ['All', 'Apartment', 'Villa', 'Commercial', 'Plot'];
 
-  const propertiesList = [
-    {
-      id: 1,
-      title: 'Ocean View 3 BHK Apartment',
-      location: 'Panaji',
-      type: 'Apartment',
-      price: 8500000, // 85 Lakhs
-      priceStr: '₹85 Lakhs',
-      details: '3 BHK | 3 Baths | 1650 sq.ft.',
-      desc: 'Luxurious ocean-facing apartment in Miramar, Panaji. Complete with premium fittings, gated security, and swimming pool access.',
-      gradient: 'from-blue-950/80 to-slate-900/80',
-      roundedClass: 'rounded-tl-[40px] rounded-br-[40px]',
-    },
-    {
-      id: 2,
-      title: 'Modern 4 BHK Villa with Pool',
-      location: 'Calangute',
-      type: 'Villa',
-      price: 14500000, // 1.45 Crores
-      priceStr: '₹1.45 Crores',
-      details: '4 BHK | 4 Baths | 3200 sq.ft.',
-      desc: 'Stunning contemporary villa in North Goa, featuring a private swimming pool, landscaped gardens, and premium modular kitchen.',
-      gradient: 'from-slate-900/80 to-blue-950/80',
-      roundedClass: 'rounded-tr-[40px] rounded-bl-[40px]',
-    },
-    {
-      id: 3,
-      title: 'Prime Commercial Office Space',
-      location: 'Margao',
-      type: 'Commercial',
-      price: 6000000, // 60 Lakhs
-      priceStr: '₹60 Lakhs',
-      details: 'G-Floor | 850 sq.ft. | Parking',
-      desc: 'Highly visible retail/office space in the heart of Margao market. Excellent footfall and modern infrastructure provisions.',
-      gradient: 'from-blue-950/80 to-slate-900/80',
-      roundedClass: 'rounded-tl-[40px] rounded-br-[40px]',
-    },
-    {
-      id: 4,
-      title: 'Residential Plot near Highway',
-      location: 'Mapusa',
-      type: 'Plot',
-      price: 3500000, // 35 Lakhs
-      priceStr: '₹35 Lakhs',
-      details: '350 sq.meters | Clear Title',
-      desc: 'Clear settlement land plot located just 5 minutes from Mapusa town. Fully gated community block with water & electricity connectivity.',
-      gradient: 'from-slate-900/80 to-blue-950/80',
-      roundedClass: 'rounded-tr-[40px] rounded-bl-[40px]',
-    },
-    {
-      id: 5,
-      title: 'Cozy 2 BHK Flat near Airport',
-      location: 'Vasco',
-      type: 'Apartment',
-      price: 4800000, // 48 Lakhs
-      priceStr: '₹48 Lakhs',
-      details: '2 BHK | 2 Baths | 1100 sq.ft.',
-      desc: 'Strategically located flat close to Dabolim Airport. Ideal for rental income yields or small families with airport commutes.',
-      gradient: 'from-blue-950/80 to-slate-900/80',
-      roundedClass: 'rounded-tl-[40px] rounded-br-[40px]',
-    },
-    {
-      id: 6,
-      title: 'Heritage Style 3 BHK Villa',
-      location: 'Margao',
-      type: 'Villa',
-      price: 12000000, // 1.20 Crores
-      priceStr: '₹1.20 Crores',
-      details: '3 BHK | 3 Baths | 2400 sq.ft.',
-      desc: 'Beautifully designed Goan-Portuguese style villa in South Goa, blending traditional architecture with modern interior fixtures.',
-      gradient: 'from-slate-900/80 to-blue-950/80',
-      roundedClass: 'rounded-tr-[40px] rounded-bl-[40px]',
-    },
-  ];
+
 
   const filteredProperties = useMemo(() => {
     return propertiesList.filter((prop) => {
@@ -140,7 +68,7 @@ function Properties() {
         className="text-center space-y-3"
       >
         <h1 className="text-4xl font-extrabold text-brand-navy tracking-tight">
-          Discover <span className="font-light italic font-syne text-brand-gold">exclusive spaces</span> in Goa
+          Discover <span className="font-light italic font-syne text-brand-goldDark">exclusive spaces</span> in Goa
         </h1>
         <p className="max-w-2xl mx-auto text-xs sm:text-sm text-brand-text-muted leading-relaxed">
           Browse our premier residential, commercial, and land plot portfolios. We provide end-to-end professional agency guidance to secure your ideal property with clear titles.
@@ -158,7 +86,7 @@ function Properties() {
           className="lg:col-span-3 bg-white border border-brand-sandDark p-6 rounded-2xl shadow-sm h-fit space-y-6"
         >
           <div className="flex items-center space-x-2 pb-3 border-b border-brand-sandDark text-brand-navy font-bold text-xs uppercase tracking-wider">
-            <Filter className="w-5 h-5 text-brand-gold" />
+            <Filter className="w-5 h-5 text-brand-goldDark" />
             <span>Search Filters</span>
           </div>
 
@@ -243,7 +171,7 @@ function Properties() {
             className="grid grid-cols-1 md:grid-cols-2 gap-6"
           >
             {filteredProperties.map((prop) => (
-              <motion.div
+              <motion.article
                 key={prop.id}
                 variants={fadeInUp}
                 className={`bg-white border border-brand-sandDark overflow-hidden shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between ${prop.roundedClass}`}
@@ -266,11 +194,11 @@ function Properties() {
                     
                     <div className="flex items-center space-x-4 text-xs font-semibold text-brand-text-muted">
                       <span className="flex items-center space-x-1">
-                        <MapPin className="w-3.5 h-3.5 text-brand-gold" />
+                        <MapPin className="w-3.5 h-3.5 text-brand-goldDark" />
                         <span>{prop.location}, Goa</span>
                       </span>
                       <span className="flex items-center space-x-1">
-                        <Layers className="w-3.5 h-3.5 text-brand-gold" />
+                        <Layers className="w-3.5 h-3.5 text-brand-goldDark" />
                         <span>{prop.details}</span>
                       </span>
                     </div>
@@ -282,20 +210,20 @@ function Properties() {
                 </div>
 
                 {/* Card footer/CTA */}
-                <div className="px-6 pb-5 pt-3 border-t border-brand-sandDark flex items-center justify-between">
-                  <span className="text-[10px] font-bold text-emerald-600 uppercase bg-emerald-50 px-2.5 py-1 rounded-md">
+                <div className="px-6 pb-5 pt-3 border-t border-brand-sandDark flex flex-col sm:flex-row gap-3 sm:gap-0 items-center justify-between w-full">
+                  <span className="text-[10px] font-bold text-emerald-600 uppercase bg-emerald-50 px-2.5 py-1 rounded-md w-full sm:w-auto text-center">
                     Clear Title
                   </span>
                   <Link
                     to={`/apply?propertyName=${encodeURIComponent(prop.title)}&propertyLocation=${encodeURIComponent(prop.location)}&propertyPrice=${prop.price}&loan=property`}
-                    className="bg-brand-navy text-white text-xs font-bold px-4 py-2 rounded-lg hover:bg-brand-gold hover:text-brand-navy transition-colors flex items-center space-x-1"
+                    className="bg-brand-navy text-white text-xs font-bold px-4 py-2.5 rounded-lg hover:bg-brand-gold hover:text-brand-navy transition-colors flex items-center justify-center space-x-1 w-full sm:w-auto text-center"
                   >
                     <span>Inquire Deal</span>
                     <ArrowUpRight className="w-3.5 h-3.5" />
                   </Link>
                 </div>
 
-              </motion.div>
+              </motion.article>
             ))}
           </motion.div>
         </main>

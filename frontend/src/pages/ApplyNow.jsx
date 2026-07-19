@@ -279,7 +279,7 @@ function ApplyNow() {
                       onChange={handleChange}
                       placeholder="e.g. John Doe"
                       className={`w-full px-4 py-2 text-sm border rounded-lg focus:ring-2 outline-none bg-white ${
-                        errors.fullName ? 'border-brand-error focus:ring-red-200' : 'border-slate-200 focus:ring-blue-500'
+                        errors.fullName ? 'border-brand-error focus:ring-red-200' : 'border-slate-300 focus:ring-brand-goldDark focus:border-brand-goldDark focus-visible:ring-2 focus-visible:ring-brand-goldDark'
                       }`}
                     />
                     {errors.fullName && <span className="text-[10px] text-brand-error font-semibold">{errors.fullName}</span>}
@@ -294,7 +294,7 @@ function ApplyNow() {
                       onChange={handleChange}
                       placeholder="e.g. 9876543210"
                       className={`w-full px-4 py-2 text-sm border rounded-lg focus:ring-2 outline-none bg-white ${
-                        errors.phone ? 'border-brand-error focus:ring-red-200' : 'border-slate-200 focus:ring-blue-500'
+                        errors.phone ? 'border-brand-error focus:ring-red-200' : 'border-slate-300 focus:ring-brand-goldDark focus:border-brand-goldDark focus-visible:ring-2 focus-visible:ring-brand-goldDark'
                       }`}
                     />
                     {errors.phone && <span className="text-[10px] text-brand-error font-semibold">{errors.phone}</span>}
@@ -310,7 +310,7 @@ function ApplyNow() {
                       value={formData.email}
                       onChange={handleChange}
                       placeholder="e.g. john@example.com"
-                      className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white"
+                      className="w-full px-4 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-goldDark focus:border-brand-goldDark focus-visible:ring-2 focus-visible:ring-brand-goldDark outline-none bg-white"
                     />
                   </div>
 
@@ -323,7 +323,7 @@ function ApplyNow() {
                       onChange={handleChange}
                       placeholder="e.g. Margao, Panaji"
                       className={`w-full px-4 py-2 text-sm border rounded-lg focus:ring-2 outline-none bg-white ${
-                        errors.location ? 'border-brand-error focus:ring-red-200' : 'border-slate-200 focus:ring-blue-500'
+                        errors.location ? 'border-brand-error focus:ring-red-200' : 'border-slate-300 focus:ring-brand-goldDark focus:border-brand-goldDark focus-visible:ring-2 focus-visible:ring-brand-goldDark'
                       }`}
                     />
                     {errors.location && <span className="text-[10px] text-brand-error font-semibold">{errors.location}</span>}
@@ -344,7 +344,7 @@ function ApplyNow() {
                       name="loanType"
                       value={formData.loanType}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white font-semibold text-brand-navy"
+                      className="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-goldDark focus:border-brand-goldDark focus-visible:ring-2 focus-visible:ring-brand-goldDark outline-none bg-white font-semibold text-brand-navy"
                     >
                       <option value="Property Inquiry">Property Purchase Inquiry</option>
                       <option value="Business Loan">Business Loan</option>
@@ -366,7 +366,7 @@ function ApplyNow() {
                       onChange={handleChange}
                       placeholder={formData.loanType === 'Property Inquiry' ? 'e.g. 15000000' : 'e.g. 2500000'}
                       className={`w-full px-4 py-2 text-sm border rounded-lg focus:ring-2 outline-none bg-white ${
-                        errors.amount ? 'border-brand-error focus:ring-red-200' : 'border-slate-200 focus:ring-blue-500'
+                        errors.amount ? 'border-brand-error focus:ring-red-200' : 'border-slate-300 focus:ring-brand-goldDark focus:border-brand-goldDark focus-visible:ring-2 focus-visible:ring-brand-goldDark'
                       }`}
                     />
                     {errors.amount && <span className="text-[10px] text-brand-error font-semibold">{errors.amount}</span>}
@@ -384,7 +384,7 @@ function ApplyNow() {
                         value={formData.preferredDate}
                         onChange={handleChange}
                         className={`w-full pl-9 pr-4 py-2 text-sm border rounded-lg focus:ring-2 outline-none bg-white ${
-                          errors.preferredDate ? 'border-brand-error focus:ring-red-200' : 'border-slate-200 focus:ring-blue-500'
+                          errors.preferredDate ? 'border-brand-error focus:ring-red-200' : 'border-slate-300 focus:ring-brand-goldDark focus:border-brand-goldDark focus-visible:ring-2 focus-visible:ring-brand-goldDark'
                         }`}
                       />
                     </div>
@@ -397,7 +397,7 @@ function ApplyNow() {
                       name="tenureYears"
                       value={formData.tenureYears}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white font-semibold text-brand-navy"
+                      className="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-goldDark focus:border-brand-goldDark focus-visible:ring-2 focus-visible:ring-brand-goldDark outline-none bg-white font-semibold text-brand-navy"
                     >
                       {[1, 3, 5, 7, 10, 15, 20, 25, 30].map((yr) => (
                         <option key={yr} value={yr}>{yr} Years</option>
@@ -420,7 +420,7 @@ function ApplyNow() {
                       name="employmentType"
                       value={formData.employmentType}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white font-semibold text-brand-navy"
+                      className="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-goldDark focus:border-brand-goldDark focus-visible:ring-2 focus-visible:ring-brand-goldDark outline-none bg-white font-semibold text-brand-navy"
                     >
                       <option value="Salaried">Salaried Professional</option>
                       <option value="Self-Employed">Self-Employed Merchant</option>
@@ -437,7 +437,7 @@ function ApplyNow() {
                       onChange={handleChange}
                       placeholder="e.g. 60000"
                       className={`w-full px-4 py-2 text-sm border rounded-lg focus:ring-2 outline-none bg-white ${
-                        errors.monthlyIncome ? 'border-brand-error focus:ring-red-200' : 'border-slate-200 focus:ring-blue-500'
+                        errors.monthlyIncome ? 'border-brand-error focus:ring-red-200' : 'border-slate-300 focus:ring-brand-goldDark focus:border-brand-goldDark focus-visible:ring-2 focus-visible:ring-brand-goldDark'
                       }`}
                     />
                     {errors.monthlyIncome && <span className="text-[10px] text-brand-error font-semibold">{errors.monthlyIncome}</span>}
@@ -452,7 +452,7 @@ function ApplyNow() {
                     value={formData.existingEmis}
                     onChange={handleChange}
                     placeholder="Enter total monthly obligations"
-                    className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white"
+                    className="w-full px-4 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-goldDark focus:border-brand-goldDark focus-visible:ring-2 focus-visible:ring-brand-goldDark outline-none bg-white"
                   />
                 </div>
               </div>
@@ -517,32 +517,30 @@ function ApplyNow() {
                     value={formData.notes}
                     onChange={handleChange}
                     placeholder="Provide property details, vehicle descriptions or target loan parameters..."
-                    className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white"
+                    className="w-full px-4 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-goldDark focus:border-brand-goldDark focus-visible:ring-2 focus-visible:ring-brand-goldDark outline-none bg-white"
                   ></textarea>
                 </div>
               </div>
             )}
 
             {/* Navigation buttons */}
-            <div className="flex justify-between items-center pt-4 border-t border-slate-100">
+            <div className="flex flex-row gap-4 justify-between items-center pt-4 border-t border-slate-100">
               {step > 1 ? (
                 <button
                   type="button"
                   onClick={prevStep}
-                  className="px-4 py-2 border border-slate-200 rounded-lg text-xs font-bold text-brand-navy hover:bg-slate-50 transition-colors flex items-center space-x-1"
+                  className="flex-1 sm:flex-initial px-4 py-2.5 border border-slate-200 rounded-lg text-xs font-bold text-brand-navy hover:bg-slate-50 transition-colors flex items-center justify-center space-x-1"
                 >
                   <ChevronLeft className="w-4 h-4" />
                   <span>Back</span>
                 </button>
-              ) : (
-                <div></div>
-              )}
+              ) : null}
 
               {step < 4 ? (
                 <button
                   type="button"
                   onClick={nextStep}
-                  className="bg-brand-navy text-white px-5 py-2.5 rounded-lg text-xs font-bold hover:bg-blue-900 transition-colors flex items-center space-x-1"
+                  className="flex-1 sm:flex-initial bg-brand-navy text-white px-5 py-2.5 rounded-lg text-xs font-bold hover:bg-blue-900 transition-colors flex items-center justify-center space-x-1"
                 >
                   <span>Continue</span>
                   <ChevronRight className="w-4 h-4" />
@@ -551,7 +549,7 @@ function ApplyNow() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="bg-brand-gold hover:bg-yellow-500 text-brand-navy font-bold px-6 py-2.5 rounded-lg text-xs transition-colors flex items-center space-x-2 disabled:opacity-50"
+                  className="flex-1 sm:flex-initial bg-brand-gold hover:bg-yellow-500 text-brand-navy font-bold px-6 py-2.5 rounded-lg text-xs transition-colors flex items-center justify-center space-x-2 disabled:opacity-50"
                 >
                   {isSubmitting ? 'Submitting...' : 'Submit Application'}
                 </button>

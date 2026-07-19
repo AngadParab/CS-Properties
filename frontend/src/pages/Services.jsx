@@ -1,90 +1,28 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Building2, Home as HomeIcon, FileText, User, CheckCircle, FileCheck, Info } from 'lucide-react';
+import servicesDataRaw from '../data/services.json';
 
 function Services() {
   const [activeTab, setActiveTab] = useState('business');
 
   const servicesData = {
     business: {
-      id: 'business',
-      title: 'Business Loans',
-      icon: <Building2 className="w-6 h-6" />,
-      desc: 'Ideal for local MSMEs, retail merchants, and startup projects in Goa seeking unsecured or secured working capital, expansion funds, or machinery financing.',
-      interest: 'Starting from 9.5% p.a.',
-      maxAmount: 'Up to ₹5 Crores',
-      eligibility: [
-        'Business must be registered and operating for at least 2 years in Goa.',
-        'Annual turnover of ₹15 Lakhs or above.',
-        'Min/Max Age: 21 to 65 years.',
-        'Good credit rating/score (CIBIL of 700+ preferred).',
-      ],
-      documents: [
-        'Company KYC (GST Registration, Trade License, Partnership Deed).',
-        'Director/Owner identity & address proofs (Aadhaar, PAN).',
-        'Last 12 months bank statements.',
-        'Income Tax Returns (ITR) with balance sheets for the last 2 years.',
-      ],
+      ...servicesDataRaw.business,
+      icon: <Building2 className="w-6 h-6" />
     },
     mortgage: {
-      id: 'mortgage',
-      title: 'Mortgage / Home Loans',
-      icon: <HomeIcon className="w-6 h-6" />,
-      desc: 'Purchase apartments, build villas, or buy land plots across Goa. We partner with public sector banks to secure lowest home interest rates.',
-      interest: 'Starting from 8.35% p.a.',
-      maxAmount: 'Up to ₹10 Crores (Based on Property Valuation)',
-      eligibility: [
-        'Salaried employees or self-employed individuals with stable income.',
-        'Minimum monthly net salary of ₹25,000.',
-        'Min/Max Age: 18 to 70 years.',
-        'Clean title deeds of the property to be financed.',
-      ],
-      documents: [
-        'Applicant KYC documents (PAN card is mandatory).',
-        'Last 3 months salary slips & Form 16 (for salaried applicants).',
-        'Last 6 months salary bank account statement.',
-        'Property title documents, sanctioned construction plans, and builder NOC.',
-      ],
+      ...servicesDataRaw.mortgage,
+      icon: <HomeIcon className="w-6 h-6" />
     },
     lap: {
-      id: 'lap',
-      title: 'Loan Against Property',
-      icon: <FileText className="w-6 h-6" />,
-      desc: 'Unlocking liquidity from your existing residential, commercial, or ancestral properties. Utilize funds for children education, business growth, or family weddings.',
-      interest: 'Starting from 9.0% p.a.',
-      maxAmount: 'Up to 65% of Property Market Value',
-      eligibility: [
-        'Individuals owning clear property titles within Goa municipal limits.',
-        'Assured repayment source (Business income or regular employment).',
-        'CIBIL score of 680+.',
-      ],
-      documents: [
-        'KYC files of all property co-owners.',
-        'Property Ownership Documents (Sale Deed, Mutation Certificate, Land Tax receipts).',
-        'Income statement verification documents (ITR or audited balance sheets).',
-        'Valuation report and title search report (we assist in organizing these).',
-      ],
+      ...servicesDataRaw.lap,
+      icon: <FileText className="w-6 h-6" />
     },
     personal: {
-      id: 'personal',
-      title: 'Personal Loans',
-      icon: <User className="w-6 h-6" />,
-      desc: 'Instant, collateral-free credit lines for immediate financial contingencies, medical bills, travel plans, or luxury purchases.',
-      interest: 'Starting from 10.75% p.a.',
-      maxAmount: 'Up to ₹25 Lakhs',
-      eligibility: [
-        'Salaried professionals employed in reputed companies or government offices in Goa.',
-        'Minimum monthly net take-home of ₹30,000.',
-        'Min/Max Age: 21 to 58 years.',
-        'Excellent repayment history (No active defaults).',
-      ],
-      documents: [
-        'Proof of Identity & Address (Aadhaar, Passport, Voter ID).',
-        'PAN Card.',
-        'Last 3 months salary slips.',
-        'Last 6 months salary account bank statements.',
-      ],
-    },
+      ...servicesDataRaw.personal,
+      icon: <User className="w-6 h-6" />
+    }
   };
 
   const selectedService = servicesData[activeTab];
@@ -163,7 +101,7 @@ function Services() {
             {/* Eligibility */}
             <div className="space-y-4">
               <h3 className="text-base font-bold text-brand-navy flex items-center space-x-2">
-                <CheckCircle className="w-5 h-5 text-brand-gold" />
+                <CheckCircle className="w-5 h-5 text-brand-goldDark" />
                 <span>Eligibility Standards</span>
               </h3>
               <ul className="space-y-2.5">
@@ -178,7 +116,7 @@ function Services() {
             {/* Documents */}
             <div className="space-y-4">
               <h3 className="text-base font-bold text-brand-navy flex items-center space-x-2">
-                <FileCheck className="w-5 h-5 text-brand-gold" />
+                <FileCheck className="w-5 h-5 text-brand-goldDark" />
                 <span>Required Documentation</span>
               </h3>
               <ul className="space-y-2.5">

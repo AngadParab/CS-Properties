@@ -17,7 +17,9 @@ function App() {
       <div className="flex flex-col min-h-screen bg-brand-bg text-brand-text-primary font-sans">
 
         {/* Responsive, Sticky Navbar */}
-        <Navbar />
+        <header>
+          <Navbar />
+        </header>
 
         {/* Dynamic Route Pages */}
         <main className="flex-grow">

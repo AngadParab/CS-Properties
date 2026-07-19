@@ -10,6 +10,7 @@ export default {
         brand: {
           navy: '#1C1C1C',       // Soft Jet Black
           gold: '#C5A880',       // Muted Ochre / Warm Tan Accent
+          goldDark: '#765C3B',   // High-Contrast Ochre for light backgrounds
           bg: '#F4F3EF',         // Warm Sand Background
           surface: '#FFFFFF',    // Crisp White Cards
           text: {

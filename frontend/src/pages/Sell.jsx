@@ -126,7 +126,7 @@ function Sell() {
       {/* Title Header */}
       <div className="text-center space-y-3 mb-10">
         <h1 className="text-3xl sm:text-4xl font-extrabold text-brand-navy tracking-tight">
-          Sell your property <span className="font-light italic font-syne text-brand-gold">with the experts</span> in Goa
+          Sell your property <span className="font-light italic font-syne text-brand-goldDark">with the experts</span> in Goa
         </h1>
         <p className="max-w-xl mx-auto text-xs sm:text-sm text-brand-text-muted leading-relaxed">
           Fill in your property specs below. Our valuation and legal teams will review the details to list your property on the main CS catalog.
@@ -226,8 +226,8 @@ function Sell() {
                       value={formData.fullName}
                       onChange={handleInputChange}
                       placeholder="e.g. John Doe"
-                      className={`w-full px-4 py-3 border rounded-xl outline-none text-xs font-semibold bg-brand-bg focus:ring-2 focus:ring-brand-gold ${
-                        errors.fullName ? 'border-brand-error' : 'border-brand-sandDark'
+                      className={`w-full px-4 py-3 border rounded-xl outline-none text-xs font-semibold bg-brand-bg focus:ring-2 focus:ring-brand-goldDark focus:border-brand-goldDark focus-visible:ring-2 focus-visible:ring-brand-goldDark ${
+                        errors.fullName ? 'border-brand-error focus:ring-red-200' : 'border-slate-300'
                       }`}
                     />
                     {errors.fullName && <p className="text-[10px] text-brand-error font-semibold">{errors.fullName}</p>}
@@ -239,7 +239,7 @@ function Sell() {
                       name="sellerRole"
                       value={formData.sellerRole}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 border border-brand-sandDark rounded-xl outline-none text-xs font-semibold bg-brand-bg"
+                      className="w-full px-4 py-3 border border-slate-300 rounded-xl outline-none text-xs font-semibold bg-brand-bg focus:ring-2 focus:ring-brand-goldDark focus:border-brand-goldDark focus-visible:ring-2 focus-visible:ring-brand-goldDark"
                     >
                       <option value="Owner">Property Owner</option>
                       <option value="Broker">Authorized Real Estate Broker</option>
@@ -255,8 +255,8 @@ function Sell() {
                       value={formData.phone}
                       onChange={handleInputChange}
                       placeholder="e.g. +91 9876543210"
-                      className={`w-full px-4 py-3 border rounded-xl outline-none text-xs font-semibold bg-brand-bg focus:ring-2 focus:ring-brand-gold ${
-                        errors.phone ? 'border-brand-error' : 'border-brand-sandDark'
+                      className={`w-full px-4 py-3 border rounded-xl outline-none text-xs font-semibold bg-brand-bg focus:ring-2 focus:ring-brand-goldDark focus:border-brand-goldDark focus-visible:ring-2 focus-visible:ring-brand-goldDark ${
+                        errors.phone ? 'border-brand-error focus:ring-red-200' : 'border-slate-300'
                       }`}
                     />
                     {errors.phone && <p className="text-[10px] text-brand-error font-semibold">{errors.phone}</p>}
@@ -270,8 +270,8 @@ function Sell() {
                       value={formData.email}
                       onChange={handleInputChange}
                       placeholder="e.g. john@domain.com"
-                      className={`w-full px-4 py-3 border rounded-xl outline-none text-xs font-semibold bg-brand-bg focus:ring-2 focus:ring-brand-gold ${
-                        errors.email ? 'border-brand-error' : 'border-brand-sandDark'
+                      className={`w-full px-4 py-3 border rounded-xl outline-none text-xs font-semibold bg-brand-bg focus:ring-2 focus:ring-brand-goldDark focus:border-brand-goldDark focus-visible:ring-2 focus-visible:ring-brand-goldDark ${
+                        errors.email ? 'border-brand-error focus:ring-red-200' : 'border-slate-300'
                       }`}
                     />
                     {errors.email && <p className="text-[10px] text-brand-error font-semibold">{errors.email}</p>}
@@ -290,8 +290,8 @@ function Sell() {
                       value={formData.propertyTitle}
                       onChange={handleInputChange}
                       placeholder="e.g. Heritage 3 BHK Villa in South Goa"
-                      className={`w-full px-4 py-3 border rounded-xl outline-none text-xs font-semibold bg-brand-bg focus:ring-2 focus:ring-brand-gold ${
-                        errors.propertyTitle ? 'border-brand-error' : 'border-brand-sandDark'
+                      className={`w-full px-4 py-3 border rounded-xl outline-none text-xs font-semibold bg-brand-bg focus:ring-2 focus:ring-brand-goldDark focus:border-brand-goldDark focus-visible:ring-2 focus-visible:ring-brand-goldDark ${
+                        errors.propertyTitle ? 'border-brand-error focus:ring-red-200' : 'border-slate-300'
                       }`}
                     />
                     {errors.propertyTitle && <p className="text-[10px] text-brand-error font-semibold">{errors.propertyTitle}</p>}
@@ -303,7 +303,7 @@ function Sell() {
                       name="propertyType"
                       value={formData.propertyType}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 border border-brand-sandDark rounded-xl outline-none text-xs font-semibold bg-brand-bg"
+                      className="w-full px-4 py-3 border border-slate-300 rounded-xl outline-none text-xs font-semibold bg-brand-bg focus:ring-2 focus:ring-brand-goldDark focus:border-brand-goldDark focus-visible:ring-2 focus-visible:ring-brand-goldDark"
                     >
                       <option value="Villa">Villa / Bungalow</option>
                       <option value="Apartment">Apartment / Flat</option>
@@ -318,7 +318,7 @@ function Sell() {
                       name="location"
                       value={formData.location}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 border border-brand-sandDark rounded-xl outline-none text-xs font-semibold bg-brand-bg"
+                      className="w-full px-4 py-3 border border-slate-300 rounded-xl outline-none text-xs font-semibold bg-brand-bg focus:ring-2 focus:ring-brand-goldDark focus:border-brand-goldDark focus-visible:ring-2 focus-visible:ring-brand-goldDark"
                     >
                       {locationsList.map((loc) => (
                         <option key={loc} value={loc}>{loc}</option>
@@ -336,8 +336,8 @@ function Sell() {
                         value={formData.sizeSqFt}
                         onChange={handleInputChange}
                         placeholder="e.g. 2400"
-                        className={`w-full pl-10 pr-4 py-3 border rounded-xl outline-none text-xs font-semibold bg-brand-bg focus:ring-2 focus:ring-brand-gold ${
-                          errors.sizeSqFt ? 'border-brand-error' : 'border-brand-sandDark'
+                        className={`w-full pl-10 pr-4 py-3 border rounded-xl outline-none text-xs font-semibold bg-brand-bg focus:ring-2 focus:ring-brand-goldDark focus:border-brand-goldDark focus-visible:ring-2 focus-visible:ring-brand-goldDark ${
+                          errors.sizeSqFt ? 'border-brand-error focus:ring-red-200' : 'border-slate-300'
                         }`}
                       />
                     </div>
@@ -347,22 +347,22 @@ function Sell() {
                   <div className="space-y-2">
                     <label className="text-[10px] font-extrabold uppercase tracking-widest text-brand-navy">Expected Asking Price (₹) *</label>
                     <div className="relative">
-                      <DollarSign className="w-4 h-4 text-brand-gold absolute left-3.5 top-3.5" />
+                      <DollarSign className="w-4 h-4 text-brand-goldDark absolute left-3.5 top-3.5" />
                       <input
                         type="number"
                         name="expectedPrice"
                         value={formData.expectedPrice}
                         onChange={handleInputChange}
                         placeholder="e.g. 12000000"
-                        className={`w-full pl-10 pr-4 py-3 border rounded-xl outline-none text-xs font-semibold bg-brand-bg focus:ring-2 focus:ring-brand-gold ${
-                          errors.expectedPrice ? 'border-brand-error' : 'border-brand-sandDark'
+                        className={`w-full pl-10 pr-4 py-3 border rounded-xl outline-none text-xs font-semibold bg-brand-bg focus:ring-2 focus:ring-brand-goldDark focus:border-brand-goldDark focus-visible:ring-2 focus-visible:ring-brand-goldDark ${
+                          errors.expectedPrice ? 'border-brand-error focus:ring-red-200' : 'border-slate-300'
                         }`}
                       />
                     </div>
                     {errors.expectedPrice ? (
                       <p className="text-[10px] text-brand-error font-semibold">{errors.expectedPrice}</p>
                     ) : (
-                      <p className="text-[10px] text-brand-gold font-bold">{formatPrice(formData.expectedPrice)}</p>
+                      <p className="text-[10px] text-brand-goldDark font-bold">{formatPrice(formData.expectedPrice)}</p>
                     )}
                   </div>
                 </div>
@@ -378,7 +378,7 @@ function Sell() {
                         name="propertyCondition"
                         value={formData.propertyCondition}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-3 border border-brand-sandDark rounded-xl outline-none text-xs font-semibold bg-brand-bg"
+                        className="w-full px-4 py-3 border border-slate-300 rounded-xl outline-none text-xs font-semibold bg-brand-bg focus:ring-2 focus:ring-brand-goldDark focus:border-brand-goldDark focus-visible:ring-2 focus-visible:ring-brand-goldDark"
                       >
                         <option value="Ready to Move">Ready to Move</option>
                         <option value="Under Construction">Under Construction</option>
@@ -395,8 +395,8 @@ function Sell() {
                       value={formData.description}
                       onChange={handleInputChange}
                       placeholder="Outline rooms, amenities, road access, distance to beach, or commercial viability details..."
-                      className={`w-full px-4 py-3 border rounded-xl outline-none text-xs font-semibold bg-brand-bg focus:ring-2 focus:ring-brand-gold ${
-                        errors.description ? 'border-brand-error' : 'border-brand-sandDark'
+                      className={`w-full px-4 py-3 border rounded-xl outline-none text-xs font-semibold bg-brand-bg focus:ring-2 focus:ring-brand-goldDark focus:border-brand-goldDark focus-visible:ring-2 focus-visible:ring-brand-goldDark ${
+                        errors.description ? 'border-brand-error' : 'border-slate-300'
                       }`}
                     ></textarea>
                     {errors.description && <p className="text-[10px] text-brand-error font-semibold">{errors.description}</p>}
@@ -404,8 +404,8 @@ function Sell() {
 
                   <div className="space-y-2">
                     <label className="text-[10px] font-extrabold uppercase tracking-widest text-brand-navy">Upload Photos & Legal Mutat Documents</label>
-                    <div className="border-2 border-dashed border-brand-sandDark rounded-2xl p-6 text-center bg-brand-bg/50 hover:bg-brand-bg hover:border-brand-gold transition-colors cursor-pointer select-none">
-                      <UploadCloud className="w-8 h-8 text-brand-gold mx-auto mb-2 animate-bounce" />
+                    <div className="border-2 border-dashed border-brand-sandDark rounded-2xl p-6 text-center bg-brand-bg/50 hover:bg-brand-bg hover:border-brand-goldDark transition-colors cursor-pointer select-none">
+                      <UploadCloud className="w-8 h-8 text-brand-goldDark mx-auto mb-2 animate-bounce" />
                       <span className="block text-xs font-bold text-brand-navy">Drag & drop photos or PDF title deed here</span>
                       <span className="text-[10px] text-brand-text-muted">Supports JPG, PNG, PDF up to 10MB</span>
                     </div>
@@ -449,7 +449,7 @@ function Sell() {
                       value={formData.notes}
                       onChange={handleInputChange}
                       placeholder="Add preferred contact time or specific pricing details..."
-                      className="w-full px-4 py-3 border border-brand-sandDark rounded-xl outline-none text-xs font-semibold bg-brand-bg focus:ring-2 focus:ring-brand-gold"
+                      className="w-full px-4 py-3 border border-slate-300 rounded-xl outline-none text-xs font-semibold bg-brand-bg focus:ring-2 focus:ring-brand-goldDark focus:border-brand-goldDark focus-visible:ring-2 focus-visible:ring-brand-goldDark"
                     ></textarea>
                   </div>
                 </div>
@@ -459,25 +459,23 @@ function Sell() {
           </AnimatePresence>
 
           {/* Stepper Navigation Buttons */}
-          <div className="flex justify-between items-center pt-6 border-t border-brand-sandDark mt-8">
+          <div className="flex flex-row gap-4 justify-between items-center pt-6 border-t border-brand-sandDark mt-8">
             {step > 1 ? (
               <button
                 type="button"
                 onClick={handlePrev}
-                className="flex items-center space-x-1.5 text-xs font-bold text-slate-500 hover:text-brand-navy transition-colors outline-none"
+                className="flex-1 sm:flex-initial flex items-center justify-center space-x-1.5 text-xs font-bold text-slate-500 hover:text-brand-navy transition-colors outline-none border border-brand-sandDark py-2.5 rounded-xl sm:border-none sm:py-0"
               >
                 <ChevronLeft className="w-4 h-4" />
                 <span>Go Back</span>
               </button>
-            ) : (
-              <div />
-            )}
+            ) : null}
 
             {step < 4 ? (
               <button
                 type="button"
                 onClick={handleNext}
-                className="bg-brand-navy text-white hover:bg-brand-gold hover:text-brand-navy font-bold px-5 py-2.5 rounded-xl transition-all duration-200 flex items-center space-x-1 text-xs outline-none"
+                className="flex-1 sm:flex-initial bg-brand-navy text-white hover:bg-brand-gold hover:text-brand-navy font-bold px-5 py-2.5 rounded-xl transition-all duration-200 flex items-center justify-center space-x-1 text-xs outline-none"
               >
                 <span>Continue</span>
                 <ChevronRight className="w-4 h-4" />
@@ -487,7 +485,7 @@ function Sell() {
                 type="submit"
                 onClick={handleSubmit}
                 disabled={isSubmitting}
-                className="bg-brand-gold text-brand-navy hover:bg-yellow-500 font-bold px-6 py-2.5 rounded-xl transition-all duration-200 flex items-center space-x-1 text-xs outline-none disabled:opacity-50"
+                className="flex-1 sm:flex-initial bg-brand-gold text-brand-navy hover:bg-yellow-500 font-bold px-6 py-2.5 rounded-xl transition-all duration-200 flex items-center justify-center space-x-1 text-xs outline-none disabled:opacity-50"
               >
                 {isSubmitting ? (
                   <span>Saving Listing...</span>
