@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Calculator, Landmark, ShieldCheck, HelpCircle } from 'lucide-react';
 
@@ -6,6 +6,9 @@ function EmiCalculatorPage() {
   const [principal, setPrincipal] = useState(5000000); // Default ₹50 Lakhs
   const [interestRate, setInterestRate] = useState(8.5); // Default 8.5%
   const [tenureYears, setTenureYears] = useState(15); // Default 15 Years
+  
+  const [principalInput, setPrincipalInput] = useState(principal.toLocaleString('en-IN'));
+  const [principalError, setPrincipalError] = useState('');
 
   const calculations = useMemo(() => {
     const P = principal;
@@ -42,6 +45,33 @@ function EmiCalculatorPage() {
     };
   }, [principal, interestRate, tenureYears]);
 
+  // Sync range slider updates to text input visual representation
+  useEffect(() => {
+    setPrincipalInput(principal.toLocaleString('en-IN'));
+    setPrincipalError('');
+  }, [principal]);
+
+  const handlePrincipalTextChange = (e) => {
+    const rawVal = e.target.value.replace(/[^0-9]/g, '');
+    if (!rawVal) {
+      setPrincipalInput('');
+      setPrincipalError('Principal amount is required.');
+      return;
+    }
+    const num = Number(rawVal);
+    setPrincipalInput(num.toLocaleString('en-IN'));
+    
+    // Validate range bounds
+    if (num < 100000) {
+      setPrincipalError('Min amount is ₹1 Lakh');
+    } else if (num > 50000000) {
+      setPrincipalError('Max amount is ₹5 Crores');
+    } else {
+      setPrincipalError('');
+      setPrincipal(num); // update calculations principal
+    }
+  };
+
   // SVG Donut Chart Logic
   const radius = 60;
   const circumference = 2 * Math.PI * radius;
@@ -77,12 +107,22 @@ function EmiCalculatorPage() {
           <div className="space-y-4">
             <div className="flex justify-between items-center">
               <label className="text-sm font-bold text-brand-navy">Loan Principal Amount</label>
-              <input
-                type="text"
-                readOnly
-                value={formatCurrency(principal)}
-                className="bg-slate-50 text-right font-bold text-brand-navy px-3 py-1.5 rounded-lg border border-slate-100 text-sm focus:outline-none w-36 sm:w-44"
-              />
+              <div className="flex flex-col items-end space-y-1">
+                <div className="flex items-center space-x-1">
+                  <span className="text-sm font-bold text-brand-navy">₹</span>
+                  <input
+                    type="text"
+                    value={principalInput}
+                    onChange={handlePrincipalTextChange}
+                    className={`bg-slate-50 text-right font-bold text-brand-navy px-3 py-1.5 rounded-lg border text-sm focus:outline-none w-36 sm:w-44 ${
+                      principalError ? 'border-red-400 focus:ring-1 focus:ring-red-300' : 'border-slate-100 focus:ring-1 focus:ring-brand-gold'
+                    }`}
+                  />
+                </div>
+                {principalError && (
+                  <span className="text-[10px] text-red-500 font-semibold">{principalError}</span>
+                )}
+              </div>
             </div>
             <input
               type="range"

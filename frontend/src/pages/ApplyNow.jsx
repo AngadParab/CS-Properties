@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { User, Landmark, Briefcase, FileText, CheckCircle2, ChevronRight, ChevronLeft, Calendar } from 'lucide-react';
 import { submitLead } from '../services/api';
+import { useCurrencyInput } from '../hooks/useCurrencyInput';
 
 function ApplyNow() {
   const query = new URLSearchParams(useLocation().search);
@@ -25,6 +27,61 @@ function ApplyNow() {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+
+  // Field validation function to provide real-time validation cues
+  const validateField = (name, value) => {
+    let errorMsg = '';
+    const val = value !== undefined ? value : formData[name];
+
+    if (name === 'fullName') {
+      if (!val.trim()) errorMsg = 'Full Name is required.';
+    } else if (name === 'phone') {
+      if (!val.trim()) {
+        errorMsg = 'Mobile number is required.';
+      } else if (!/^\d{10}$/.test(val.trim())) {
+        errorMsg = 'Please enter a valid 10-digit mobile number.';
+      }
+    } else if (name === 'location') {
+      if (!val.trim()) errorMsg = 'Goa Location is required.';
+    } else if (name === 'amount') {
+      if (!val || Number(val) <= 0) {
+        errorMsg = formData.loanType === 'Property Inquiry' 
+          ? 'Please enter a valid estimated budget.' 
+          : 'Please enter a valid positive loan amount.';
+      }
+    } else if (name === 'preferredDate') {
+      if (formData.loanType === 'Property Inquiry' && !val) {
+        errorMsg = 'Please select a preferred site visit date.';
+      }
+    } else if (name === 'monthlyIncome') {
+      if (formData.loanType !== 'Property Inquiry' && (!val || Number(val) <= 0)) {
+        errorMsg = 'Net monthly income is required.';
+      }
+    }
+
+    setErrors((prev) => ({
+      ...prev,
+      [name]: errorMsg,
+    }));
+
+    return !errorMsg;
+  };
+
+  // Instantiating the real-time custom regex formatting hooks
+  const amountInput = useCurrencyInput(formData.amount, (val) => {
+    setFormData((prev) => ({ ...prev, amount: val }));
+    validateField('amount', val);
+  });
+
+  const monthlyIncomeInput = useCurrencyInput(formData.monthlyIncome, (val) => {
+    setFormData((prev) => ({ ...prev, monthlyIncome: val }));
+    validateField('monthlyIncome', val);
+  });
+
+  const existingEmisInput = useCurrencyInput(formData.existingEmis, (val) => {
+    setFormData((prev) => ({ ...prev, existingEmis: val }));
+    validateField('existingEmis', val);
+  });
 
   // Pre-fill from URL params
   useEffect(() => {
@@ -54,51 +111,47 @@ function ApplyNow() {
       if (loanParam === 'property') selectedLoan = 'Property Inquiry';
     }
 
+    const initialAmount = amountParam || formData.amount;
+    const initialIncome = formData.monthlyIncome;
+    const initialEmis = formData.existingEmis;
+
     setFormData((prev) => ({
       ...prev,
-      amount: amountParam || prev.amount,
+      amount: initialAmount,
       tenureYears: tenureParam || prev.tenureYears,
       loanType: selectedLoan,
       notes: notesText || prev.notes,
     }));
+
+    // Update currency hook visual values as well
+    if (initialAmount) amountInput.setValue(initialAmount);
+    if (initialIncome) monthlyIncomeInput.setValue(initialIncome);
+    if (initialEmis) existingEmisInput.setValue(initialEmis);
   }, []);
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-    if (errors[e.target.name]) {
-      setErrors({ ...errors, [e.target.name]: '' });
-    }
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    validateField(name, value);
   };
 
   const validateStep = () => {
-    const stepErrors = {};
+    let isValid = true;
     if (step === 1) {
-      if (!formData.fullName.trim()) stepErrors.fullName = 'Full Name is required.';
-      if (!formData.phone.trim()) {
-        stepErrors.phone = 'Phone number is required.';
-      } else if (!/^\d{10}$/.test(formData.phone.trim())) {
-        stepErrors.phone = 'Please enter a valid 10-digit phone number.';
-      }
-      if (!formData.location.trim()) stepErrors.location = 'Goa Location is required.';
+      isValid = validateField('fullName') && isValid;
+      isValid = validateField('phone') && isValid;
+      isValid = validateField('location') && isValid;
     } else if (step === 2) {
-      if (!formData.amount || Number(formData.amount) <= 0) {
-        stepErrors.amount = formData.loanType === 'Property Inquiry' 
-          ? 'Please enter a valid estimated budget.' 
-          : 'Please enter a valid positive loan amount.';
-      }
-      if (formData.loanType === 'Property Inquiry' && !formData.preferredDate) {
-        stepErrors.preferredDate = 'Please select a preferred site visit date.';
+      isValid = validateField('amount') && isValid;
+      if (formData.loanType === 'Property Inquiry') {
+        isValid = validateField('preferredDate') && isValid;
       }
     } else if (step === 3) {
       if (formData.loanType !== 'Property Inquiry') {
-        if (!formData.monthlyIncome || Number(formData.monthlyIncome) <= 0) {
-          stepErrors.monthlyIncome = 'Net monthly income is required.';
-        }
+        isValid = validateField('monthlyIncome') && isValid;
       }
     }
-
-    setErrors(stepErrors);
-    return Object.keys(stepErrors).length === 0;
+    return isValid;
   };
 
   const nextStep = () => {
@@ -173,15 +226,19 @@ function ApplyNow() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-12 space-y-12">
+    <main className="max-w-4xl mx-auto px-4 py-12 space-y-12">
+      <Helmet>
+        <title>Apply for Property Inquiry & Auto/Business Finance | CS Properties</title>
+        <meta name="description" content="Get professional advice and instant eligibility checks for loans and property inquiries in Goa. Standardized forms, zero commission." />
+      </Helmet>
       
       {/* Title Header */}
-      <div className="text-center space-y-2">
+      <header className="text-center space-y-2">
         <h1 className="text-3xl font-extrabold text-brand-navy">Apply Now</h1>
         <p className="text-brand-text-muted text-sm max-w-md mx-auto">
           Complete our digital onboarding form. No application fee. No commission charges.
         </p>
-      </div>
+      </header>
 
       {/* Steps Indicator Progress Bar */}
       <div className="bg-white border border-slate-100 rounded-xl p-4 sm:p-6 shadow-sm flex justify-between items-center relative overflow-hidden">
@@ -278,6 +335,7 @@ function ApplyNow() {
                       id="fullName"
                       value={formData.fullName}
                       onChange={handleChange}
+                      onBlur={() => validateField('fullName')}
                       placeholder="e.g. John Doe"
                       className={`w-full px-4 py-2 text-sm border rounded-lg outline-none bg-white focus:ring-2 focus:ring-brand-goldDark focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-goldDark focus-visible:outline-none ${
                         errors.fullName ? 'border-brand-error focus:ring-red-200' : 'border-slate-300'
@@ -294,6 +352,7 @@ function ApplyNow() {
                       id="phone"
                       value={formData.phone}
                       onChange={handleChange}
+                      onBlur={() => validateField('phone')}
                       placeholder="e.g. 9876543210"
                       className={`w-full px-4 py-2 text-sm border rounded-lg outline-none bg-white focus:ring-2 focus:ring-brand-goldDark focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-goldDark focus-visible:outline-none ${
                         errors.phone ? 'border-brand-error focus:ring-red-200' : 'border-slate-300'
@@ -325,6 +384,7 @@ function ApplyNow() {
                       id="location"
                       value={formData.location}
                       onChange={handleChange}
+                      onBlur={() => validateField('location')}
                       placeholder="e.g. Margao, Panaji"
                       className={`w-full px-4 py-2 text-sm border rounded-lg outline-none bg-white focus:ring-2 focus:ring-brand-goldDark focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-goldDark focus-visible:outline-none ${
                         errors.location ? 'border-brand-error focus:ring-red-200' : 'border-slate-300'
@@ -364,17 +424,21 @@ function ApplyNow() {
                     <label htmlFor="amount" className="text-xs font-bold text-brand-navy">
                       {formData.loanType === 'Property Inquiry' ? 'Estimated Budget / Price *' : 'Required Loan Amount (INR) *'}
                     </label>
-                    <input
-                      type="number"
-                      name="amount"
-                      id="amount"
-                      value={formData.amount}
-                      onChange={handleChange}
-                      placeholder={formData.loanType === 'Property Inquiry' ? 'e.g. 15000000' : 'e.g. 2500000'}
-                      className={`w-full px-4 py-2 text-sm border rounded-lg outline-none bg-white focus:ring-2 focus:ring-brand-goldDark focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-goldDark focus-visible:outline-none ${
-                        errors.amount ? 'border-brand-error focus:ring-red-200' : 'border-slate-300'
-                      }`}
-                    />
+                    <div className="relative">
+                      <span className="absolute left-3.5 top-2 text-sm font-bold text-brand-navy">₹</span>
+                      <input
+                        type="text"
+                        name="amount"
+                        id="amount"
+                        value={amountInput.value}
+                        onChange={amountInput.onChange}
+                        onBlur={() => validateField('amount')}
+                        placeholder={formData.loanType === 'Property Inquiry' ? 'e.g. 1,50,00,000' : 'e.g. 25,00,000'}
+                        className={`w-full pl-8 pr-4 py-2 text-sm border rounded-lg outline-none bg-white focus:ring-2 focus:ring-brand-goldDark focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-goldDark focus-visible:outline-none ${
+                          errors.amount ? 'border-brand-error focus:ring-red-200' : 'border-slate-300'
+                        }`}
+                      />
+                    </div>
                     {errors.amount && <span className="text-[10px] text-brand-error font-semibold">{errors.amount}</span>}
                   </div>
                 </div>
@@ -390,6 +454,7 @@ function ApplyNow() {
                         id="preferredDate"
                         value={formData.preferredDate}
                         onChange={handleChange}
+                        onBlur={() => validateField('preferredDate')}
                         className={`w-full pl-9 pr-4 py-2 text-sm border rounded-lg outline-none bg-white focus:ring-2 focus:ring-brand-goldDark focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-goldDark focus-visible:outline-none ${
                           errors.preferredDate ? 'border-brand-error focus:ring-red-200' : 'border-slate-300'
                         }`}
@@ -439,32 +504,40 @@ function ApplyNow() {
 
                   <div className="space-y-1.5">
                     <label htmlFor="monthlyIncome" className="text-xs font-bold text-brand-navy">Net Monthly Income (INR) *</label>
-                    <input
-                      type="number"
-                      name="monthlyIncome"
-                      id="monthlyIncome"
-                      value={formData.monthlyIncome}
-                      onChange={handleChange}
-                      placeholder="e.g. 60000"
-                      className={`w-full px-4 py-2 text-sm border rounded-lg outline-none bg-white focus:ring-2 focus:ring-brand-goldDark focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-goldDark focus-visible:outline-none ${
-                        errors.monthlyIncome ? 'border-brand-error focus:ring-red-200' : 'border-slate-300'
-                      }`}
-                    />
+                    <div className="relative">
+                      <span className="absolute left-3.5 top-2 text-sm font-bold text-brand-navy">₹</span>
+                      <input
+                        type="text"
+                        name="monthlyIncome"
+                        id="monthlyIncome"
+                        value={monthlyIncomeInput.value}
+                        onChange={monthlyIncomeInput.onChange}
+                        onBlur={() => validateField('monthlyIncome')}
+                        placeholder="e.g. 60,000"
+                        className={`w-full pl-8 pr-4 py-2 text-sm border rounded-lg outline-none bg-white focus:ring-2 focus:ring-brand-goldDark focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-goldDark focus-visible:outline-none ${
+                          errors.monthlyIncome ? 'border-brand-error focus:ring-red-200' : 'border-slate-300'
+                        }`}
+                      />
+                    </div>
                     {errors.monthlyIncome && <span className="text-[10px] text-brand-error font-semibold">{errors.monthlyIncome}</span>}
                   </div>
                 </div>
 
                 <div className="space-y-1.5">
                   <label htmlFor="existingEmis" className="text-xs font-bold text-brand-navy">Current Active Monthly EMIs (If any)</label>
-                  <input
-                    type="number"
-                    name="existingEmis"
-                    id="existingEmis"
-                    value={formData.existingEmis}
-                    onChange={handleChange}
-                    placeholder="Enter total monthly obligations"
-                    className="w-full px-4 py-2 text-sm border border-slate-300 rounded-lg outline-none bg-white focus:ring-2 focus:ring-brand-goldDark focus:border-brand-goldDark focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-goldDark focus-visible:outline-none"
-                  />
+                  <div className="relative">
+                    <span className="absolute left-3.5 top-2 text-sm font-bold text-brand-navy">₹</span>
+                    <input
+                      type="text"
+                      name="existingEmis"
+                      id="existingEmis"
+                      value={existingEmisInput.value}
+                      onChange={existingEmisInput.onChange}
+                      onBlur={() => validateField('existingEmis')}
+                      placeholder="Enter total monthly obligations"
+                      className="w-full pl-8 pr-4 py-2 text-sm border border-slate-300 rounded-lg outline-none bg-white focus:ring-2 focus:ring-brand-goldDark focus:border-brand-goldDark focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-goldDark focus-visible:outline-none"
+                    />
+                  </div>
                 </div>
               </div>
             )}
@@ -572,7 +645,7 @@ function ApplyNow() {
         )}
       </div>
 
-    </div>
+    </main>
   );
 }
 

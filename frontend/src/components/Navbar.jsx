@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
-import logoImg from '../assets/logo.webp';
+import logoImg from '../assets/logo.png';
 
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -18,11 +18,13 @@ function Navbar() {
 
   return (
     <nav className="sticky top-0 z-50 bg-brand-navy text-white shadow-md">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo & Brand Name */}
           <Link to="/" className="flex items-center focus:outline-none">
-            <img src={logoImg} width="128" height="40" alt="CS Properties Goa" className="h-10 w-32 object-contain rounded bg-white p-0.5 border border-white/20" />
+            <span className="brand-title text-xs sm:text-sm md:text-base text-brand-gold hover:text-white uppercase">
+              CS Properties Goa
+            </span>
           </Link>
 
           {/* Desktop Navigation */}

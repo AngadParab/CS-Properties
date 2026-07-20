@@ -4,6 +4,7 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ProtectedRoute from './components/ProtectedRoute';
 import PropertyDetailModal from './components/PropertyDetailModal';
+import ErrorBoundary from './components/ErrorBoundary';
 
 // Lazily load routes to split production bundles
 const Home = lazy(() => import('./pages/Home'));
@@ -25,7 +26,8 @@ const PageLoader = () => (
 function App() {
   return (
     <Router>
-      <div className="flex flex-col min-h-screen bg-brand-bg text-brand-text-primary font-sans">
+      <ErrorBoundary>
+        <div className="flex flex-col min-h-screen bg-brand-bg text-brand-text-primary font-sans">
 
         {/* Responsive, Sticky Navbar */}
         <header>
@@ -58,6 +60,7 @@ function App() {
         <PropertyDetailModal />
 
       </div>
+      </ErrorBoundary>
     </Router>
   );
 }

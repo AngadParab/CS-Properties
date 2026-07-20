@@ -26,6 +26,8 @@ export default {
       fontFamily: {
         sans: ['Plus Jakarta Sans', 'Inter', 'sans-serif'],
         syne: ['Syne', 'sans-serif'],
+        orbitron: ['Orbitron', 'sans-serif'],
+        systemui: ['system-ui', 'sans-serif'],
       }
     },
   },

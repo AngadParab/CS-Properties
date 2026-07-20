@@ -1,7 +1,12 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { Helmet } from 'react-helmet-async';
 import geminiBg from '../assets/gemini.webp';
+import logoImg from '../assets/logo.png';
+import gemini320w from '../assets/gemini-320w.webp';
+import gemini768w from '../assets/gemini-768w.webp';
+import gemini1200w from '../assets/gemini-1200w.webp';
 import { useProperties } from '../context/PropertyContext';
 import { 
   Building2, 
@@ -76,117 +81,155 @@ function Home() {
 
   return (
     <div className="bg-brand-bg min-h-screen font-sans selection:bg-brand-gold/30">
+      <Helmet>
+        <title>Premium Goa Properties & Capital Advisors | CS Properties</title>
+        <meta name="description" content="Discover premium residential villas, coastal plots, and commercial office spaces in Goa. Handpicked, verified listings with professional real estate guidance and title check audits." />
+        <meta name="keywords" content="Goa real estate, buy villa in Goa, properties in Goa, CS Properties, land plots Goa, property document auditing" />
+      </Helmet>
       
-      {/* ========================================================================= */}
-      {/* ZONE 1: PROPERTIES SECTION (Hero Search & Featured Listings)             */}
-      {/* ========================================================================= */}
-      
-      <section className="relative bg-gradient-to-b from-brand-bg via-brand-sandDark to-white pt-24 pb-28 px-4 overflow-hidden">
-        {/* Background Image */}
-        <div className="absolute inset-0 z-0 opacity-100 pointer-events-none select-none">
-          <img src={geminiBg} alt="Background" className="w-full h-full object-cover" />
-          {/* Subtle dark overlay wash to guarantee high text contrast */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/55 via-black/45 to-black/35"></div>
-        </div>
-        {/* Soft abstract graphic elements */}
-        <div className="absolute top-0 right-0 w-[40rem] h-[40rem] bg-brand-gold/5 rounded-full blur-3xl -mr-48 -mt-48 select-none pointer-events-none"></div>
-        <div className="absolute bottom-0 left-0 w-80 h-80 bg-brand-gold/5 rounded-full blur-3xl -ml-40 select-none pointer-events-none"></div>
-
-        <div className="relative z-10 max-w-7xl mx-auto space-y-16">
+      <main>
+        {/* ========================================================================= */}
+        {/* ZONE 1: PROPERTIES SECTION (Hero Search & Featured Listings)             */}
+        {/* ========================================================================= */}
+        
+        {/* Slanted Slash Hero Section */}
+        <section className="relative bg-brand-navy min-h-[70vh] lg:min-h-[75vh] w-full lg:grid lg:grid-cols-12 overflow-hidden border-b border-brand-charcoal flex items-center">
           
+          {/* Mobile-only background image (hidden on desktop) */}
+          <div className="absolute inset-0 z-0 opacity-100 pointer-events-none select-none lg:hidden">
+            <picture>
+              <source srcSet={`${gemini320w} 320w, ${gemini768w} 768w`} sizes="(max-width: 640px) 320px, 768px" type="image/webp" />
+              <img src={geminiBg} alt="Background" className="w-full h-full object-cover" />
+            </picture>
+            {/* Dark overlay wash for mobile readability */}
+            <div className="absolute inset-0 bg-black/65"></div>
+          </div>
+
+          {/* Background overlay soft glow gradients (desktop only) */}
+          <div className="absolute top-0 left-0 w-80 h-80 bg-brand-gold/10 rounded-full blur-3xl -ml-40 -mt-20 pointer-events-none hidden lg:block"></div>
+          <div className="absolute bottom-0 right-0 w-[30rem] h-[30rem] bg-brand-gold/5 rounded-full blur-3xl -mr-32 -mb-32 pointer-events-none hidden lg:block"></div>
+
+          {/* Left Block: Logo, Info & Typography content */}
+          <div className="col-span-12 lg:col-span-7 flex flex-col justify-center px-4 py-24 sm:p-12 lg:p-20 z-10 text-center lg:text-left bg-transparent lg:bg-brand-navy relative w-full">
+            <motion.div 
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={fadeInUp}
+              className="space-y-6 max-w-2xl mx-auto lg:mx-0 lg:-mt-16"
+            >
+              {/* Premium transparent logo container (mobile only, centered) */}
+              <div className="flex items-center justify-center max-w-[160px] lg:hidden mx-auto">
+                <img src={logoImg} alt="CS Properties Logo" className="h-16 w-auto object-contain select-none" />
+              </div>
+
+              <div className="inline-flex items-center space-x-2 bg-white/10 border border-white/20 shadow-sm text-white text-[10px] sm:text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-widest backdrop-blur-md">
+                <Sparkles className="w-3.5 h-3.5 text-brand-gold" />
+                <span>Goa Properties & Capital Advisors</span>
+              </div>
+              
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.1] drop-shadow-sm">
+                Connecting you <br className="hidden sm:inline" />
+                <span className="font-light italic font-syne text-brand-gold tracking-normal">to the home</span> you love
+              </h1>
+              
+              <p className="text-sm sm:text-base text-white/80 leading-relaxed font-medium">
+                Find premium residential villas, coastal plots, and offices in Goa. Discover handpicked, verified listings with professional real estate guidance and end-to-end documentation support.
+              </p>
+            </motion.div>
+          </div>
+
+          {/* Right Block: Diagonally sliced visual cover image (hidden on mobile) */}
+          <div className="hidden lg:block lg:col-span-5 relative overflow-hidden h-full min-h-[320px] lg:min-h-0 bg-brand-navy">
+            <div className="absolute inset-0 w-full h-full hero-slice-clip z-0">
+              <picture>
+                <source srcSet={`${gemini320w} 320w, ${gemini768w} 768w, ${gemini1200w} 1200w`} sizes="(max-width: 640px) 320px, (max-width: 1024px) 768px, 1200px" type="image/webp" />
+                <img src={geminiBg} alt="CS Properties Premium Assets" className="w-full h-full object-cover" />
+              </picture>
+              {/* Overlay shading to blend content borders */}
+              <div className="absolute inset-0 bg-gradient-to-t lg:bg-gradient-to-r from-brand-navy via-brand-navy/10 to-transparent"></div>
+            </div>
+          </div>
+
+          {/* Centered border overlay logo (desktop only) */}
+          <div className="absolute left-[48%] top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 hidden lg:flex items-center justify-center">
+            <img src={logoImg} alt="CS Properties Symbol" className="h-72 w-auto object-contain transform hover:scale-105 transition-transform duration-300 select-none" />
+          </div>
+        </section>
+
+        {/* Floating Search Filter Catalog Section (Moved down) */}
+        <section className="relative -mt-10 lg:-mt-14 z-20 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mb-16">
           <motion.div 
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
             variants={fadeInUp}
-            className="text-center space-y-6 max-w-3xl mx-auto"
+            className="p-1.5 bg-white/20 border border-white/40 shadow-xl rounded-[28px] backdrop-blur-md"
           >
-            <div className="inline-flex items-center space-x-2 bg-white/10 border border-white/20 shadow-sm text-white text-[10px] sm:text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-widest backdrop-blur-md">
-              <Sparkles className="w-3.5 h-3.5 text-brand-gold" />
-              <span>Goa Properties & Capital Advisors</span>
-            </div>
-            
-            <h1 className="text-4xl sm:text-6xl font-black text-white tracking-tight leading-[1.05] drop-shadow-sm">
-              Connecting you <span className="font-light italic font-syne text-brand-gold tracking-normal">to the home</span> you love
-            </h1>
-            
-            <p className="text-sm sm:text-base text-white/85 leading-relaxed font-medium max-w-2xl mx-auto">
-              Find premium residential villas, coastal plots, and offices in Goa. Discover handpicked, verified listings with professional real estate guidance and end-to-end documentation support.
-            </p>
-          </motion.div>
+            <div className="bg-white rounded-[24px] p-6 sm:p-8 shadow-sm">
+              <form onSubmit={handleSearchSubmit} className="grid grid-cols-1 md:grid-cols-4 gap-5 items-end">
+                
+                {/* Location */}
+                <div className="space-y-2">
+                  <label className="text-[10px] font-extrabold uppercase tracking-widest text-brand-navy">Location</label>
+                  <div className="relative">
+                    <MapPin className="w-4 h-4 text-brand-gold absolute left-3.5 top-3.5" />
+                    <select 
+                      value={searchLocation} 
+                      onChange={(e) => setSearchLocation(e.target.value)}
+                      className="w-full pl-10 pr-3 py-3.5 border border-brand-sandDark rounded-xl outline-none bg-brand-bg text-xs font-bold text-brand-navy appearance-none"
+                    >
+                      <option value="Panaji">Panaji (Capital)</option>
+                      <option value="Margao">Margao (South)</option>
+                      <option value="Calangute">Calangute (North)</option>
+                      <option value="Candolim">Candolim</option>
+                    </select>
+                  </div>
+                </div>
 
-          {/* Bento Glassmorphic Search Form Overlay */}
-          <motion.div 
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: '-100px' }}
-            variants={fadeInUp}
-            className="max-w-4xl mx-auto p-1.5 bg-white/40 border border-white/60 shadow-lg rounded-[24px]"
-          >
-            <form onSubmit={handleSearchSubmit} className="bg-white rounded-[20px] p-6 sm:p-8 grid grid-cols-1 md:grid-cols-4 gap-5 items-end shadow-sm">
-              
-              {/* Location */}
-              <div className="space-y-2">
-                <label className="text-[10px] font-extrabold uppercase tracking-widest text-brand-navy">Location</label>
-                <div className="relative">
-                  <MapPin className="w-4 h-4 text-brand-gold absolute left-3.5 top-3.5" />
+                {/* Property Type */}
+                <div className="space-y-2">
+                  <label className="text-[10px] font-extrabold uppercase tracking-widest text-brand-navy">Property Type</label>
                   <select 
-                    value={searchLocation} 
-                    onChange={(e) => setSearchLocation(e.target.value)}
-                    className="w-full pl-10 pr-3 py-3.5 border border-brand-sandDark rounded-xl outline-none bg-brand-bg text-xs font-bold text-brand-navy appearance-none"
+                    value={searchPropertyType} 
+                    onChange={(e) => setSearchPropertyType(e.target.value)}
+                    className="w-full px-4 py-3.5 border border-brand-sandDark rounded-xl outline-none bg-brand-bg text-xs font-bold text-brand-navy"
                   >
-                    <option value="Panaji">Panaji (Capital)</option>
-                    <option value="Margao">Margao (South)</option>
-                    <option value="Calangute">Calangute (North)</option>
-                    <option value="Candolim">Candolim</option>
+                    <option value="Apartment">Apartment</option>
+                    <option value="Villa">Luxury Villa</option>
+                    <option value="Plot">Residential Plot</option>
+                    <option value="Commercial">Commercial Office/Shop</option>
                   </select>
                 </div>
-              </div>
 
-              {/* Property Type */}
-              <div className="space-y-2">
-                <label className="text-[10px] font-extrabold uppercase tracking-widest text-brand-navy">Property Type</label>
-                <select 
-                  value={searchPropertyType} 
-                  onChange={(e) => setSearchPropertyType(e.target.value)}
-                  className="w-full px-4 py-3.5 border border-brand-sandDark rounded-xl outline-none bg-brand-bg text-xs font-bold text-brand-navy"
+                {/* Budget Range */}
+                <div className="space-y-2">
+                  <label className="text-[10px] font-extrabold uppercase tracking-widest text-brand-navy">Max Budget</label>
+                  <select 
+                    value={searchBudget} 
+                    onChange={(e) => setSearchBudget(e.target.value)}
+                    className="w-full px-4 py-3.5 border border-brand-sandDark rounded-xl outline-none bg-brand-bg text-xs font-bold text-brand-navy"
+                  >
+                    <option value="0.75">₹75 Lakhs</option>
+                    <option value="1.5">₹1.50 Crore</option>
+                    <option value="3.0">₹3.00 Crore</option>
+                    <option value="5.0">₹5.00 Crore</option>
+                  </select>
+                </div>
+
+                {/* Submit Button */}
+                <button 
+                  type="submit" 
+                  className="bg-brand-navy text-white hover:bg-brand-navy/95 font-bold py-3.5 rounded-xl flex items-center justify-center space-x-2 transition-all outline-none shadow-md text-xs h-[50px] w-full"
                 >
-                  <option value="Apartment">Apartment</option>
-                  <option value="Villa">Luxury Villa</option>
-                  <option value="Plot">Residential Plot</option>
-                  <option value="Commercial">Commercial Office/Shop</option>
-                </select>
-              </div>
+                  <Search className="w-4 h-4 text-brand-gold" />
+                  <span>Search Catalog</span>
+                </button>
 
-              {/* Budget Range */}
-              <div className="space-y-2">
-                <label className="text-[10px] font-extrabold uppercase tracking-widest text-brand-navy">Max Budget</label>
-                <select 
-                  value={searchBudget} 
-                  onChange={(e) => setSearchBudget(e.target.value)}
-                  className="w-full px-4 py-3.5 border border-brand-sandDark rounded-xl outline-none bg-brand-bg text-xs font-bold text-brand-navy"
-                >
-                  <option value="0.75">₹75 Lakhs</option>
-                  <option value="1.5">₹1.50 Crore</option>
-                  <option value="3.0">₹3.00 Crore</option>
-                  <option value="5.0">₹5.00 Crore</option>
-                </select>
-              </div>
-
-              {/* Submit Button */}
-              <button 
-                type="submit" 
-                className="bg-brand-navy text-white hover:bg-brand-navy/95 font-bold py-3.5 rounded-xl flex items-center justify-center space-x-2 transition-all outline-none shadow-md text-xs h-[50px]"
-              >
-                <Search className="w-4 h-4 text-brand-gold" />
-                <span>Search Catalog</span>
-              </button>
-
-            </form>
+              </form>
+            </div>
           </motion.div>
-
-        </div>
-      </section>
+        </section>
 
       {/* Featured Properties Grid */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 space-y-12">
@@ -546,6 +589,7 @@ function Home() {
         </div>
       </section>
 
+      </main>
     </div>
   );
 }

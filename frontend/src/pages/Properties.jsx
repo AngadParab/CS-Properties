@@ -1,6 +1,7 @@
 import React, { useMemo, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { Helmet } from 'react-helmet-async';
 import { Search, MapPin, DollarSign, Home as HomeIcon, Filter, Layers, ArrowUpRight, Heart } from 'lucide-react';
 import { useProperties } from '../context/PropertyContext';
 
@@ -13,11 +14,14 @@ function Properties() {
   const { 
     properties, 
     loading, 
+    error,
     searchFilters, 
     updateFilters, 
+    resetFilters,
     favorites, 
     toggleFavorite, 
-    setActiveModalProperty 
+    setActiveModalProperty,
+    refetchProperties
   } = useProperties();
 
   // Run initial sync from home query params if they exist
@@ -31,6 +35,37 @@ function Properties() {
       updateFilters(initialFilters);
     }
   }, [typeQuery, locQuery, budgetQuery]);
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
+        <div className="w-10 h-10 border-4 border-brand-sandDark border-t-brand-goldDark rounded-full animate-spin"></div>
+        <span className="text-[10px] font-bold text-brand-text-muted tracking-widest uppercase animate-pulse">Loading Exclusive Spaces...</span>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="max-w-md mx-auto my-20 p-8 bg-white border border-brand-sandDark rounded-3xl shadow-xl text-center space-y-6">
+        <div className="inline-flex p-3.5 bg-red-50 text-red-600 rounded-full">
+          <Filter className="w-8 h-8" />
+        </div>
+        <div className="space-y-2">
+          <h2 className="text-xl font-bold text-brand-navy">Failed to load properties</h2>
+          <p className="text-xs text-brand-text-muted leading-relaxed font-semibold">
+            {error}
+          </p>
+        </div>
+        <button
+          onClick={refetchProperties}
+          className="w-full bg-brand-navy text-white text-xs font-bold py-3 rounded-xl hover:bg-brand-gold hover:text-brand-navy transition-all duration-200"
+        >
+          Try Again
+        </button>
+      </div>
+    );
+  }
 
   const locations = ['All', 'Margao', 'Panaji', 'Calangute', 'Vasco', 'Mapusa'];
   const types = ['All', 'Apartment', 'Villa', 'Commercial', 'Plot'];
@@ -66,22 +101,28 @@ function Properties() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-12">
+    <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-12">
+      <Helmet>
+        <title>Exclusive Goa Real Estate Listings | CS Properties</title>
+        <meta name="description" content="Browse verified villas, apartments, plots, and offices for sale in Goa. Filter by location and budget, with professional documentation support." />
+      </Helmet>
       
       {/* Title Header */}
-      <motion.div 
-        initial="hidden"
-        animate="visible"
-        variants={fadeInUp}
-        className="text-center space-y-3"
-      >
-        <h1 className="text-4xl font-extrabold text-brand-navy tracking-tight">
-          Discover <span className="font-light italic font-syne text-brand-goldDark">exclusive spaces</span> in Goa
-        </h1>
-        <p className="max-w-2xl mx-auto text-xs sm:text-sm text-brand-text-muted leading-relaxed">
-          Browse our premier residential, commercial, and land plot portfolios. We provide end-to-end professional agency guidance to secure your ideal property with clear titles.
-        </p>
-      </motion.div>
+      <header>
+        <motion.div 
+          initial="hidden"
+          animate="visible"
+          variants={fadeInUp}
+          className="text-center space-y-3"
+        >
+          <h1 className="text-4xl font-extrabold text-brand-navy tracking-tight">
+            Discover <span className="font-light italic font-syne text-brand-goldDark">exclusive spaces</span> in Goa
+          </h1>
+          <p className="max-w-2xl mx-auto text-xs sm:text-sm text-brand-text-muted leading-relaxed">
+            Browse our premier residential, commercial, and land plot portfolios. We provide end-to-end professional agency guidance to secure your ideal property with clear titles.
+          </p>
+        </motion.div>
+      </header>
 
       {/* Main Filter & Listing Section */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -172,7 +213,7 @@ function Properties() {
         </motion.aside>
 
         {/* Right Side: Grid Showcase */}
-        <main className="lg:col-span-9 space-y-6">
+        <section className="lg:col-span-9 space-y-6">
           <div className="flex justify-between items-center text-xs text-brand-text-muted font-bold tracking-wide uppercase">
             <span>Showing {filteredProperties.length} Properties</span>
             {filteredProperties.length === 0 && (
@@ -267,11 +308,11 @@ function Properties() {
               );
             })}
           </motion.div>
-        </main>
+        </section>
 
       </div>
 
-    </div>
+    </main>
   );
 }
 

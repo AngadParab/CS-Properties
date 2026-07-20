@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { MapPin, Phone, Mail, Clock, Send, CheckCircle2 } from 'lucide-react';
+import { Helmet } from 'react-helmet-async';
 import { submitLead } from '../services/api';
 
 function Contact() {
@@ -12,22 +13,59 @@ function Contact() {
   });
 
   const [submitted, setSubmitted] = useState(false);
-  const [error, setError] = useState('');
+  const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const validateField = (name, value) => {
+    let errorMsg = '';
+    const val = value !== undefined ? value : formData[name];
+
+    if (name === 'name') {
+      if (!val.trim()) errorMsg = 'Full Name is required.';
+    } else if (name === 'phone') {
+      if (!val.trim()) {
+        errorMsg = 'Phone number is required.';
+      } else if (!/^\d{10}$/.test(val.trim())) {
+        errorMsg = 'Please enter a valid 10-digit phone number.';
+      }
+    } else if (name === 'email') {
+      if (val.trim() && !/\S+@\S+\.\S+/.test(val.trim())) {
+        errorMsg = 'Please enter a valid email address.';
+      }
+    } else if (name === 'message') {
+      if (!val.trim()) errorMsg = 'Message details are required.';
+    }
+
+    setErrors((prev) => ({
+      ...prev,
+      [name]: errorMsg,
+    }));
+
+    return !errorMsg;
+  };
+
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-    if (error) setError('');
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    validateField(name, value);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.name || !formData.phone || !formData.message) {
-      setError('Please fill in all mandatory fields (*).');
+    
+    // Validate all fields
+    const isNameValid = validateField('name');
+    const isPhoneValid = validateField('phone');
+    const isEmailValid = validateField('email');
+    const isMessageValid = validateField('message');
+
+    if (!isNameValid || !isPhoneValid || !isEmailValid || !isMessageValid) {
+      setErrors((prev) => ({ ...prev, formError: 'Please correct the validation errors below.' }));
       return;
     }
 
     setIsSubmitting(true);
+    setErrors({});
     try {
       const payload = {
         fullName: formData.name,
@@ -46,7 +84,7 @@ function Contact() {
       setSubmitted(true);
       setFormData({ name: '', email: '', phone: '', subject: 'General Inquiry', message: '' });
     } catch (err) {
-      setError(err.message || 'Failed to submit inquiry. Please try again.');
+      setErrors({ formError: err.message || 'Failed to submit inquiry. Please try again.' });
     } finally {
       setIsSubmitting(false);
     }
@@ -54,6 +92,10 @@ function Contact() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-12">
+      <Helmet>
+        <title>Contact Our Advisors | CS Properties Goa</title>
+        <meta name="description" content="Get in touch with CS Properties in Margao. Inquire about document verification, property title check, loan eligibility, or visit our branch." />
+      </Helmet>
       
       {/* Title Header */}
       <div className="text-center space-y-3">
@@ -143,9 +185,9 @@ function Contact() {
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
-              {error && (
+              {errors.formError && (
                 <div className="text-xs text-brand-error font-semibold bg-red-50 p-3 rounded-lg border border-red-100">
-                  {error}
+                  {errors.formError}
                 </div>
               )}
 
@@ -158,9 +200,13 @@ function Contact() {
                     id="name"
                     value={formData.name}
                     onChange={handleChange}
+                    onBlur={() => validateField('name')}
                     placeholder="Enter your name"
-                    className="w-full px-4 py-2 text-sm border border-slate-300 rounded-lg outline-none bg-white focus:ring-2 focus:ring-brand-goldDark focus:border-brand-goldDark focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-goldDark focus-visible:outline-none"
+                    className={`w-full px-4 py-2 text-sm border rounded-lg outline-none bg-white focus:ring-2 focus:ring-brand-goldDark focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-goldDark focus-visible:outline-none ${
+                      errors.name ? 'border-brand-error focus:ring-red-200' : 'border-slate-300'
+                    }`}
                   />
+                  {errors.name && <span className="text-[10px] text-brand-error font-semibold">{errors.name}</span>}
                 </div>
                 <div className="space-y-1.5">
                   <label htmlFor="phone" className="text-xs font-bold text-brand-navy">Phone Number *</label>
@@ -170,9 +216,13 @@ function Contact() {
                     id="phone"
                     value={formData.phone}
                     onChange={handleChange}
+                    onBlur={() => validateField('phone')}
                     placeholder="Enter your contact number"
-                    className="w-full px-4 py-2 text-sm border border-slate-300 rounded-lg outline-none bg-white focus:ring-2 focus:ring-brand-goldDark focus:border-brand-goldDark focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-goldDark focus-visible:outline-none"
+                    className={`w-full px-4 py-2 text-sm border rounded-lg outline-none bg-white focus:ring-2 focus:ring-brand-goldDark focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-goldDark focus-visible:outline-none ${
+                      errors.phone ? 'border-brand-error focus:ring-red-200' : 'border-slate-300'
+                    }`}
                   />
+                  {errors.phone && <span className="text-[10px] text-brand-error font-semibold">{errors.phone}</span>}
                 </div>
               </div>
 
@@ -184,9 +234,13 @@ function Contact() {
                   id="email"
                   value={formData.email}
                   onChange={handleChange}
+                  onBlur={() => validateField('email')}
                   placeholder="name@example.com"
-                  className="w-full px-4 py-2 text-sm border border-slate-300 rounded-lg outline-none bg-white focus:ring-2 focus:ring-brand-goldDark focus:border-brand-goldDark focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-goldDark focus-visible:outline-none"
+                  className={`w-full px-4 py-2 text-sm border rounded-lg outline-none bg-white focus:ring-2 focus:ring-brand-goldDark focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-goldDark focus-visible:outline-none ${
+                    errors.email ? 'border-brand-error focus:ring-red-200' : 'border-slate-300'
+                  }`}
                 />
+                {errors.email && <span className="text-[10px] text-brand-error font-semibold">{errors.email}</span>}
               </div>
 
               <div className="space-y-1.5">
@@ -196,7 +250,7 @@ function Contact() {
                   id="subject"
                   value={formData.subject}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg outline-none bg-white focus:ring-2 focus:ring-brand-goldDark focus:border-brand-goldDark focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-goldDark focus-visible:outline-none"
+                  className="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg outline-none bg-white focus:ring-2 focus:ring-brand-goldDark focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-goldDark focus-visible:outline-none"
                 >
                   <option value="General Inquiry">General Inquiry</option>
                   <option value="Business Loan Setup">Business Loan Setup</option>
@@ -213,9 +267,13 @@ function Contact() {
                   rows="4"
                   value={formData.message}
                   onChange={handleChange}
+                  onBlur={() => validateField('message')}
                   placeholder="Explain your query in detail..."
-                  className="w-full px-4 py-2 text-sm border border-slate-300 rounded-lg outline-none bg-white focus:ring-2 focus:ring-brand-goldDark focus:border-brand-goldDark focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-goldDark focus-visible:outline-none"
+                  className={`w-full px-4 py-2 text-sm border rounded-lg outline-none bg-white focus:ring-2 focus:ring-brand-goldDark focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-goldDark focus-visible:outline-none ${
+                    errors.message ? 'border-brand-error focus:ring-red-200' : 'border-slate-300'
+                  }`}
                 ></textarea>
+                {errors.message && <span className="text-[10px] text-brand-error font-semibold">{errors.message}</span>}
               </div>
 
               <button

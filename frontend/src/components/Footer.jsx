@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { MapPin, Phone, Mail, Clock } from 'lucide-react';
-import logoImg from '../assets/logo.webp';
+import logoImg from '../assets/logo.png';
 
 function Footer() {
   return (
@@ -12,7 +12,7 @@ function Footer() {
           {/* Brand & Description */}
           <div className="space-y-4">
             <div className="flex items-center">
-              <img src={logoImg} width="154" height="48" alt="CS Properties Goa" className="h-12 w-40 object-contain rounded bg-white p-0.5 border border-white/20" />
+              <img src={logoImg} width="154" height="48" alt="CS Properties Goa" className="h-12 w-auto object-contain" />
             </div>
             <p className="text-sm text-gray-300 leading-relaxed">
               Transforming your real estate aspirations in Goa into reality. We offer transparent, professional property advisory and listing brokerage services for buyers and sellers.

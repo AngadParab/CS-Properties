@@ -6,6 +6,7 @@ const PropertyContext = createContext(null);
 export const PropertyProvider = ({ children }) => {
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [activeModalProperty, setActiveModalProperty] = useState(null);
   
   // Search and filter state
@@ -36,19 +37,22 @@ export const PropertyProvider = ({ children }) => {
     }
   }, [favorites]);
 
+  const loadData = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await fetchProperties();
+      setProperties(data || []);
+    } catch (err) {
+      console.error('Failed to fetch properties:', err);
+      setError(err.message || 'Failed to fetch properties records.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Load properties list asynchronously on mount
   useEffect(() => {
-    const loadData = async () => {
-      setLoading(true);
-      try {
-        const data = await fetchProperties();
-        setProperties(data || []);
-      } catch (error) {
-        console.error('Failed to fetch properties:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
     loadData();
   }, []);
 
@@ -78,13 +82,15 @@ export const PropertyProvider = ({ children }) => {
   const value = {
     properties,
     loading,
+    error,
     searchFilters,
     favorites,
     activeModalProperty,
     setActiveModalProperty,
     toggleFavorite,
     updateFilters,
-    resetFilters
+    resetFilters,
+    refetchProperties: loadData
   };
 
   return <PropertyContext.Provider value={value}>{children}</PropertyContext.Provider>;

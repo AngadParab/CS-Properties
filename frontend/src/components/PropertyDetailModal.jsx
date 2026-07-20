@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, MapPin, DollarSign, Layers, ArrowUpRight, CheckCircle2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -6,6 +6,69 @@ import { useProperties } from '../context/PropertyContext';
 
 function PropertyDetailModal() {
   const { activeModalProperty, setActiveModalProperty } = useProperties();
+  const modalRef = useRef(null);
+
+  useEffect(() => {
+    if (!activeModalProperty) return;
+
+    // Save previous active element to restore focus when modal closes
+    const previousActiveElement = document.activeElement;
+
+    // Query selector for focusable elements
+    const focusableSelector = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+    
+    // Small timeout to allow modal mounting animation to start
+    const timer = setTimeout(() => {
+      if (!modalRef.current) return;
+      
+      const focusableElements = Array.from(modalRef.current.querySelectorAll(focusableSelector));
+      const firstFocusable = focusableElements[0];
+      const lastFocusable = focusableElements[focusableElements.length - 1];
+
+      if (firstFocusable) {
+        firstFocusable.focus();
+      }
+
+      const handleKeyDown = (e) => {
+        if (e.key === 'Tab') {
+          if (focusableElements.length === 0) {
+            e.preventDefault();
+            return;
+          }
+          if (e.shiftKey) { // Shift + Tab
+            if (document.activeElement === firstFocusable) {
+              lastFocusable.focus();
+              e.preventDefault();
+            }
+          } else { // Tab
+            if (document.activeElement === lastFocusable) {
+              firstFocusable.focus();
+              e.preventDefault();
+            }
+          }
+        } else if (e.key === 'Escape') {
+          setActiveModalProperty(null);
+        }
+      };
+
+      window.addEventListener('keydown', handleKeyDown);
+
+      // Save handler reference to clean up properly
+      if (modalRef.current) {
+        modalRef.current._handleKeyDown = handleKeyDown;
+      }
+    }, 50);
+
+    return () => {
+      clearTimeout(timer);
+      if (modalRef.current?._handleKeyDown) {
+        window.removeEventListener('keydown', modalRef.current._handleKeyDown);
+      }
+      if (previousActiveElement && previousActiveElement.focus) {
+        previousActiveElement.focus();
+      }
+    };
+  }, [activeModalProperty]);
 
   if (!activeModalProperty) return null;
 
@@ -15,6 +78,11 @@ function PropertyDetailModal() {
     if (val >= 10000000) return `₹${(val / 10000000).toFixed(2)} Cr`;
     return `₹${(val / 100000).toFixed(0)} Lakhs`;
   };
+
+  // Split description text by period to form bullet items
+  const descBullets = prop.desc
+    ? prop.desc.split('.').map(s => s.trim()).filter(Boolean)
+    : [];
 
   return (
     <AnimatePresence>
@@ -30,6 +98,7 @@ function PropertyDetailModal() {
 
         {/* Modal Window Container */}
         <motion.div
+          ref={modalRef}
           initial={{ scale: 0.95, opacity: 0, y: 20 }}
           animate={{ scale: 1, opacity: 1, y: 0 }}
           exit={{ scale: 0.95, opacity: 0, y: 20 }}
@@ -82,12 +151,52 @@ function PropertyDetailModal() {
               </div>
             </div>
 
-            {/* Description */}
+            {/* Specifications Table */}
+            <div className="space-y-3">
+              <h3 className="text-xs font-extrabold text-brand-navy uppercase tracking-widest">Property Metadata</h3>
+              <div className="border border-brand-sandDark rounded-2xl overflow-hidden shadow-sm">
+                <table className="min-w-full divide-y divide-brand-sandDark text-xs font-semibold text-brand-navy">
+                  <tbody className="divide-y divide-brand-sandDark bg-white">
+                    <tr>
+                      <td className="px-4 py-3 bg-brand-bg text-brand-text-muted font-extrabold uppercase w-1/3">Property ID</td>
+                      <td className="px-4 py-3 font-mono">CS-00{prop.id}</td>
+                    </tr>
+                    <tr>
+                      <td className="px-4 py-3 bg-brand-bg text-brand-text-muted font-extrabold uppercase">Name</td>
+                      <td className="px-4 py-3">{prop.name}</td>
+                    </tr>
+                    <tr>
+                      <td className="px-4 py-3 bg-brand-bg text-brand-text-muted font-extrabold uppercase">District Location</td>
+                      <td className="px-4 py-3">{prop.locationFull}</td>
+                    </tr>
+                    <tr>
+                      <td className="px-4 py-3 bg-brand-bg text-brand-text-muted font-extrabold uppercase">Asset Type</td>
+                      <td className="px-4 py-3">{prop.type}</td>
+                    </tr>
+                    <tr>
+                      <td className="px-4 py-3 bg-brand-bg text-brand-text-muted font-extrabold uppercase">Planimetric Area</td>
+                      <td className="px-4 py-3">{prop.size}</td>
+                    </tr>
+                    <tr>
+                      <td className="px-4 py-3 bg-brand-bg text-brand-text-muted font-extrabold uppercase">Asking Budget</td>
+                      <td className="px-4 py-3 text-brand-goldDark font-extrabold">{formatPrice(prop.price)} ({prop.priceStr})</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Bulleted Highlights */}
             <div className="space-y-2">
-              <h3 className="text-xs font-extrabold text-brand-navy uppercase tracking-widest">Description</h3>
-              <p className="text-sm text-brand-text-muted leading-relaxed font-medium">
-                {prop.desc}
-              </p>
+              <h3 className="text-xs font-extrabold text-brand-navy uppercase tracking-widest">Key Highlights</h3>
+              <ul className="space-y-1.5 text-sm text-brand-text-muted font-medium">
+                {descBullets.map((bullet, idx) => (
+                  <li key={idx} className="flex items-start gap-2">
+                    <span className="text-brand-goldDark font-bold mt-0.5">•</span>
+                    <span>{bullet}.</span>
+                  </li>
+                ))}
+              </ul>
             </div>
 
             {/* Verification highlights */}
