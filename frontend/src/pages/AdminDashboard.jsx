@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { useAuth } from '../context/AuthContext';
 import { fetchLeads, updateLeadStatus } from '../services/api';
-import { LogOut, Calendar, User, Phone, MapPin, ChevronDown, ChevronUp, RefreshCw, BarChart2, ShieldCheck } from 'lucide-react';
+import { LogOut, Calendar, Phone, MapPin, ChevronDown, ChevronUp, RefreshCw, BarChart2, ShieldCheck } from 'lucide-react';
 
 function AdminDashboard() {
   const { token, logout } = useAuth();
@@ -15,7 +16,7 @@ function AdminDashboard() {
 
   const statuses = ['All', 'New', 'Pending Document', 'Contacted', 'Approved', 'Rejected'];
 
-  const getLeadsList = async () => {
+  const getLeadsList = useCallback(async () => {
     setLoading(true);
     setError('');
     try {
@@ -26,11 +27,11 @@ function AdminDashboard() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [token]);
 
   useEffect(() => {
     getLeadsList();
-  }, [token]);
+  }, [getLeadsList]);
 
   // Handle status update change from dropdown
   const handleStatusChange = async (id, newStatus) => {
@@ -88,6 +89,10 @@ function AdminDashboard() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
+      <Helmet>
+        <title>Admin CRM Leads Dashboard | CS Properties</title>
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
 
       {/* 1. Header with Title & Logout */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-6 border-b border-slate-100">

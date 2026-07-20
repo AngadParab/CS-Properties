@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { useAuth } from '../context/AuthContext';
 import { Shield, Lock, User, AlertCircle, Loader2 } from 'lucide-react';
 
@@ -46,6 +47,10 @@ function AdminLogin() {
 
   return (
     <div className="min-h-[75vh] flex items-center justify-center bg-brand-bg px-4 py-12">
+      <Helmet>
+        <title>Admin Portal Login | CS Properties Goa</title>
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
       <div className="max-w-md w-full bg-white rounded-2xl border border-slate-100 shadow-md p-6 sm:p-8 space-y-6">
         
         {/* Brand Header */}

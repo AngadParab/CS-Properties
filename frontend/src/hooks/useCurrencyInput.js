@@ -1,15 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 /**
  * A custom React hook to format inputs to Indian style currency commas in real-time.
  * It stores the raw numeric value while returning a formatted string representation.
+ * Handles edge cases like pasting formatted strings, negative signs, decimals, and special characters.
  */
 export function useCurrencyInput(initialValue = '', onValueChange = null) {
-  const formatValue = (val) => {
+  const sanitizeDigits = (val) => {
     if (val === undefined || val === null || val === '') return '';
-    const numericStr = String(val).replace(/[^0-9]/g, '');
+    return String(val).replace(/\D/g, '');
+  };
+
+  const formatValue = (val) => {
+    const numericStr = sanitizeDigits(val);
     if (!numericStr) return '';
-    return Number(numericStr).toLocaleString('en-IN');
+    const num = Number(numericStr);
+    if (isNaN(num)) return '';
+    return new Intl.NumberFormat('en-IN').format(num);
   };
 
   const [displayValue, setDisplayValue] = useState(() => formatValue(initialValue));
@@ -20,13 +27,13 @@ export function useCurrencyInput(initialValue = '', onValueChange = null) {
   }, [initialValue]);
 
   const handleChange = (e) => {
-    const inputValue = e.target.value;
-    const numericValue = inputValue.replace(/[^0-9]/g, '');
+    const inputValue = (e && e.target) ? e.target.value : e;
+    const numericValue = sanitizeDigits(inputValue);
     
-    // Set formatted visual representation
+    // Set formatted visual representation using Intl.NumberFormat('en-IN')
     setDisplayValue(formatValue(numericValue));
     
-    // Propagate the raw numeric value back
+    // Propagate the raw numeric value back safely
     if (onValueChange) {
       onValueChange(numericValue);
     }
@@ -35,6 +42,9 @@ export function useCurrencyInput(initialValue = '', onValueChange = null) {
   return {
     value: displayValue,
     onChange: handleChange,
-    setValue: (val) => setDisplayValue(formatValue(val))
+    setValue: (val) => {
+      const numericStr = sanitizeDigits(val);
+      setDisplayValue(formatValue(numericStr));
+    }
   };
 }

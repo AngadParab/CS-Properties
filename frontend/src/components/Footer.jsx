@@ -11,8 +11,15 @@ function Footer() {
 
           {/* Brand & Description */}
           <div className="space-y-4">
-            <div className="flex items-center">
-              <img src={logoImg} width="154" height="48" alt="CS Properties Goa" className="h-12 w-auto object-contain" />
+            <div className="flex items-center justify-between gap-3">
+              <img src={logoImg} width="220" height="70" alt="CS Properties Goa" className="h-16 sm:h-20 w-auto object-contain" />
+              <Link 
+                to="/admin-login" 
+                className="text-[10px] font-bold text-brand-gold hover:text-white uppercase tracking-widest bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-lg border border-white/10 transition-colors"
+                title="Admin Portal Access"
+              >
+                Admin Login
+              </Link>
             </div>
             <p className="text-sm text-gray-300 leading-relaxed">
               Transforming your real estate aspirations in Goa into reality. We offer transparent, professional property advisory and listing brokerage services for buyers and sellers.
@@ -27,13 +34,13 @@ function Footer() {
                 <Link to="/properties" className="text-sm text-gray-300 hover:text-brand-gold transition-colors">Browse Listings</Link>
               </li>
               <li>
-                <Link to="/properties?type=Villa" className="text-sm text-gray-300 hover:text-brand-gold transition-colors">Luxury Villas</Link>
+                <Link to="/properties?type=Residential" className="text-sm text-gray-300 hover:text-brand-gold transition-colors">Residential Real Estate</Link>
               </li>
               <li>
-                <Link to="/properties?type=Apartment" className="text-sm text-gray-300 hover:text-brand-gold transition-colors">Modern Apartments</Link>
+                <Link to="/properties?type=Commercial" className="text-sm text-gray-300 hover:text-brand-gold transition-colors">Commercial Real Estate</Link>
               </li>
               <li>
-                <Link to="/properties?type=Plot" className="text-sm text-gray-300 hover:text-brand-gold transition-colors">Residential Plots</Link>
+                <Link to="/properties?type=Land" className="text-sm text-gray-300 hover:text-brand-gold transition-colors">Land & Plots</Link>
               </li>
             </ul>
           </div>
@@ -84,12 +91,18 @@ function Footer() {
         <hr className="my-8 border-white/10" />
 
         {/* Footer Bottom */}
-        <div className="flex flex-col sm:flex-row justify-between items-center text-xs text-gray-400">
+        <div className="flex flex-col sm:flex-row justify-between items-center text-xs text-gray-400 gap-2 sm:gap-0">
           <p>&copy; {new Date().getFullYear()} CS Properties Goa. All rights reserved.</p>
-          <div className="mt-2 sm:mt-0 flex space-x-4">
-            <span className="text-brand-gold font-medium">Verified Properties & Financial Advisory</span>
-            <span>|</span>
-            <span>Regulated by Professional Standards</span>
+          <div className="mt-2 sm:mt-0 flex items-center space-x-1">
+            <span>Designed & Developed by</span>
+            <a 
+              href="https://angad-portfolio.web.app" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="text-brand-gold font-bold hover:text-white hover:underline transition-colors ml-1"
+            >
+              Angad Parab
+            </a>
           </div>
         </div>
 

@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { fetchProperties } from '../services/propertyService';
+import { useFilters } from './FilterContext';
 
 const PropertyContext = createContext(null);
 
@@ -8,14 +9,9 @@ export const PropertyProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeModalProperty, setActiveModalProperty] = useState(null);
-  
-  // Search and filter state
-  const [searchFilters, setSearchFilters] = useState({
-    query: '',
-    location: 'All',
-    type: 'All',
-    maxBudget: 50000000
-  });
+
+  // Consume search and filter state from FilterContext
+  const { searchFilters, updateFilters, resetFilters } = useFilters();
 
   // Favorites state initialized from localStorage
   const [favorites, setFavorites] = useState(() => {
@@ -45,7 +41,7 @@ export const PropertyProvider = ({ children }) => {
       setProperties(data || []);
     } catch (err) {
       console.error('Failed to fetch properties:', err);
-      setError(err.message || 'Failed to fetch properties records.');
+      setError(err?.message || 'Failed to fetch properties records.');
     } finally {
       setLoading(false);
     }
@@ -63,22 +59,6 @@ export const PropertyProvider = ({ children }) => {
     );
   };
 
-  const updateFilters = (newFilters) => {
-    setSearchFilters((prev) => ({
-      ...prev,
-      ...newFilters
-    }));
-  };
-
-  const resetFilters = () => {
-    setSearchFilters({
-      query: '',
-      location: 'All',
-      type: 'All',
-      maxBudget: 50000000
-    });
-  };
-
   const value = {
     properties,
     loading,
@@ -90,7 +70,7 @@ export const PropertyProvider = ({ children }) => {
     toggleFavorite,
     updateFilters,
     resetFilters,
-    refetchProperties: loadData
+    refetchProperties: loadData,
   };
 
   return <PropertyContext.Provider value={value}>{children}</PropertyContext.Provider>;

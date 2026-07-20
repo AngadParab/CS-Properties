@@ -38,6 +38,28 @@ export const submitLead = async (leadData) => {
 };
 
 /**
+ * Public: Submit a general or property inquiry directly to Firestore "inquiries" collection
+ */
+export const submitInquiry = async (inquiryData) => {
+  try {
+    const docRef = await addDoc(collection(db, 'inquiries'), {
+      ...inquiryData,
+      status: 'New',
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+    });
+    
+    return {
+      status: 'success',
+      message: 'Inquiry submitted successfully',
+      data: { _id: docRef.id, ...inquiryData },
+    };
+  } catch (error) {
+    throw new Error(error.message || 'Failed to submit inquiry to Firestore');
+  }
+};
+
+/**
  * Public: Submit a new property listing to sell
  */
 export const submitPropertyListing = async (listingData) => {

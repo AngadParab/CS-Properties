@@ -14,6 +14,7 @@ const Sell = lazy(() => import('./pages/Sell'));
 const ApplyNow = lazy(() => import('./pages/ApplyNow'));
 const AdminLogin = lazy(() => import('./pages/AdminLogin'));
 const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
+const NotFound = lazy(() => import('./pages/NotFound'));
 
 // Custom page loading skeleton
 const PageLoader = () => (
@@ -49,6 +50,7 @@ function App() {
                   <AdminDashboard />
                 </ProtectedRoute>
               } />
+              <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
         </main>

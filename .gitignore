@@ -18,3 +18,8 @@ frontend/.env
 .idea/
 .DS_Store
 Thumbs.db
+
+# AI Planning & Memory Files
+/md/
+memory.md
+

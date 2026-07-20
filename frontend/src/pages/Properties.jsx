@@ -1,13 +1,16 @@
 import React, { useMemo, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { useLocation, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Helmet } from 'react-helmet-async';
-import { Search, MapPin, DollarSign, Home as HomeIcon, Filter, Layers, ArrowUpRight, Heart } from 'lucide-react';
+import { Search, MapPin, DollarSign, Filter, Layers, ArrowUpRight, Heart } from 'lucide-react';
 import { useProperties } from '../context/PropertyContext';
+import { useFilters, SUBTYPES_MAP } from '../context/FilterContext';
+import { PropertiesGridSkeleton } from '../components/SkeletonLoader';
 
 function Properties() {
   const queryParams = new URLSearchParams(useLocation().search);
   const typeQuery = queryParams.get('type');
+  const subtypeQuery = queryParams.get('subtype');
   const locQuery = queryParams.get('location');
   const budgetQuery = queryParams.get('budget');
 
@@ -15,73 +18,65 @@ function Properties() {
     properties, 
     loading, 
     error,
-    searchFilters, 
-    updateFilters, 
-    resetFilters,
     favorites, 
     toggleFavorite, 
     setActiveModalProperty,
     refetchProperties
   } = useProperties();
 
+  const { searchFilters, updateFilters, resetFilters } = useFilters();
+
   // Run initial sync from home query params if they exist
   useEffect(() => {
     const initialFilters = {};
     if (typeQuery) initialFilters.type = typeQuery;
+    if (subtypeQuery) initialFilters.subtype = subtypeQuery;
     if (locQuery) initialFilters.location = locQuery;
     if (budgetQuery) initialFilters.maxBudget = Number(budgetQuery) * 10000000;
     
     if (Object.keys(initialFilters).length > 0) {
       updateFilters(initialFilters);
     }
-  }, [typeQuery, locQuery, budgetQuery]);
+  }, [typeQuery, subtypeQuery, locQuery, budgetQuery, updateFilters]);
 
-  if (loading) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
-        <div className="w-10 h-10 border-4 border-brand-sandDark border-t-brand-goldDark rounded-full animate-spin"></div>
-        <span className="text-[10px] font-bold text-brand-text-muted tracking-widest uppercase animate-pulse">Loading Exclusive Spaces...</span>
-      </div>
-    );
-  }
+  const locations = ['All', 'South Goa District', 'North Goa District', 'Kushawati District'];
+  const types = [
+    'All',
+    'Residential Real Estate (Living spaces)',
+    'Commercial Real Estate (Business & income generation)',
+    'Industrial Real Estate (Production, storage, logistics)',
+    'Land / Plots (Raw, subdivided, or agricultural)',
+    'Special Purpose / Mixed-Use (Multi-use developments, hospitality, public infrastructure)'
+  ];
 
-  if (error) {
-    return (
-      <div className="max-w-md mx-auto my-20 p-8 bg-white border border-brand-sandDark rounded-3xl shadow-xl text-center space-y-6">
-        <div className="inline-flex p-3.5 bg-red-50 text-red-600 rounded-full">
-          <Filter className="w-8 h-8" />
-        </div>
-        <div className="space-y-2">
-          <h2 className="text-xl font-bold text-brand-navy">Failed to load properties</h2>
-          <p className="text-xs text-brand-text-muted leading-relaxed font-semibold">
-            {error}
-          </p>
-        </div>
-        <button
-          onClick={refetchProperties}
-          className="w-full bg-brand-navy text-white text-xs font-bold py-3 rounded-xl hover:bg-brand-gold hover:text-brand-navy transition-all duration-200"
-        >
-          Try Again
-        </button>
-      </div>
-    );
-  }
-
-  const locations = ['All', 'Margao', 'Panaji', 'Calangute', 'Vasco', 'Mapusa'];
-  const types = ['All', 'Apartment', 'Villa', 'Commercial', 'Plot'];
+  const availableSubtypes = useMemo(() => {
+    if (!searchFilters?.type || searchFilters.type === 'All') return [];
+    return SUBTYPES_MAP[searchFilters.type] || [];
+  }, [searchFilters?.type]);
 
   const filteredProperties = useMemo(() => {
-    return properties.filter((prop) => {
-      const matchesSearch = prop.title.toLowerCase().includes(searchFilters.query.toLowerCase()) || 
-                            prop.desc.toLowerCase().includes(searchFilters.query.toLowerCase());
-      const matchesLocation = searchFilters.location === 'All' || prop.location === searchFilters.location;
-      const matchesType = searchFilters.type === 'All' || prop.type === searchFilters.type;
-      const matchesBudget = prop.price <= searchFilters.maxBudget;
-      return matchesSearch && matchesLocation && matchesType && matchesBudget;
+    return (properties || []).filter((prop) => {
+      const title = prop?.title || '';
+      const desc = prop?.desc || '';
+      const matchesSearch = title.toLowerCase().includes((searchFilters?.query || '').toLowerCase()) || 
+                            desc.toLowerCase().includes((searchFilters?.query || '').toLowerCase());
+      
+      const filterLoc = searchFilters?.location || 'All';
+      const matchesLocation = filterLoc === 'All' || prop?.location === filterLoc || (prop?.locationFull || '').includes(filterLoc);
+      
+      const filterType = searchFilters?.type || 'All';
+      const matchesType = filterType === 'All' || prop?.type === filterType || (filterType && prop?.type && prop.type.toLowerCase().includes(filterType.toLowerCase()));
+
+      const filterSubtype = searchFilters?.subtype || 'All';
+      const matchesSubtype = filterSubtype === 'All' || prop?.subtype === filterSubtype || (filterSubtype && prop?.subtype && prop.subtype.toLowerCase().includes(filterSubtype.toLowerCase()));
+
+      const matchesBudget = (prop?.price || 0) <= (searchFilters?.maxBudget || 50000000);
+      return matchesSearch && matchesLocation && matchesType && matchesSubtype && matchesBudget;
     });
   }, [properties, searchFilters]);
 
   const formatPrice = (val) => {
+    if (!val || isNaN(val)) return '₹0';
     if (val >= 10000000) return `₹${(val / 10000000).toFixed(2)} Cr`;
     return `₹${(val / 100000).toFixed(0)} Lakhs`;
   };
@@ -105,6 +100,9 @@ function Properties() {
       <Helmet>
         <title>Exclusive Goa Real Estate Listings | CS Properties</title>
         <meta name="description" content="Browse verified villas, apartments, plots, and offices for sale in Goa. Filter by location and budget, with professional documentation support." />
+        <meta property="og:title" content="Exclusive Goa Real Estate Listings | CS Properties" />
+        <meta property="og:description" content="Browse verified luxury villas, coastal plots, and commercial spaces in Goa." />
+        <meta property="og:type" content="website" />
       </Helmet>
       
       {/* Title Header */}
@@ -154,7 +152,7 @@ function Properties() {
               <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
               <input
                 type="text"
-                value={searchFilters.query}
+                value={searchFilters?.query || ''}
                 onChange={(e) => updateFilters({ query: e.target.value })}
                 placeholder="Search..."
                 className="w-full pl-9 pr-4 py-2 border border-brand-sandDark bg-brand-bg rounded-lg text-xs font-semibold focus:ring-2 focus:ring-brand-gold outline-none"
@@ -166,7 +164,7 @@ function Properties() {
           <div className="space-y-2">
             <label className="text-[10px] font-extrabold text-brand-navy uppercase tracking-widest">Location</label>
             <select
-              value={searchFilters.location}
+              value={searchFilters?.location || 'All'}
               onChange={(e) => updateFilters({ location: e.target.value })}
               className="w-full px-3 py-2 border border-brand-sandDark bg-brand-bg rounded-lg text-xs font-semibold focus:ring-2 focus:ring-brand-gold outline-none"
             >
@@ -178,11 +176,11 @@ function Properties() {
 
           {/* Type filter */}
           <div className="space-y-2">
-            <label className="text-[10px] font-extrabold text-brand-navy uppercase tracking-widest">Property Type</label>
+            <label className="text-[10px] font-extrabold text-brand-navy uppercase tracking-widest">Asset Class</label>
             <select
-              value={searchFilters.type}
-              onChange={(e) => updateFilters({ type: e.target.value })}
-              className="w-full px-3 py-2 border border-brand-sandDark bg-brand-bg rounded-lg text-xs font-semibold focus:ring-2 focus:ring-brand-gold outline-none"
+              value={searchFilters?.type || 'All'}
+              onChange={(e) => updateFilters({ type: e.target.value, subtype: 'All' })}
+              className="w-full px-3 py-2 border border-brand-sandDark bg-brand-bg rounded-lg text-xs font-semibold focus:ring-2 focus:ring-brand-gold outline-none truncate"
             >
               {types.map((type) => (
                 <option key={type} value={type}>{type}</option>
@@ -190,18 +188,35 @@ function Properties() {
             </select>
           </div>
 
+          {/* Subtype filter (Dynamically populates based on selected Asset Class) */}
+          {availableSubtypes.length > 0 && (
+            <div className="space-y-2 animate-fadeIn">
+              <label className="text-[10px] font-extrabold text-brand-navy uppercase tracking-widest">Property Subtype</label>
+              <select
+                value={searchFilters?.subtype || 'All'}
+                onChange={(e) => updateFilters({ subtype: e.target.value })}
+                className="w-full px-3 py-2 border border-brand-sandDark bg-brand-bg rounded-lg text-xs font-semibold focus:ring-2 focus:ring-brand-gold outline-none truncate"
+              >
+                <option value="All">All Subtypes</option>
+                {availableSubtypes.map((st) => (
+                  <option key={st} value={st}>{st}</option>
+                ))}
+              </select>
+            </div>
+          )}
+
           {/* Budget filter */}
           <div className="space-y-3">
             <div className="flex justify-between items-center">
               <label className="text-[10px] font-extrabold text-brand-navy uppercase tracking-widest">Max Budget</label>
-              <span className="text-xs font-bold text-brand-navy">{formatPrice(searchFilters.maxBudget)}</span>
+              <span className="text-xs font-bold text-brand-navy">{formatPrice(searchFilters?.maxBudget)}</span>
             </div>
             <input
               type="range"
               min={2500000} // 25 Lakhs
               max={50000000} // 5 Crores
               step={1000000}
-              value={searchFilters.maxBudget}
+              value={searchFilters?.maxBudget || 50000000}
               onChange={(e) => updateFilters({ maxBudget: Number(e.target.value) })}
               className="w-full accent-brand-navy cursor-pointer"
             />
@@ -215,99 +230,120 @@ function Properties() {
         {/* Right Side: Grid Showcase */}
         <section className="lg:col-span-9 space-y-6">
           <div className="flex justify-between items-center text-xs text-brand-text-muted font-bold tracking-wide uppercase">
-            <span>Showing {filteredProperties.length} Properties</span>
-            {filteredProperties.length === 0 && (
+            <span>Showing {loading ? '...' : filteredProperties.length} Properties</span>
+            {!loading && filteredProperties.length === 0 && (
               <span className="text-brand-error normal-case">No matches found. Try resetting filters.</span>
             )}
           </div>
 
-          <motion.div 
-            initial="hidden"
-            animate="visible"
-            variants={staggerContainer}
-            className="grid grid-cols-1 md:grid-cols-2 gap-6"
-          >
-            {filteredProperties.map((prop) => {
-              const isFav = favorites.includes(prop.id);
-              return (
-                <motion.article
-                  key={prop.id}
-                  variants={fadeInUp}
-                  className={`bg-white border border-brand-sandDark overflow-hidden shadow-sm hover:shadow-md hover:scale-[1.02] transition-all duration-300 ease-in-out flex flex-col justify-between ${prop.roundedClass}`}
-                >
-                  <div>
-                    {/* Decorative visual gradient mockup */}
-                    <div className={`h-40 bg-gradient-to-br ${prop.gradient} relative p-5 flex flex-col justify-between text-white`}>
-                      <div className="flex justify-between items-center w-full">
-                        <span className="bg-brand-navy/80 text-brand-gold text-[9px] uppercase tracking-wider font-extrabold px-2.5 py-1 rounded-full self-start">
-                          {prop.type}
-                        </span>
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            toggleFavorite(prop.id);
-                          }}
-                          className="bg-black/35 hover:bg-black/50 text-white p-1.5 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-brand-goldDark"
-                          aria-label={isFav ? "Remove from favorites" : "Add to favorites"}
+          {loading ? (
+            <PropertiesGridSkeleton count={4} />
+          ) : error ? (
+            <div className="p-8 bg-white border border-brand-sandDark rounded-3xl text-center space-y-4">
+              <p className="text-sm font-bold text-brand-navy">Failed to load property listings</p>
+              <p className="text-xs text-brand-text-muted">{error}</p>
+              <button
+                onClick={refetchProperties}
+                className="bg-brand-navy text-white text-xs font-bold px-5 py-2.5 rounded-xl hover:bg-brand-gold hover:text-brand-navy transition-colors"
+              >
+                Try Again
+              </button>
+            </div>
+          ) : (
+            <motion.div 
+              initial="hidden"
+              animate="visible"
+              variants={staggerContainer}
+              className="grid grid-cols-1 md:grid-cols-2 gap-6"
+            >
+              {filteredProperties.map((prop) => {
+                const isFav = favorites.includes(prop?.id);
+                const gradientClass = prop?.gradient || 'from-slate-800 to-slate-900';
+                const propertyTitle = prop?.title || prop?.name || 'Goa Real Estate Space';
+                const propertyLocation = prop?.location || 'Goa';
+                const propertyPrice = prop?.price || 0;
+                const propertyType = prop?.type || 'Property';
+
+                return (
+                  <motion.article
+                    key={prop?.id || Math.random()}
+                    variants={fadeInUp}
+                    className={`bg-white border border-brand-sandDark overflow-hidden shadow-sm hover:shadow-md hover:scale-[1.02] transition-all duration-300 ease-in-out flex flex-col justify-between ${prop?.roundedClass || 'rounded-2xl'}`}
+                  >
+                    <div>
+                      {/* Fixed aspect ratio visual container to eliminate Cumulative Layout Shift (CLS) */}
+                      <div className={`w-full aspect-[4/3] bg-gradient-to-br ${gradientClass} relative p-5 flex flex-col justify-between text-white overflow-hidden`}>
+                        <div className="flex justify-between items-center w-full z-10">
+                          <span className="bg-brand-navy/80 text-brand-gold text-[9px] uppercase tracking-wider font-extrabold px-2.5 py-1 rounded-full self-start">
+                            {propertyType}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              toggleFavorite(prop?.id);
+                            }}
+                            className="bg-black/35 hover:bg-black/50 text-white p-1.5 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-brand-goldDark z-10"
+                            aria-label={isFav ? "Remove from favorites" : "Add to favorites"}
+                          >
+                            <Heart className={`w-3.5 h-3.5 ${isFav ? 'fill-red-500 text-red-500' : 'text-white'}`} />
+                          </button>
+                        </div>
+                        <div className="flex items-center space-x-1 font-extrabold text-base drop-shadow-sm text-brand-gold z-10">
+                          <DollarSign className="w-4 h-4 shrink-0" />
+                          <span>{prop?.priceStr || formatPrice(propertyPrice)}</span>
+                        </div>
+                      </div>
+
+                      {/* Core details */}
+                      <div className="p-6 space-y-3">
+                        <h3 
+                          onClick={() => setActiveModalProperty(prop)}
+                          className="text-base font-bold text-brand-navy leading-tight cursor-pointer hover:text-brand-goldDark transition-colors"
                         >
-                          <Heart className={`w-3.5 h-3.5 ${isFav ? 'fill-red-500 text-red-500' : 'text-white'}`} />
-                        </button>
-                      </div>
-                      <div className="flex items-center space-x-1 font-extrabold text-base drop-shadow-sm text-brand-gold">
-                        <DollarSign className="w-4 h-4 shrink-0" />
-                        <span>{prop.priceStr}</span>
+                          {propertyTitle}
+                        </h3>
+                        
+                        <div className="flex items-center space-x-4 text-xs font-semibold text-brand-text-muted">
+                          <span className="flex items-center space-x-1">
+                            <MapPin className="w-3.5 h-3.5 text-brand-goldDark" />
+                            <span>{propertyLocation}, Goa</span>
+                          </span>
+                          <span className="flex items-center space-x-1">
+                            <Layers className="w-3.5 h-3.5 text-brand-goldDark" />
+                            <span>{prop?.details || propertyType}</span>
+                          </span>
+                        </div>
+                        
+                        <p className="text-xs text-brand-text-muted leading-relaxed pt-1 line-clamp-3">
+                          {prop?.desc || ''}
+                        </p>
                       </div>
                     </div>
 
-                    {/* Core details */}
-                    <div className="p-6 space-y-3">
-                      <h3 
+                    {/* Card footer/CTA */}
+                    <div className="px-6 pb-5 pt-3 border-t border-brand-sandDark flex flex-col sm:flex-row gap-3 sm:gap-0 items-center justify-between w-full">
+                      <button
                         onClick={() => setActiveModalProperty(prop)}
-                        className="text-base font-bold text-brand-navy leading-tight cursor-pointer hover:text-brand-goldDark transition-colors"
+                        className="text-xs font-bold text-brand-navy hover:text-brand-goldDark transition-colors w-full sm:w-auto text-left"
                       >
-                        {prop.title}
-                      </h3>
-                      
-                      <div className="flex items-center space-x-4 text-xs font-semibold text-brand-text-muted">
-                        <span className="flex items-center space-x-1">
-                          <MapPin className="w-3.5 h-3.5 text-brand-goldDark" />
-                          <span>{prop.location}, Goa</span>
-                        </span>
-                        <span className="flex items-center space-x-1">
-                          <Layers className="w-3.5 h-3.5 text-brand-goldDark" />
-                          <span>{prop.details}</span>
-                        </span>
-                      </div>
-                      
-                      <p className="text-xs text-brand-text-muted leading-relaxed pt-1">
-                        {prop.desc}
-                      </p>
+                        Quick View
+                      </button>
+                      <Link
+                        to={`/apply?propertyName=${encodeURIComponent(propertyTitle)}&propertyLocation=${encodeURIComponent(propertyLocation)}&propertyPrice=${propertyPrice}&loan=property`}
+                        className="bg-brand-navy text-white text-xs font-bold px-4 py-2.5 rounded-lg hover:bg-brand-gold hover:text-brand-navy transition-colors flex items-center justify-center space-x-1 w-full sm:w-auto text-center"
+                      >
+                        <span>Inquire Deal</span>
+                        <ArrowUpRight className="w-3.5 h-3.5" />
+                      </Link>
                     </div>
-                  </div>
 
-                  {/* Card footer/CTA */}
-                  <div className="px-6 pb-5 pt-3 border-t border-brand-sandDark flex flex-col sm:flex-row gap-3 sm:gap-0 items-center justify-between w-full">
-                    <button
-                      onClick={() => setActiveModalProperty(prop)}
-                      className="text-xs font-bold text-brand-navy hover:text-brand-goldDark transition-colors w-full sm:w-auto text-left"
-                    >
-                      Quick View
-                    </button>
-                    <Link
-                      to={`/apply?propertyName=${encodeURIComponent(prop.title)}&propertyLocation=${encodeURIComponent(prop.location)}&propertyPrice=${prop.price}&loan=property`}
-                      className="bg-brand-navy text-white text-xs font-bold px-4 py-2.5 rounded-lg hover:bg-brand-gold hover:text-brand-navy transition-colors flex items-center justify-center space-x-1 w-full sm:w-auto text-center"
-                    >
-                      <span>Inquire Deal</span>
-                      <ArrowUpRight className="w-3.5 h-3.5" />
-                    </Link>
-                  </div>
-
-                </motion.article>
-              );
-            })}
-          </motion.div>
+                  </motion.article>
+                );
+              })}
+            </motion.div>
+          )}
         </section>
 
       </div>
