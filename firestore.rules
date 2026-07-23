@@ -1,0 +1,85 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function role() {
+      return isAuthenticated() && 'role' in request.auth.token ? request.auth.token.role : null;
+    }
+
+    function isAdminOrBroker() {
+      return role() in ['admin', 'broker'];
+    }
+
+    function isOwner(agentIdField) {
+      return isAuthenticated() && resource != null && 'data' in resource && agentIdField in resource.data && request.auth.uid == resource.data[agentIdField];
+    }
+
+    // Agents collection
+    match /agents/{agentId} {
+      allow read: if isAuthenticated();
+      allow write: if role() == 'admin';
+    }
+
+    // Contacts collection
+    match /contacts/{contactId} {
+      allow read: if isAdminOrBroker() || (role() == 'sales_agent' && isOwner('assignedAgentId'));
+      allow write: if isAdminOrBroker() || (role() == 'sales_agent' && isOwner('assignedAgentId'));
+    }
+
+    // Properties collection
+    match /properties/{propertyId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdminOrBroker();
+    }
+
+    // Listings collection
+    match /listings/{listingId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdminOrBroker() || (role() == 'listing_agent' && isOwner('listingAgentId'));
+    }
+
+    // Deals collection
+    match /deals/{dealId} {
+      allow read: if isAdminOrBroker() || (role() == 'sales_agent' && isOwner('assignedAgentId'));
+      allow write: if isAdminOrBroker() || (role() == 'sales_agent' && isOwner('assignedAgentId'));
+    }
+
+    // Commissions collection (Write only via Admin SDK)
+    match /commissions/{commissionId} {
+      allow read: if isAdminOrBroker();
+      allow write: if false;
+    }
+
+    // Activity Log collection
+    match /activityLog/{entryId} {
+      allow read: if isAdminOrBroker() || (role() == 'sales_agent' && isOwner('createdBy'));
+      allow write: if isAdminOrBroker() || role() == 'sales_agent';
+    }
+
+    // Documents collection (Direct access denied; mediated by getDocumentUrl Cloud Function)
+    match /documents/{documentId} {
+      allow read, write: if false;
+    }
+
+    // Document Access Log collection (Direct access denied)
+    match /documentAccessLog/{entryId} {
+      allow read, write: if false;
+    }
+
+    // Rate limits (Direct access denied)
+    match /rateLimits/{ip} {
+      allow read, write: if false;
+    }
+
+    // Broker Escalations collection
+    match /brokerEscalations/{escalationId} {
+      allow read: if isAdminOrBroker();
+      allow write: if false;
+    }
+  }
+}
