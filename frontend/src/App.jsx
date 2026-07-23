@@ -1,12 +1,11 @@
 import React, { lazy, Suspense } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ProtectedRoute from './components/ProtectedRoute';
-import PropertyDetailModal from './components/PropertyDetailModal';
 import ErrorBoundary from './components/ErrorBoundary';
 
-// Lazily load routes to split production bundles
+// Lazily load routes and modals to split production bundles
 const Home = lazy(() => import('./pages/Home'));
 const Properties = lazy(() => import('./pages/Properties'));
 const Contact = lazy(() => import('./pages/Contact'));
@@ -15,6 +14,9 @@ const ApplyNow = lazy(() => import('./pages/ApplyNow'));
 const AdminLogin = lazy(() => import('./pages/AdminLogin'));
 const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
 const NotFound = lazy(() => import('./pages/NotFound'));
+
+// Lazy load heavy details modal overlay
+const PropertyModal = lazy(() => import('./components/PropertyModal'));
 
 // Custom page loading skeleton
 const PageLoader = () => (
@@ -26,9 +28,8 @@ const PageLoader = () => (
 
 function App() {
   return (
-    <Router>
-      <ErrorBoundary>
-        <div className="flex flex-col min-h-screen bg-brand-bg text-brand-text-primary font-sans">
+    <ErrorBoundary>
+      <div className="flex flex-col min-h-screen bg-brand-bg text-brand-text-primary font-sans">
 
         {/* Responsive, Sticky Navbar */}
         <header>
@@ -36,7 +37,7 @@ function App() {
         </header>
 
         {/* Dynamic Route Pages */}
-        <main className="flex-grow">
+        <main className="flex-grow" id="primary-content-layout">
           <Suspense fallback={<PageLoader />}>
             <Routes>
               <Route path="/" element={<Home />} />
@@ -58,12 +59,13 @@ function App() {
         {/* Brand Information Footer */}
         <Footer />
 
-        {/* Quick View Modal Overlay */}
-        <PropertyDetailModal />
+        {/* Quick View Modal Overlay - Lazily Loaded */}
+        <Suspense fallback={null}>
+          <PropertyModal />
+        </Suspense>
 
       </div>
-      </ErrorBoundary>
-    </Router>
+    </ErrorBoundary>
   );
 }
 

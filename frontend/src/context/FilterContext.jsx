@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, useCallback, useMemo } from 'react';
+import React, { createContext, useContext, useCallback, useMemo } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
 const FilterContext = createContext(null);
 
@@ -48,18 +49,40 @@ const DEFAULT_FILTERS = {
 };
 
 export const FilterProvider = ({ children }) => {
-  const [searchFilters, setSearchFilters] = useState(DEFAULT_FILTERS);
+  const [searchParams, setSearchParams] = useSearchParams();
 
+  // Parse filters from URL search params with fallback defaults
+  const searchFilters = useMemo(() => {
+    return {
+      query: searchParams.get('query') || DEFAULT_FILTERS.query,
+      location: searchParams.get('location') || DEFAULT_FILTERS.location,
+      type: searchParams.get('type') || DEFAULT_FILTERS.type,
+      subtype: searchParams.get('subtype') || DEFAULT_FILTERS.subtype,
+      maxBudget: searchParams.has('maxBudget')
+        ? Number(searchParams.get('maxBudget'))
+        : DEFAULT_FILTERS.maxBudget,
+    };
+  }, [searchParams]);
+
+  // Synchronize new filter states back to the URL parameters
   const updateFilters = useCallback((newFilters) => {
-    setSearchFilters((prev) => ({
-      ...prev,
-      ...newFilters,
-    }));
-  }, []);
+    setSearchParams((prev) => {
+      const updated = new URLSearchParams(prev);
+      Object.entries(newFilters).forEach(([key, val]) => {
+        if (val === undefined || val === null || val === 'All' || val === '') {
+          updated.delete(key);
+        } else {
+          updated.set(key, String(val));
+        }
+      });
+      return updated;
+    }, { replace: true });
+  }, [setSearchParams]);
 
+  // Clear all filters by resetting URL params
   const resetFilters = useCallback(() => {
-    setSearchFilters(DEFAULT_FILTERS);
-  }, []);
+    setSearchParams(new URLSearchParams(), { replace: true });
+  }, [setSearchParams]);
 
   const value = useMemo(() => ({
     searchFilters,

@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 import { useProperties } from '../context/PropertyContext';
 import { Helmet } from 'react-helmet-async';
 
-function PropertyDetailModal() {
+function PropertyModal() {
   const { activeModalProperty, setActiveModalProperty } = useProperties();
 
   if (!activeModalProperty) return null;
@@ -19,7 +19,7 @@ function PropertyDetailModal() {
     return `₹${(val / 100000).toFixed(0)} Lakhs`;
   };
 
-  // Defensive split description text by period to form bullet items
+  // Split description text by period to form bullet items
   const descBullets = prop?.desc
     ? prop.desc.split('.').map(s => s.trim()).filter(Boolean)
     : ['Verified Goa asset', 'End-to-end legal title documentation'];
@@ -36,13 +36,13 @@ function PropertyDetailModal() {
     <Dialog.Root open={!!activeModalProperty} onOpenChange={(open) => !open && setActiveModalProperty(null)}>
       <Helmet>
         <title>{propertyTitle} | CS Properties Goa</title>
-        <meta name="description" content={prop.desc} />
+        <meta name="description" content={prop.desc || 'Premium real estate listing in Goa.'} />
         <meta property="og:title" content={`${propertyTitle} - Premium Real Estate in Goa`} />
-        <meta property="og:description" content={prop.desc} />
+        <meta property="og:description" content={prop.desc || 'Exclusive listing.'} />
         <meta property="og:image" content={prop.images && prop.images.length > 0 ? prop.images[0] : '/images/logo.png'} />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={propertyTitle} />
-        <meta name="twitter:description" content={prop.desc} />
+        <meta name="twitter:description" content={prop.desc || 'Exclusive listing.'} />
         <script type="application/ld+json">
           {JSON.stringify({
             "@context": "https://schema.org",
@@ -93,6 +93,8 @@ function PropertyDetailModal() {
                     <img
                       src={prop.images[0]}
                       alt={propertyTitle}
+                      width={600}
+                      height={250}
                       className="absolute inset-0 w-full h-full object-cover z-0"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/20 to-transparent z-0" />
@@ -103,8 +105,8 @@ function PropertyDetailModal() {
                 
                 <Dialog.Close asChild>
                   <button
-                    className="absolute top-4 right-4 bg-black/40 hover:bg-black/60 text-white p-2 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-brand-gold focus:ring-offset-2 z-10"
-                    aria-label="Close details"
+                    className="absolute top-4 right-4 bg-black/40 hover:bg-black/60 text-white p-2 rounded-full transition-colors focus-visible:ring-2 focus-visible:ring-brand-gold focus-visible:ring-offset-2 outline-none z-10 min-h-[44px] min-w-[44px] flex items-center justify-center"
+                    aria-label="Close details modal"
                   >
                     <X className="w-5 h-5" />
                   </button>
@@ -133,7 +135,7 @@ function PropertyDetailModal() {
                   <div className="text-center space-y-1 border-r border-brand-sandDark">
                     <span className="text-[10px] text-brand-text-muted uppercase tracking-wider font-bold">Asking Price</span>
                     <div className="text-base font-extrabold text-brand-navy flex items-center justify-center text-brand-goldDark">
-                      <DollarSign className="w-4 h-4" />
+                      <DollarSign className="w-4 h-4 text-brand-goldDark" />
                       <span>{formatPrice(propertyPrice)}</span>
                     </div>
                   </div>
@@ -154,41 +156,41 @@ function PropertyDetailModal() {
 
                 {/* Specifications Table */}
                 <div className="space-y-3">
-                  <h3 className="text-xs font-extrabold text-brand-navy uppercase tracking-widest">Property Metadata</h3>
+                  <h3 className="text-xs font-extrabold text-brand-navy uppercase tracking-widest text-left">Property Metadata</h3>
                   <div className="border border-brand-sandDark rounded-2xl overflow-hidden shadow-sm">
                     <table className="min-w-full divide-y divide-brand-sandDark text-xs font-semibold text-brand-navy">
                       <tbody className="divide-y divide-brand-sandDark bg-white">
                         <tr>
-                          <td className="px-4 py-3 bg-brand-bg text-brand-text-muted font-extrabold uppercase w-1/3">Property ID</td>
-                          <td className="px-4 py-3 font-mono">CS-00{prop?.id || '0'}</td>
+                          <td className="px-4 py-3 bg-brand-bg text-brand-text-muted font-extrabold uppercase w-1/3 text-left">Property ID</td>
+                          <td className="px-4 py-3 font-mono text-left">CS-00{prop?.id || '0'}</td>
                         </tr>
                         <tr>
-                          <td className="px-4 py-3 bg-brand-bg text-brand-text-muted font-extrabold uppercase">Name</td>
-                          <td className="px-4 py-3">{prop?.name || propertyTitle}</td>
+                          <td className="px-4 py-3 bg-brand-bg text-brand-text-muted font-extrabold uppercase text-left">Name</td>
+                          <td className="px-4 py-3 text-left">{prop?.name || propertyTitle}</td>
                         </tr>
                         <tr>
-                          <td className="px-4 py-3 bg-brand-bg text-brand-text-muted font-extrabold uppercase">District Location</td>
-                          <td className="px-4 py-3">{locationFull}</td>
+                          <td className="px-4 py-3 bg-brand-bg text-brand-text-muted font-extrabold uppercase text-left">District Location</td>
+                          <td className="px-4 py-3 text-left">{locationFull}</td>
                         </tr>
                         <tr>
-                          <td className="px-4 py-3 bg-brand-bg text-brand-text-muted font-extrabold uppercase">Asset Type</td>
-                          <td className="px-4 py-3">{propertyType}</td>
+                          <td className="px-4 py-3 bg-brand-bg text-brand-text-muted font-extrabold uppercase text-left">Asset Type</td>
+                          <td className="px-4 py-3 text-left">{propertyType}</td>
                         </tr>
                         <tr>
-                          <td className="px-4 py-3 bg-brand-bg text-brand-text-muted font-extrabold uppercase">Planimetric Area</td>
-                          <td className="px-4 py-3">{propertySize}</td>
+                          <td className="px-4 py-3 bg-brand-bg text-brand-text-muted font-extrabold uppercase text-left">Planimetric Area</td>
+                          <td className="px-4 py-3 text-left">{propertySize}</td>
                         </tr>
                         <tr>
-                          <td className="px-4 py-3 bg-brand-bg text-brand-text-muted font-extrabold uppercase">Asking Budget</td>
-                          <td className="px-4 py-3 text-brand-goldDark font-extrabold">{formatPrice(propertyPrice)} ({propertyPriceStr})</td>
+                          <td className="px-4 py-3 bg-brand-bg text-brand-text-muted font-extrabold uppercase text-left">Asking Budget</td>
+                          <td className="px-4 py-3 text-brand-goldDark font-extrabold text-left">{formatPrice(propertyPrice)} ({propertyPriceStr})</td>
                         </tr>
                       </tbody>
                     </table>
                   </div>
                 </div>
 
-                {/* Bulleted Highlights */}
-                <div className="space-y-2">
+                {/* Highlights */}
+                <div className="space-y-2 text-left">
                   <h3 className="text-xs font-extrabold text-brand-navy uppercase tracking-widest">Key Highlights</h3>
                   <ul className="space-y-1.5 text-sm text-brand-text-muted font-medium animate-fadeIn">
                     {descBullets.map((bullet, idx) => (
@@ -200,8 +202,8 @@ function PropertyDetailModal() {
                   </ul>
                 </div>
 
-                {/* Verification highlights */}
-                <div className="bg-brand-bg rounded-2xl p-5 border border-brand-sandDark space-y-3 animate-fadeIn">
+                {/* Verification */}
+                <div className="bg-brand-bg rounded-2xl p-5 border border-brand-sandDark space-y-3 text-left">
                   <h4 className="text-xs font-bold text-brand-navy flex items-center gap-1.5 uppercase tracking-wider">
                     <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                     <span>CS Property Guarantee & Verifications</span>
@@ -231,7 +233,7 @@ function PropertyDetailModal() {
               <div className="bg-brand-bg p-6 border-t border-brand-sandDark flex flex-col sm:flex-row gap-3 justify-end items-center shrink-0">
                 <Dialog.Close asChild>
                   <button
-                    className="text-xs font-bold text-brand-navy hover:text-brand-goldDark w-full sm:w-auto px-5 py-3 transition-colors text-center border border-brand-sandDark rounded-xl bg-white hover:bg-brand-bg"
+                    className="text-xs font-bold text-brand-navy hover:text-brand-goldDark w-full sm:w-auto px-5 py-3 transition-colors text-center border border-brand-sandDark rounded-xl bg-white hover:bg-brand-bg min-h-[44px]"
                   >
                     Close Details
                   </button>
@@ -239,7 +241,7 @@ function PropertyDetailModal() {
                 <Link
                   to={`/apply?propertyName=${encodeURIComponent(propertyTitle)}&propertyLocation=${encodeURIComponent(prop?.location || 'Goa')}&propertyPrice=${propertyPrice}&loan=property`}
                   onClick={() => setActiveModalProperty(null)}
-                  className="bg-brand-navy text-white text-xs font-bold px-6 py-3 rounded-xl hover:bg-brand-gold hover:text-brand-navy transition-all duration-200 hover:scale-[1.02] flex items-center justify-center gap-1 w-full sm:w-auto shadow-sm"
+                  className="bg-brand-navy text-white text-xs font-bold px-6 py-3 rounded-xl hover:bg-brand-gold hover:text-brand-navy transition-all duration-200 hover:scale-[1.02] flex items-center justify-center gap-1 w-full sm:w-auto shadow-sm min-h-[44px]"
                 >
                   <span>Book Consultation</span>
                   <ArrowUpRight className="w-4 h-4" />
@@ -253,4 +255,4 @@ function PropertyDetailModal() {
   );
 }
 
-export default PropertyDetailModal;
+export default PropertyModal;

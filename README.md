@@ -1,36 +1,133 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CS-Properties: Premium Real Estate Platform
 
-## Getting Started
+An enterprise-grade real estate listings catalog and lead ingestion system designed for high-end properties, luxury villas, and commercial real estate. The project is split into a client-facing catalog app and a real estate CRM dashboard.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## 🏛 Project Architecture & Structure
+
+```
+CS-Properties/
+├── app/                      # Next.js App Router (CRM Dashboard)
+│   ├── api/                  # Auth session endpoints
+│   ├── dashboard/            # Lead Kanban and Property Catalog views
+│   └── properties/           # Public read-only listing pages
+├── components/               # Next.js UI elements
+├── dataconnect/              # Firebase SQL Connect (PostgreSQL Database)
+│   ├── schema/               # Database definitions (schema.gql)
+│   └── connector/            # GraphQL operations (queries, mutations)
+├── frontend/                 # Vite + React Client Showcase App
+│   ├── src/
+│   │   ├── components/       # Modular presentation components
+│   │   ├── config/           # Firebase client initialization
+│   │   ├── context/          # React Auth, Filter & Property contexts
+│   │   ├── hooks/            # Custom React hooks (useProperties)
+│   │   └── pages/            # Home, Properties Catalog, Admin views
+│   └── public/               # Asset folders
+├── functions/                # Firebase Cloud Functions (v2, TypeScript)
+│   ├── src/auth/             # Auth sync triggers (onUserCreated)
+│   └── src/leads/            # Webhook lead ingestion endpoints
+├── lib/                      # Core backend utilities (auth, leads, storage)
+├── storage.rules             # Role-based Cloud Storage security rules
+└── README.md                 # Project documentation
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## ⚙️ Prerequisites & Node.js Version
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **Node.js**: `v20.x` or later (Active LTS recommended).
+- **Package Manager**: `npm` (v10.x or later).
+- **Firebase CLI**: Install globally via `npm install -g firebase-tools`.
+- **Java Runtime Environment (JRE)**: Version 11 or higher (required for Firebase Local Emulators).
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## 🛠️ Local Environment Setup
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. **Clone the Repository**:
+   ```bash
+   git clone https://github.com/AngadParab/CS-Properties.git
+   cd CS-Properties
+   ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+2. **Backend & Next.js CRM Setup**:
+   * Create a `.env.local` file in the root directory:
+     ```env
+     NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key
+     NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project_id.firebaseapp.com
+     NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
+     NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_project_id.appspot.com
+     FIREBASE_WEBHOOK_SECRET=your_webhook_secure_secret
+     ```
+   * Install root dependencies:
+     ```bash
+     npm install
+     ```
 
-## Deploy on Vercel
+3. **Frontend Client Setup**:
+   * Navigate to the `frontend/` folder:
+     ```bash
+     cd frontend
+     ```
+   * Copy the environment template:
+     ```bash
+     cp .env.example .env.local
+     ```
+   * Fill out the Firebase API credentials inside `frontend/.env.local`.
+   * Install frontend dependencies:
+     ```bash
+     npm install
+     ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🏃 Available Scripts
+
+### Next.js CRM Root Project
+* Run development server: `npm run dev`
+* Compile production bundle: `npm run build`
+* Run Next.js server: `npm run start`
+
+### Vite Frontend App (`/frontend`)
+* Run development server: `npm run dev`
+* Compile production build: `npm run build`
+* Preview production build locally: `npm run preview`
+
+---
+
+## 🚀 Deployment Overview
+
+### Frontend Deploy
+The client showcase application is deployed to Firebase Hosting:
+```bash
+cd frontend
+npm run build
+firebase deploy --only hosting
+```
+
+### Backend & Cloud Functions Deploy
+Functions, Storage Rules, and Data Connect connectors are deployed from the root directory:
+```bash
+firebase deploy --only functions,storage,dataconnect
+```
+
+---
+
+## 🤝 Git Workflow & Conventional Commits
+
+We follow the **Conventional Commits** specification for commit messages and structured branch naming rules.
+
+### Branch Naming Conventions
+- **Feature Branches**: `feature/your-feature-name` (e.g., `feature/property-filters`)
+- **Fix Branches**: `fix/bug-description` (e.g., `fix/mobile-modal`)
+- **Refactoring Branches**: `refactor/component-name` (e.g., `refactor/use-properties-hook`)
+
+### Commit Message Syntax
+Format: `<type>(<scope>): <short description>`
+
+*   `feat`: A new feature (e.g., `feat(auth): add role custom claim synchronization`)
+*   `fix`: A bug fix (e.g., `fix(search): resolve cumulative layout shifts in grid`)
+*   `refactor`: Code changes that neither fix a bug nor add a feature (e.g., `refactor(list): extract modular PropertyCard component`)
+*   `docs`: Documentation updates (e.g., `docs(readme): update environment variable guide`)
+*   `chore`: Maintain tasks or build config modifications (e.g., `chore: update tailwind dependency`)

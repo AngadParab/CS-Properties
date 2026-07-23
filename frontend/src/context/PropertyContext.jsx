@@ -1,19 +1,17 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
-import { fetchProperties } from '../services/propertyService';
+import { useProperties as usePropertiesHook } from '../hooks/useProperties';
 import { useFilters } from './FilterContext';
 
 const PropertyContext = createContext(null);
 
 export const PropertyProvider = ({ children }) => {
-  const [properties, setProperties] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const { properties, loading, error, refetchProperties } = usePropertiesHook();
   const [activeModalProperty, setActiveModalProperty] = useState(null);
 
-  // Consume search and filter state from FilterContext
+  // Consume search filters from FilterContext
   const { searchFilters, updateFilters, resetFilters } = useFilters();
 
-  // Favorites state initialized from localStorage
+  // Favorites state initialization from localStorage
   const [favorites, setFavorites] = useState(() => {
     try {
       const stored = localStorage.getItem('favorites');
@@ -24,7 +22,7 @@ export const PropertyProvider = ({ children }) => {
     }
   });
 
-  // Sync favorites to localStorage
+  // Sync favorites state changes to localStorage
   useEffect(() => {
     try {
       localStorage.setItem('favorites', JSON.stringify(favorites));
@@ -33,25 +31,6 @@ export const PropertyProvider = ({ children }) => {
     }
   }, [favorites]);
 
-  const loadData = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const data = await fetchProperties();
-      setProperties(data || []);
-    } catch (err) {
-      setError(err?.message || 'Failed to fetch properties records.');
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  // Load properties list asynchronously on mount
-  useEffect(() => {
-    loadData();
-  }, [loadData]);
-
-  // Actions
   const toggleFavorite = useCallback((id) => {
     setFavorites((prev) =>
       prev.includes(id) ? prev.filter((favId) => favId !== id) : [...prev, id]
@@ -69,7 +48,7 @@ export const PropertyProvider = ({ children }) => {
     toggleFavorite,
     updateFilters,
     resetFilters,
-    refetchProperties: loadData,
+    refetchProperties,
   }), [
     properties,
     loading,
@@ -80,7 +59,7 @@ export const PropertyProvider = ({ children }) => {
     toggleFavorite,
     updateFilters,
     resetFilters,
-    loadData
+    refetchProperties,
   ]);
 
   return <PropertyContext.Provider value={value}>{children}</PropertyContext.Provider>;
