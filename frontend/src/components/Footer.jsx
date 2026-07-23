@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { MapPin, Phone, Mail, Clock } from 'lucide-react';
-import logoImg from '../assets/logo.png';
+const logoImg = '/images/logo.png';
 
 function Footer() {
   return (

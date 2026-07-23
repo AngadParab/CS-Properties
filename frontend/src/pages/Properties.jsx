@@ -6,6 +6,7 @@ import { Search, MapPin, DollarSign, Filter, Layers, ArrowUpRight, Heart } from 
 import { useProperties } from '../context/PropertyContext';
 import { useFilters, SUBTYPES_MAP } from '../context/FilterContext';
 import { PropertiesGridSkeleton } from '../components/SkeletonLoader';
+import EmptyState from '../components/EmptyState';
 
 function Properties() {
   const queryParams = new URLSearchParams(useLocation().search);
@@ -103,6 +104,18 @@ function Properties() {
         <meta property="og:title" content="Exclusive Goa Real Estate Listings | CS Properties" />
         <meta property="og:description" content="Browse verified luxury villas, coastal plots, and commercial spaces in Goa." />
         <meta property="og:type" content="website" />
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "ItemList",
+            "itemListElement": filteredProperties.map((prop, index) => ({
+              "@type": "ListItem",
+              "position": index + 1,
+              "url": `${window.location.origin}/properties?id=${prop.id}`,
+              "name": prop.title || prop.name
+            }))
+          })}
+        </script>
       </Helmet>
       
       {/* Title Header */}
@@ -231,9 +244,6 @@ function Properties() {
         <section className="lg:col-span-9 space-y-6">
           <div className="flex justify-between items-center text-xs text-brand-text-muted font-bold tracking-wide uppercase">
             <span>Showing {loading ? '...' : filteredProperties.length} Properties</span>
-            {!loading && filteredProperties.length === 0 && (
-              <span className="text-brand-error normal-case">No matches found. Try resetting filters.</span>
-            )}
           </div>
 
           {loading ? (
@@ -249,6 +259,8 @@ function Properties() {
                 Try Again
               </button>
             </div>
+          ) : filteredProperties.length === 0 ? (
+            <EmptyState onReset={resetFilters} />
           ) : (
             <motion.div 
               initial="hidden"

@@ -1,0 +1,150 @@
+# Queries for CS Properties CRM
+
+# Fetch all properties
+query GetProperties {
+  properties {
+    id
+    title
+    description
+    price
+    status
+    type
+    bedrooms
+    bathrooms
+    areaSqFt
+    address
+    city
+    agent {
+      id
+      name
+      email
+    }
+    createdAt
+  }
+}
+
+# Fetch a single property with images
+query GetProperty($id: UUID!) {
+  property(id: $id) {
+    id
+    title
+    description
+    price
+    status
+    type
+    bedrooms
+    bathrooms
+    areaSqFt
+    address
+    city
+    agent {
+      id
+      name
+      email
+    }
+    createdAt
+  }
+  propertyImages(where: { property: { id: { eq: $id } } }) {
+    id
+    url
+    displayOrder
+  }
+}
+
+# Fetch leads with status and assigned agent filters
+query GetLeads($status: LeadStatus, $assignedToId: UUID) {
+  leads(where: {
+    status: { eq: $status }
+    assignedTo: { id: { eq: $assignedToId } }
+  }) {
+    id
+    fullName
+    email
+    phone
+    status
+    budget
+    notes
+    source
+    property {
+      id
+      title
+    }
+    assignedTo {
+      id
+      name
+    }
+    createdAt
+  }
+}
+
+# Fetch a single lead and all its timeline activities
+query GetLead($id: UUID!) {
+  lead(id: $id) {
+    id
+    fullName
+    email
+    phone
+    status
+    budget
+    notes
+    source
+    property {
+      id
+      title
+      price
+    }
+    assignedTo {
+      id
+      name
+      role
+    }
+    createdAt
+  }
+  activities(where: { lead: { id: { eq: $id } } }) {
+    id
+    actor {
+      id
+      name
+      role
+    }
+    type
+    comment
+    createdAt
+  }
+}
+
+# Get property agent ID
+query GetPropertyAgent($id: UUID!) {
+  property(id: $id) {
+    agent {
+      id
+    }
+  }
+}
+
+# Get all ADMIN users
+query GetAdmins {
+  users(where: { role: { eq: ADMIN } }) {
+    id
+  }
+}
+
+# Get all leads with assigned user IDs
+query GetLeadsAssignment {
+  leads {
+    assignedTo {
+      id
+    }
+  }
+}
+
+# Get all property images
+query GetPropertyImages {
+  propertyImages {
+    url
+    displayOrder
+    property {
+      id
+    }
+  }
+}

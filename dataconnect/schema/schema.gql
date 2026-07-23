@@ -1,0 +1,94 @@
+# CS Properties CRM PostgreSQL Data Schema
+
+# Enums
+enum UserRole {
+  ADMIN
+  AGENT
+}
+
+enum PropertyStatus {
+  DRAFT
+  ACTIVE
+  UNDER_CONTRACT
+  SOLD
+}
+
+enum PropertyType {
+  RESIDENTIAL
+  VILLA
+  COMMERCIAL
+  PLOT
+}
+
+enum LeadStatus {
+  NEW
+  CONTACTED
+  SITE_VISIT_SCHEDULED
+  UNDER_NEGOTIATION
+  CLOSED_WON
+  CLOSED_LOST
+}
+
+enum ActivityType {
+  CALL
+  EMAIL
+  SITE_VISIT
+  NOTE
+  STATUS_CHANGE
+}
+
+# Tables
+type User @table {
+  id: UUID! @default(expr: "uuidV4()")
+  email: String!
+  name: String!
+  role: UserRole!
+  phone: String
+  createdAt: Timestamp! @default(expr: "request.time")
+}
+
+type Property @table {
+  id: UUID! @default(expr: "uuidV4()")
+  title: String!
+  description: String!
+  price: Float!
+  status: PropertyStatus!
+  type: PropertyType!
+  bedrooms: Int
+  bathrooms: Int
+  areaSqFt: Float
+  address: String!
+  city: String!
+  agent: User!
+  createdAt: Timestamp! @default(expr: "request.time")
+}
+
+type PropertyImage @table {
+  id: UUID! @default(expr: "uuidV4()")
+  property: Property!
+  url: String!
+  displayOrder: Int!
+}
+
+type Lead @table {
+  id: UUID! @default(expr: "uuidV4()")
+  fullName: String!
+  email: String!
+  phone: String!
+  status: LeadStatus!
+  budget: Float!
+  notes: String
+  source: String
+  property: Property
+  assignedTo: User
+  createdAt: Timestamp! @default(expr: "request.time")
+}
+
+type Activity @table {
+  id: UUID! @default(expr: "uuidV4()")
+  lead: Lead!
+  actor: User!
+  type: ActivityType!
+  comment: String!
+  createdAt: Timestamp! @default(expr: "request.time")
+}

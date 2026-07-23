@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useCallback, useMemo } from 'react';
 
 const FilterContext = createContext(null);
 
@@ -50,22 +50,22 @@ const DEFAULT_FILTERS = {
 export const FilterProvider = ({ children }) => {
   const [searchFilters, setSearchFilters] = useState(DEFAULT_FILTERS);
 
-  const updateFilters = (newFilters) => {
+  const updateFilters = useCallback((newFilters) => {
     setSearchFilters((prev) => ({
       ...prev,
       ...newFilters,
     }));
-  };
+  }, []);
 
-  const resetFilters = () => {
+  const resetFilters = useCallback(() => {
     setSearchFilters(DEFAULT_FILTERS);
-  };
+  }, []);
 
-  const value = {
+  const value = useMemo(() => ({
     searchFilters,
     updateFilters,
     resetFilters,
-  };
+  }), [searchFilters, updateFilters, resetFilters]);
 
   return <FilterContext.Provider value={value}>{children}</FilterContext.Provider>;
 };

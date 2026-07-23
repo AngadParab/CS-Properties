@@ -15,7 +15,7 @@ export default {
           surface: '#FFFFFF',    // Crisp White Cards
           text: {
             primary: '#1C1C1C',  // Soft Jet Black
-            muted: '#8E8C84',    // Ghost Grey / Muted Taupe
+            muted: '#4F4D46',    // High-Contrast dark muted taupe for WCAG compliance
           },
           charcoal: '#272727',   // Dark Charcoal for intense contrast
           sandDark: '#EFECE6',   // Secondary Off-White/Sand

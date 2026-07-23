@@ -1,0 +1,193 @@
+# Mutations for CS Properties CRM
+
+# Upsert User (synced from Auth custom claims setup)
+mutation UpsertUser($id: UUID!, $email: String!, $name: String!, $role: UserRole!, $phone: String) {
+  user_upsert(data: {
+    id: $id
+    email: $email
+    name: $name
+    role: $role
+    phone: $phone
+  }) {
+    id
+  }
+}
+
+# Create a Property
+mutation CreateProperty(
+  $title: String!
+  $description: String!
+  $price: Float!
+  $status: PropertyStatus!
+  $type: PropertyType!
+  $bedrooms: Int
+  $bathrooms: Int
+  $areaSqFt: Float
+  $address: String!
+  $city: String!
+  $agentId: UUID!
+) {
+  property_insert(data: {
+    title: $title
+    description: $description
+    price: $price
+    status: $status
+    type: $type
+    bedrooms: $bedrooms
+    bathrooms: $bathrooms
+    areaSqFt: $areaSqFt
+    address: $address
+    city: $city
+    agentId: $agentId
+  }) {
+    id
+  }
+}
+
+# Update a Property
+mutation UpdateProperty(
+  $id: UUID!
+  $title: String
+  $description: String
+  $price: Float
+  $status: PropertyStatus
+  $type: PropertyType
+  $bedrooms: Int
+  $bathrooms: Int
+  $areaSqFt: Float
+  $address: String
+  $city: String
+  $agentId: UUID
+) {
+  property_update(
+    id: $id,
+    data: {
+      title: $title
+      description: $description
+      price: $price
+      status: $status
+      type: $type
+      bedrooms: $bedrooms
+      bathrooms: $bathrooms
+      areaSqFt: $areaSqFt
+      address: $address
+      city: $city
+      agentId: $agentId
+    }
+  ) {
+    id
+  }
+}
+
+# Add a Property Image
+mutation AddPropertyImage($propertyId: UUID!, $url: String!, $displayOrder: Int!) {
+  propertyImage_insert(data: {
+    propertyId: $propertyId
+    url: $url
+    displayOrder: $displayOrder
+  }) {
+    id
+  }
+}
+
+# Delete a Property Image
+mutation DeletePropertyImage($id: UUID!) {
+  propertyImage_delete(id: $id) {
+    id
+  }
+}
+
+# Create a Lead
+mutation CreateLead(
+  $fullName: String!
+  $email: String!
+  $phone: String!
+  $status: LeadStatus!
+  $budget: Float!
+  $notes: String
+  $source: String
+  $propertyId: UUID
+  $assignedToId: UUID
+) {
+  lead_insert(data: {
+    fullName: $fullName
+    email: $email
+    phone: $phone
+    status: $status
+    budget: $budget
+    notes: $notes
+    source: $source
+    propertyId: $propertyId
+    assignedToId: $assignedToId
+  }) {
+    id
+  }
+}
+
+# Update a Lead (pipeline state changes & updates)
+mutation UpdateLead(
+  $id: UUID!
+  $fullName: String
+  $email: String
+  $phone: String
+  $status: LeadStatus
+  $budget: Float
+  $notes: String
+  $source: String
+  $propertyId: UUID
+  $assignedToId: UUID
+) {
+  lead_update(
+    id: $id,
+    data: {
+      fullName: $fullName
+      email: $email
+      phone: $phone
+      status: $status
+      budget: $budget
+      notes: $notes
+      source: $source
+      propertyId: $propertyId
+      assignedToId: $assignedToId
+    }
+  ) {
+    id
+  }
+}
+
+# Create an Activity (append interaction timeline logs)
+mutation CreateActivity(
+  $leadId: UUID!
+  $actorId: UUID!
+  $type: ActivityType!
+  $comment: String!
+) {
+  activity_insert(data: {
+    leadId: $leadId
+    actorId: $actorId
+    type: $type
+    comment: $comment
+  }) {
+    id
+  }
+}
+
+# Update Lead Status and Append Activity Log atomically
+mutation UpdateLeadAndAddActivity(
+  $leadId: UUID!
+  $newStatus: LeadStatus!
+  $actorId: UUID!
+  $comment: String!
+) {
+  lead_update(id: $leadId, data: { status: $newStatus }) {
+    id
+  }
+  activity_insert(data: {
+    leadId: $leadId
+    actorId: $actorId
+    type: STATUS_CHANGE
+    comment: $comment
+  }) {
+    id
+  }
+}

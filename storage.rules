@@ -1,16 +1,18 @@
 rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
-    // 1. Public property listing images (Read allowed globally, write allowed for listing roles)
+    // 1. Public property listing images (Read allowed globally, write allowed for ADMIN or AGENT roles, must be jpeg/png < 5MB)
     match /listings/{listingId}/{allPaths=**} {
       allow read: if true;
-      allow write: if request.auth != null && request.auth.token.role in ['admin', 'broker', 'listing_agent'];
+      allow write: if request.auth != null 
+                   && (request.auth.token.role == 'ADMIN' || request.auth.token.role == 'AGENT')
+                   && (request.resource.contentType == 'image/jpeg' || request.resource.contentType == 'image/png')
+                   && request.resource.size <= 5 * 1024 * 1024;
     }
     
-    // 2. Private deal vault documents (Default-deny direct reads; mediated by Cloud Functions)
-    match /deals/{dealId}/{allPaths=**} {
-      allow read: if false;
-      allow write: if request.auth != null;
+    // 2. Default deny for all other folders
+    match /{allPaths=**} {
+      allow read, write: if false;
     }
   }
 }

@@ -15,8 +15,42 @@ service cloud.firestore {
       return role() in ['admin', 'broker'];
     }
 
+    function isAdmin() {
+      return isAuthenticated() && (request.auth.token.admin == true || role() == 'admin');
+    }
+
     function isOwner(agentIdField) {
       return isAuthenticated() && resource != null && 'data' in resource && agentIdField in resource.data && request.auth.uid == resource.data[agentIdField];
+    }
+
+    // Schema Validation Helpers
+    function isValidProperty(data) {
+      return data.address is string && data.address.size() > 0
+          && data.city is string && data.city.size() > 0
+          && data.bedrooms is int && data.bedrooms >= 0
+          && data.bathrooms is int && data.bathrooms >= 0
+          && data.squareFootage is int && data.squareFootage > 0
+          && data.assetClass is string && data.assetClass.size() > 0
+          && data.subtype is string && data.subtype.size() > 0
+          && data.description is string
+          && (data.ownerContactId == null || data.ownerContactId is string)
+          && (data.hoaFee == null || data.hoaFee is int || data.hoaFee is string)
+          && data.amenities is list
+          && data.createdAt is string;
+    }
+
+    function isValidListing(data) {
+      return data.propertyId is string && data.propertyId.size() > 0
+          && (data.listingAgentId == null || data.listingAgentId is string)
+          && data.askingPrice is int && data.askingPrice >= 0
+          && data.status is string && data.status.size() > 0
+          && data.webDisplay is bool
+          && data.propertyAddress is string && data.propertyAddress.size() > 0
+          && data.propertyCity is string && data.propertyCity.size() > 0
+          && data.images is list
+          && data.notes is string
+          && data.createdAt is string
+          && data.updatedAt is string;
     }
 
     // Agents collection
@@ -34,13 +68,13 @@ service cloud.firestore {
     // Properties collection
     match /properties/{propertyId} {
       allow read: if isAuthenticated();
-      allow write: if isAdminOrBroker();
+      allow write: if isAdmin() && isValidProperty(request.resource.data);
     }
 
     // Listings collection
     match /listings/{listingId} {
       allow read: if isAuthenticated();
-      allow write: if isAdminOrBroker() || (role() == 'listing_agent' && isOwner('listingAgentId'));
+      allow write: if isAdmin() && isValidListing(request.resource.data);
     }
 
     // Deals collection

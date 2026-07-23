@@ -1,0 +1,12 @@
+specVersion: "v1alpha"
+serviceId: "cs-properties-crm"
+location: "us-central1"
+schema:
+  source: "./schema"
+  datasource:
+    postgresql:
+      database: "cs-properties"
+      cloudSql:
+        instanceId: "cs-properties-instance"
+connectorDirs:
+  - "./connector"

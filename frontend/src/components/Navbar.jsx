@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-  const location = useLocation();
 
   const navItems = [
     { name: 'Home', path: '/' },
@@ -12,8 +11,6 @@ function Navbar() {
     { name: 'Sell Property', path: '/sell' },
     { name: 'Contact', path: '/contact' },
   ];
-
-  const isActive = (path) => location.pathname === path;
 
   return (
     <nav className="sticky top-0 z-50 bg-brand-navy text-white shadow-md">
@@ -29,14 +26,17 @@ function Navbar() {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-6">
             {navItems.map((item) => (
-              <Link
+              <NavLink
                 key={item.name}
                 to={item.path}
-                className={`text-sm font-medium transition-colors hover:text-brand-gold ${isActive(item.path) ? 'text-brand-gold border-b-2 border-brand-gold pb-1' : 'text-gray-300'
-                  }`}
+                className={({ isActive }) =>
+                  `text-sm font-semibold transition-colors hover:text-brand-gold pb-1 ${
+                    isActive ? 'text-brand-gold border-b-2 border-brand-gold' : 'text-gray-300'
+                  }`
+                }
               >
                 {item.name}
-              </Link>
+              </NavLink>
             ))}
             <Link
               to="/sell"
@@ -64,17 +64,20 @@ function Navbar() {
         <div className="md:hidden bg-brand-navy border-t border-white/10 transition-all duration-300">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
             {navItems.map((item) => (
-              <Link
+              <NavLink
                 key={item.name}
                 to={item.path}
                 onClick={() => setIsOpen(false)}
-                className={`block px-3 py-2 rounded-md text-base font-medium transition-colors ${isActive(item.path)
-                    ? 'text-brand-gold bg-brand-charcoal'
-                    : 'text-gray-300 hover:text-brand-gold hover:bg-brand-charcoal'
-                  }`}
+                className={({ isActive }) =>
+                  `block px-3 py-2 rounded-md text-base font-semibold transition-colors ${
+                    isActive
+                      ? 'text-brand-gold bg-brand-charcoal'
+                      : 'text-gray-300 hover:text-brand-gold hover:bg-brand-charcoal'
+                  }`
+                }
               >
                 {item.name}
-              </Link>
+              </NavLink>
             ))}
             <div className="pt-4 pb-2 px-3">
               <Link

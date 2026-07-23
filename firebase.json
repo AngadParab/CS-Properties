@@ -6,29 +6,32 @@
   "storage": {
     "rules": "storage.rules"
   },
-  "functions": {
-    "source": "functions"
-  },
+  "functions": [
+    {
+      "source": "functions",
+      "codebase": "default",
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log"
+      ],
+      "predeploy": [
+        "npm --prefix \"$RESOURCE_DIR\" run build"
+      ]
+    }
+  ],
   "hosting": {
-    "public": "frontend/dist",
+    "public": "out",
     "ignore": [
       "firebase.json",
       "**/.*",
       "**/node_modules/**"
     ],
-    "rewrites": [
-      {
-        "source": "**",
-        "destination": "/index.html"
-      }
-    ],
-    "headers": [{
-      "source": "**/*.@(jpg|jpeg|gif|png|svg|webp|js|css)",
-      "headers": [{
-        "key": "Cache-Control",
-        "value": "max-age=31536000, immutable"
-      }]
-    }]
+    "cleanUrls": true
+  },
+  "dataconnect": {
+    "source": "dataconnect"
   },
   "emulators": {
     "auth": {
@@ -42,6 +45,9 @@
     },
     "storage": {
       "port": 9199
+    },
+    "dataconnect": {
+      "port": 9399
     },
     "ui": {
       "enabled": true,
