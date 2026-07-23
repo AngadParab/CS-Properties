@@ -122,7 +122,19 @@ function PropertyDetailModal() {
           className="bg-white rounded-3xl overflow-hidden shadow-2xl max-w-2xl w-full relative z-10 border border-brand-sandDark flex flex-col"
         >
           {/* Header Visual Image Mockup */}
-          <div className={`h-56 bg-gradient-to-br ${gradientClass} relative p-8 flex flex-col justify-between text-white`}>
+          <div className="h-56 relative p-8 flex flex-col justify-between text-white overflow-hidden bg-brand-navy">
+            {prop?.images && prop.images.length > 0 ? (
+              <>
+                <img
+                  src={prop.images[0]}
+                  alt={propertyTitle}
+                  className="absolute inset-0 w-full h-full object-cover z-0"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/20 to-transparent z-0" />
+              </>
+            ) : (
+              <div className={`absolute inset-0 bg-gradient-to-br ${gradientClass} z-0`} />
+            )}
             <button
               onClick={() => setActiveModalProperty(null)}
               className="absolute top-4 right-4 bg-black/40 hover:bg-black/60 text-white p-2 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-brand-gold focus:ring-offset-2"

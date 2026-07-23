@@ -1,4 +1,4 @@
-import { db, auth, appCheck, functions } from '../config/firebase';
+import { db, auth, appCheck, functions, storage } from '../config/firebase';
 import { 
   collection, 
   addDoc, 
@@ -9,8 +9,11 @@ import {
   query, 
   orderBy, 
   where,
-  serverTimestamp 
+  serverTimestamp,
+  deleteDoc,
+  setDoc
 } from 'firebase/firestore';
+import { ref as storageRef, deleteObject } from 'firebase/storage';
 import { signInWithEmailAndPassword, signOut as firebaseSignOut } from 'firebase/auth';
 import { httpsCallable } from 'firebase/functions';
 import { getToken } from 'firebase/app-check';
@@ -362,4 +365,195 @@ export const getDocumentDownloadUrl = async (documentId) => {
 // Legacy API interfaces mapped for backwards compatibility
 export const fetchLeads = fetchDeals;
 export const updateLeadStatus = updateDealStage;
+
+/**
+ * Protected: Create a manual client profile and deal assignment from Admin panel
+ */
+export const createManualDeal = async (dealData) => {
+  try {
+    const contactsRef = collection(db, 'contacts');
+    let contactId;
+    let contactData = null;
+
+    // Deduplication check: check email first, then phone
+    let existingDoc = null;
+    if (dealData.email) {
+      const emailQuery = query(contactsRef, where('email', '==', dealData.email));
+      const emailSnap = await getDocs(emailQuery);
+      if (!emailSnap.empty) existingDoc = emailSnap.docs[0];
+    }
+    if (!existingDoc && dealData.phone) {
+      const phoneQuery = query(contactsRef, where('phone', '==', dealData.phone));
+      const phoneSnap = await getDocs(phoneQuery);
+      if (!phoneSnap.empty) existingDoc = phoneSnap.docs[0];
+    }
+
+    if (existingDoc) {
+      contactId = existingDoc.id;
+      contactData = existingDoc.data();
+      await updateDoc(doc(db, 'contacts', contactId), {
+        firstName: dealData.firstName || contactData.firstName || '',
+        lastName: dealData.lastName || contactData.lastName || '',
+        email: dealData.email || contactData.email || null,
+        phone: dealData.phone || contactData.phone || null,
+        updatedAt: serverTimestamp(),
+      });
+    } else {
+      const newContactRef = await addDoc(contactsRef, {
+        firstName: dealData.firstName || '',
+        lastName: dealData.lastName || '',
+        email: dealData.email || null,
+        phone: dealData.phone || null,
+        leadSource: dealData.leadSource || 'Manual Entry',
+        leadStatus: dealData.stage === 'Closed' ? 'qualified' : 'new',
+        budgetMin: dealData.budgetMin || null,
+        budgetMax: dealData.budgetMax || null,
+        preferredBedrooms: dealData.preferredBedrooms || null,
+        preferredZones: dealData.preferredZones || [],
+        assignedAgentId: dealData.assignedAgentId || auth.currentUser?.uid || null,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+      });
+      contactId = newContactRef.id;
+    }
+
+    // Create the Deal
+    const dealRef = await addDoc(collection(db, 'deals'), {
+      contactId,
+      pipelineType: dealData.pipelineType || 'buyer',
+      stage: dealData.stage || 'New',
+      listingId: dealData.listingId || null,
+      assignedAgentId: dealData.assignedAgentId || auth.currentUser?.uid || null,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+    });
+
+    // Log Activity
+    await addDoc(collection(db, 'activityLog'), {
+      dealId: dealRef.id,
+      contactId,
+      type: 'note',
+      payload: {
+        title: 'Deal Manually Created',
+        text: dealData.notes || 'Agent manually entered client profile and pipeline card.'
+      },
+      createdBy: auth.currentUser?.email || 'admin',
+      createdAt: serverTimestamp(),
+    });
+
+    return {
+      status: 'success',
+      dealId: dealRef.id,
+    };
+  } catch (error) {
+    throw new Error(error.message || 'Failed to manually create client deal');
+  }
+};
+
+/**
+ * Protected: Manually list a property (creates Property & Listing documents)
+ */
+export const createPropertyAndListing = async (propertyData, listingData, imageUrls = []) => {
+  try {
+    // 1. Create property record
+    const propRef = await addDoc(collection(db, 'properties'), {
+      address: propertyData.address || '',
+      city: propertyData.city || 'Goa',
+      bedrooms: Number(propertyData.bedrooms || 0),
+      bathrooms: Number(propertyData.bathrooms || 0),
+      squareFootage: Number(propertyData.squareFootage || 0),
+      ownerContactId: propertyData.ownerContactId || null,
+      hoaFee: propertyData.hoaFee ? Number(propertyData.hoaFee) : null,
+      amenities: propertyData.amenities || [],
+      createdAt: serverTimestamp(),
+    });
+
+    // 2. Create listing record
+    const listingRef = await addDoc(collection(db, 'listings'), {
+      propertyId: propRef.id,
+      listingAgentId: auth.currentUser?.uid || null,
+      askingPrice: Number(listingData.askingPrice || 0),
+      status: listingData.status || 'active',
+      webDisplay: listingData.webDisplay !== undefined ? listingData.webDisplay : true,
+      propertyAddress: propertyData.address || '',
+      propertyCity: propertyData.city || 'Goa',
+      images: imageUrls,
+      createdAt: serverTimestamp(),
+    });
+
+    return {
+      status: 'success',
+      listingId: listingRef.id,
+      propertyId: propRef.id,
+    };
+  } catch (error) {
+    throw new Error(error.message || 'Failed to list property manually');
+  }
+};
+
+/**
+ * Protected: Delete property listing (deletes database records and cleans up storage images)
+ */
+export const deletePropertyListing = async (listingId, propertyId, imageUrls = []) => {
+  try {
+    // 1. Delete Firestore documents
+    await deleteDoc(doc(db, 'listings', listingId));
+    if (propertyId) {
+      await deleteDoc(doc(db, 'properties', propertyId));
+    }
+
+    // 2. Cleanup images from storage bucket
+    for (const url of imageUrls) {
+      if (url && url.includes('firebasestorage')) {
+        try {
+          const fileRef = storageRef(storage, url);
+          await deleteObject(fileRef);
+          console.log(`Deleted storage asset: ${url}`);
+        } catch (err) {
+          console.warn(`Failed to clean up storage image ${url}:`, err.message);
+        }
+      }
+    }
+
+    return { status: 'success' };
+  } catch (error) {
+    throw new Error(error.message || 'Failed to delete property listing');
+  }
+};
+
+/**
+ * Protected: Fetch all listings (active + pending) for administrative oversight
+ */
+export const fetchAdminListings = async () => {
+  try {
+    const listingsSnap = await getDocs(collection(db, 'listings'));
+    const adminListings = [];
+
+    for (const listingDoc of listingsSnap.docs) {
+      const listingData = listingDoc.data();
+      let property = null;
+
+      if (listingData.propertyId) {
+        try {
+          const propSnap = await getDoc(doc(db, 'properties', listingData.propertyId));
+          if (propSnap.exists()) {
+            property = { _id: propSnap.id, ...propSnap.data() };
+          }
+        } catch (propErr) {
+          console.warn(`Could not resolve listing property ${listingData.propertyId}:`, propErr.message);
+        }
+      }
+
+      adminListings.push({
+        _id: listingDoc.id,
+        ...listingData,
+        property,
+      });
+    }
+
+    return adminListings;
+  } catch (error) {
+    throw new Error(error.message || 'Failed to fetch admin listings');
+  }
+};
 

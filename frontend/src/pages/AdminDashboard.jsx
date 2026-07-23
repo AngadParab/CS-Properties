@@ -9,29 +9,34 @@ import {
   fetchAgents, 
   fetchDocuments, 
   addDocumentMetadata, 
-  getDocumentDownloadUrl 
+  getDocumentDownloadUrl,
+  createManualDeal,
+  createPropertyAndListing,
+  deletePropertyListing,
+  fetchAdminListings
 } from '../services/api';
 import { db, storage } from '../config/firebase';
 import { doc, updateDoc } from 'firebase/firestore';
-import { ref, uploadBytes } from 'firebase/storage';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { 
   LogOut, Calendar, Phone, MapPin, ChevronRight, RefreshCw, BarChart2, 
   ShieldCheck, Users, Briefcase, FileText, Send, UploadCloud, Download, 
-  Lock, X, CheckCircle, ArrowRight, UserPlus
+  Lock, X, CheckCircle, ArrowRight, UserPlus, Image, Plus, Trash, Eye, EyeOff
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 function AdminDashboard() {
-  const { user, token, logout } = useAuth();
+  const { user, logout } = useAuth();
 
-  const [activeTab, setActiveTab] = useState('kanban'); // 'kanban' | 'agents'
+  const [activeTab, setActiveTab] = useState('kanban'); // 'kanban' | 'agents' | 'inventory'
   const [deals, setDeals] = useState([]);
   const [agents, setAgents] = useState([]);
+  const [adminListings, setAdminListings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [selectedDeal, setSelectedDeal] = useState(null);
   
-  // Drawer state
+  // Drawer & Log state
   const [drawerTab, setDrawerTab] = useState('info'); // 'info' | 'activity' | 'vault'
   const [activities, setActivities] = useState([]);
   const [newActivityText, setNewActivityText] = useState('');
@@ -40,7 +45,54 @@ function AdminDashboard() {
   const [uploadingFile, setUploadingFile] = useState(false);
   const [isUpdating, setIsUpdating] = useState(null); // stores deal ID being updated
   
+  // Modals state
+  const [showAddDealModal, setShowAddDealModal] = useState(false);
+  const [showAddListingModal, setShowAddListingModal] = useState(false);
+  const [isFormSubmitting, setIsFormSubmitting] = useState(false);
+
+  // Manual Deal Form State
+  const [dealForm, setDealForm] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    pipelineType: 'buyer',
+    budgetMin: '',
+    budgetMax: '',
+    preferredBedrooms: '3',
+    preferredZones: 'South Goa District',
+    notes: '',
+    assignedAgentId: ''
+  });
+
+  // Manual Listing Form State
+  const [listingForm, setListingForm] = useState({
+    address: '',
+    city: 'South Goa District',
+    bedrooms: '3',
+    bathrooms: '3',
+    squareFootage: '1500',
+    assetClass: 'Residential Real Estate (Living spaces)',
+    subtype: 'Apartments / Flats',
+    amenities: 'Security, Parking, Pool',
+    askingPrice: '',
+    status: 'active',
+    webDisplay: true,
+    hoaFee: '',
+    description: ''
+  });
+  const [selectedPropertyFiles, setSelectedPropertyFiles] = useState([]);
+  const [uploadProgressText, setUploadProgressText] = useState('');
+
   const dealStages = ['New', 'Contacted', 'Qualified', 'Offer Submitted', 'Closed'];
+  const locations = ['South Goa District', 'North Goa District', 'Kushawati District'];
+  const assetClasses = [
+    'Residential Real Estate (Living spaces)',
+    'Commercial Real Estate (Business & income generation)',
+    'Industrial Real Estate (Production, storage, logistics)',
+    'Land / Plots (Raw, subdivided, or agricultural)',
+    'Special Purpose / Mixed-Use'
+  ];
 
   const loadAllData = useCallback(async () => {
     setLoading(true);
@@ -51,6 +103,9 @@ function AdminDashboard() {
       
       const agentsRes = await fetchAgents();
       setAgents(agentsRes || []);
+
+      const listingsRes = await fetchAdminListings();
+      setAdminListings(listingsRes || []);
     } catch (err) {
       setError(err.message || 'Failed to sync CRM records.');
     } finally {
@@ -82,7 +137,7 @@ function AdminDashboard() {
           title: 'Stage Transitioned',
           text: `Deal progressed to stage: ${newStage}`
         },
-        createdBy: user.username || user.email
+        createdBy: user.email
       });
       
       if (selectedDeal && selectedDeal._id === dealId) {
@@ -129,7 +184,7 @@ function AdminDashboard() {
           title: activityType.charAt(0).toUpperCase() + activityType.slice(1) + ' Logged',
           text: newActivityText.trim()
         },
-        createdBy: user.username || user.email
+        createdBy: user.email
       });
       setNewActivityText('');
       
@@ -151,7 +206,7 @@ function AdminDashboard() {
     }
   };
 
-  // Document uploading handler
+  // Document uploading handler (Vault)
   const handleUploadDocument = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -161,19 +216,16 @@ function AdminDashboard() {
       const storagePath = `deals/${selectedDeal._id}/${Date.now()}_${file.name}`;
       const fileRef = ref(storage, storagePath);
       
-      // Upload bytes directly
       await uploadBytes(fileRef, file);
       
-      // Add document metadata record to database
       await addDocumentMetadata({
         dealId: selectedDeal._id,
         propertyId: selectedDeal.listingId || null,
         storagePath,
         filename: file.name,
-        uploadedBy: user.username || user.email
+        uploadedBy: user.email
       });
 
-      // Log upload activity
       await addActivityEntry({
         dealId: selectedDeal._id,
         contactId: selectedDeal.contactId,
@@ -182,10 +234,9 @@ function AdminDashboard() {
           title: 'Document Uploaded',
           text: `Attached file: ${file.name}`
         },
-        createdBy: user.username || user.email
+        createdBy: user.email
       });
 
-      // Refresh documents and activities
       const docs = await fetchDocuments(selectedDeal._id);
       setDocuments(docs);
       
@@ -204,7 +255,6 @@ function AdminDashboard() {
       const agentRef = doc(db, 'agents', agentId);
       await updateDoc(agentRef, { role: newRole });
       
-      // Update local state
       setAgents(prev => prev.map(a => a._id === agentId ? { ...a, role: newRole } : a));
       alert(`Claim sync triggered: Synced ${newRole} claim for agent.`);
     } catch (err) {
@@ -212,7 +262,157 @@ function AdminDashboard() {
     }
   };
 
-  // Filter columns
+  // Handle manual deal submit
+  const handleAddDealSubmit = async (e) => {
+    e.preventDefault();
+    if (!dealForm.firstName || !dealForm.phone) {
+      alert('First Name and Phone are required.');
+      return;
+    }
+
+    setIsFormSubmitting(true);
+    try {
+      await createManualDeal({
+        firstName: dealForm.firstName,
+        lastName: dealForm.lastName,
+        email: dealForm.email || null,
+        phone: dealForm.phone,
+        pipelineType: dealForm.pipelineType,
+        budgetMin: dealForm.budgetMin ? Number(dealForm.budgetMin) : null,
+        budgetMax: dealForm.budgetMax ? Number(dealForm.budgetMax) : null,
+        preferredBedrooms: Number(dealForm.preferredBedrooms) || null,
+        preferredZones: [dealForm.preferredZones],
+        notes: dealForm.notes,
+        assignedAgentId: dealForm.assignedAgentId || null,
+        stage: 'New'
+      });
+
+      setShowAddDealModal(false);
+      setDealForm({
+        firstName: '',
+        lastName: '',
+        email: '',
+        phone: '',
+        pipelineType: 'buyer',
+        budgetMin: '',
+        budgetMax: '',
+        preferredBedrooms: '3',
+        preferredZones: 'South Goa District',
+        notes: '',
+        assignedAgentId: ''
+      });
+
+      // Reload
+      const dealsRes = await fetchDeals();
+      setDeals(dealsRes.data || []);
+      alert('Client deal logged successfully!');
+    } catch (err) {
+      alert('Failed to log client deal: ' + err.message);
+    } finally {
+      setIsFormSubmitting(false);
+    }
+  };
+
+  // Handle listing property submit with multiple file uploads
+  const handleAddListingSubmit = async (e) => {
+    e.preventDefault();
+    if (!listingForm.address || !listingForm.askingPrice) {
+      alert('Property Address and Asking Price are required.');
+      return;
+    }
+
+    setIsFormSubmitting(true);
+    setUploadProgressText('Uploading property images to Storage...');
+    try {
+      const imageUrls = [];
+      const timestamp = Date.now();
+
+      for (let i = 0; i < selectedPropertyFiles.length; i++) {
+        const file = selectedPropertyFiles[i];
+        const path = `listings/${timestamp}_${Math.random().toString(36).substr(2, 9)}/${file.name}`;
+        const fileRef = ref(storage, path);
+        
+        await uploadBytes(fileRef, file);
+        const url = await getDownloadURL(fileRef);
+        imageUrls.push(url);
+      }
+
+      setUploadProgressText('Saving property & listing documents...');
+      const amenitiesList = listingForm.amenities.split(',').map(s => s.trim()).filter(Boolean);
+
+      await createPropertyAndListing(
+        {
+          address: listingForm.address,
+          city: listingForm.city,
+          bedrooms: Number(listingForm.bedrooms),
+          bathrooms: Number(listingForm.bathrooms),
+          squareFootage: Number(listingForm.squareFootage),
+          amenities: amenitiesList,
+          hoaFee: listingForm.hoaFee || null,
+          description: listingForm.description
+        },
+        {
+          askingPrice: Number(listingForm.askingPrice),
+          status: listingForm.status,
+          webDisplay: listingForm.webDisplay
+        },
+        imageUrls
+      );
+
+      setShowAddListingModal(false);
+      setSelectedPropertyFiles([]);
+      setUploadProgressText('');
+      setListingForm({
+        address: '',
+        city: 'South Goa District',
+        bedrooms: '3',
+        bathrooms: '3',
+        squareFootage: '1500',
+        assetClass: 'Residential Real Estate (Living spaces)',
+        subtype: 'Apartments / Flats',
+        amenities: 'Security, Parking, Pool',
+        askingPrice: '',
+        status: 'active',
+        webDisplay: true,
+        hoaFee: '',
+        description: ''
+      });
+
+      // Reload
+      const listingsRes = await fetchAdminListings();
+      setAdminListings(listingsRes || []);
+      alert('Property listed successfully!');
+    } catch (err) {
+      alert('Failed to list property: ' + err.message);
+    } finally {
+      setIsFormSubmitting(false);
+      setUploadProgressText('');
+    }
+  };
+
+  // Delete Listing & cleanup images
+  const handleDeleteListing = async (listingId, propertyId, images = []) => {
+    if (!window.confirm('Are you sure you want to permanently delete this listing and its uploaded files?')) return;
+    try {
+      await deletePropertyListing(listingId, propertyId, images);
+      setAdminListings(prev => prev.filter(l => l._id !== listingId));
+      alert('Listing and Storage images deleted successfully.');
+    } catch (err) {
+      alert('Failed to delete listing: ' + err.message);
+    }
+  };
+
+  // Toggle Web Display status for listing
+  const handleToggleWebDisplay = async (listingId, currentVal) => {
+    try {
+      const listingRef = doc(db, 'listings', listingId);
+      await updateDoc(listingRef, { webDisplay: !currentVal });
+      setAdminListings(prev => prev.map(l => l._id === listingId ? { ...l, webDisplay: !currentVal } : l));
+    } catch (err) {
+      alert('Failed to toggle web visibility: ' + err.message);
+    }
+  };
+
   const getStageDeals = (stage) => {
     return deals.filter(d => (d.stage || 'New').toLowerCase() === stage.toLowerCase());
   };
@@ -261,6 +461,13 @@ function AdminDashboard() {
               <span>Deals Kanban</span>
             </button>
             <button
+              onClick={() => setActiveTab('inventory')}
+              className={`px-3 py-2 rounded-lg transition-all flex items-center space-x-1.5 ${activeTab === 'inventory' ? 'bg-white text-brand-navy shadow-sm' : 'text-brand-text-muted hover:text-brand-navy'}`}
+            >
+              <Image className="w-3.5 h-3.5" />
+              <span>Inventory (Villas)</span>
+            </button>
+            <button
               onClick={() => setActiveTab('agents')}
               className={`px-3 py-2 rounded-lg transition-all flex items-center space-x-1.5 ${activeTab === 'agents' ? 'bg-white text-brand-navy shadow-sm' : 'text-brand-text-muted hover:text-brand-navy'}`}
             >
@@ -304,20 +511,23 @@ function AdminDashboard() {
                 <span className="text-xl font-extrabold text-brand-navy">{deals.length}</span>
               </div>
             </div>
-            <div className="bg-white border border-slate-100 p-4 rounded-xl shadow-sm flex items-center space-x-3">
+            <div className="bg-white border border-slate-100 p-4 rounded-xl shadow-sm flex items-center space-x-3 text-left">
               <div className="p-2.5 bg-emerald-50 text-emerald-600 rounded-lg"><CheckCircle className="w-5 h-5" /></div>
               <div>
                 <span className="block text-[10px] font-bold text-brand-text-muted uppercase tracking-wider">Closed Deals</span>
                 <span className="text-xl font-extrabold text-brand-navy">{getStageDeals('Closed').length}</span>
               </div>
             </div>
-            <div className="bg-white border border-slate-100 p-4 rounded-xl shadow-sm flex items-center space-x-3">
-              <div className="p-2.5 bg-amber-50 text-brand-gold rounded-lg"><RefreshCw className="w-4 h-4 animate-spin-slow" /></div>
+            <button
+              onClick={() => setShowAddDealModal(true)}
+              className="bg-brand-navy hover:bg-blue-900 border border-brand-navy p-4 rounded-xl transition-all flex items-center justify-between text-left text-white shadow-sm"
+            >
               <div>
-                <span className="block text-[10px] font-bold text-brand-text-muted uppercase tracking-wider">In Progress</span>
-                <span className="text-xl font-extrabold text-brand-navy">{deals.length - getStageDeals('Closed').length}</span>
+                <span className="block text-[10px] font-extrabold uppercase tracking-wider text-brand-gold">Operations</span>
+                <span className="text-xs font-bold">Add Manual Deal</span>
               </div>
-            </div>
+              <Plus className="w-5 h-5 text-brand-gold" />
+            </button>
             <button
               onClick={loadAllData}
               className="bg-slate-50 hover:bg-slate-100 border border-slate-200 p-4 rounded-xl transition-all flex items-center justify-between text-left group"
@@ -356,7 +566,7 @@ function AdminDashboard() {
                           key={deal._id}
                           layoutId={deal._id}
                           onClick={() => handleOpenDealDrawer(deal)}
-                          className="bg-white border border-slate-150 p-3.5 rounded-xl shadow-xs hover:shadow-md hover:border-brand-gold/60 cursor-pointer transition-all space-y-2 group relative"
+                          className="bg-white border border-slate-150 p-3.5 rounded-xl shadow-xs hover:shadow-md hover:border-brand-gold/60 cursor-pointer transition-all space-y-2 group relative text-left"
                         >
                           {/* Pipeline badge */}
                           <div className="flex justify-between items-center">
@@ -408,6 +618,107 @@ function AdminDashboard() {
               );
             })}
           </div>
+        </div>
+      ) : activeTab === 'inventory' ? (
+        /* PROPERTY INVENTORY TAB VIEW */
+        <div className="space-y-6">
+          <div className="flex justify-between items-center bg-white border border-slate-100 p-5 rounded-2xl shadow-sm">
+            <div>
+              <h2 className="text-lg font-bold text-brand-navy">Villas & Plots Inventory</h2>
+              <p className="text-xs text-brand-text-muted">List and update properties showcasing on the public directory.</p>
+            </div>
+            <button
+              onClick={() => setShowAddListingModal(true)}
+              className="bg-brand-navy hover:bg-blue-900 text-white font-bold text-xs px-4 py-2.5 rounded-xl flex items-center space-x-2 transition-all shadow-sm"
+            >
+              <Plus className="w-4.5 h-4.5 text-brand-gold" />
+              <span>List Property & Uploads</span>
+            </button>
+          </div>
+
+          {adminListings.length === 0 ? (
+            <div className="bg-white border border-slate-150 rounded-2xl py-24 text-center text-sm font-semibold text-brand-text-muted italic shadow-sm">
+              No inventory listings created yet. Click "List Property & Uploads" to create one.
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {adminListings.map((listing) => (
+                <div key={listing._id} className="bg-white border border-slate-150 rounded-2xl overflow-hidden shadow-xs hover:shadow-md transition-all flex flex-col justify-between text-left">
+                  <div>
+                    {/* Image Thumbnail banner */}
+                    <div className="h-44 bg-brand-navy relative flex flex-col justify-between p-4 text-white overflow-hidden">
+                      {listing.images && listing.images[0] ? (
+                        <>
+                          <img
+                            src={listing.images[0]}
+                            alt={listing.propertyAddress}
+                            className="absolute inset-0 w-full h-full object-cover z-0"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent z-0" />
+                        </>
+                      ) : (
+                        <div className="absolute inset-0 bg-gradient-to-br from-blue-950 to-slate-900 z-0" />
+                      )}
+                      
+                      <div className="flex justify-between items-center w-full z-10">
+                        <span className={`text-[9px] font-bold px-2 py-0.5 rounded uppercase tracking-wider ${listing.status === 'active' ? 'bg-emerald-550 bg-emerald-600' : 'bg-amber-600'}`}>
+                          {listing.status}
+                        </span>
+                        <span className="text-[10px] font-bold bg-black/40 px-2 py-0.5 rounded-full">
+                          {listing.images?.length || 0} Photos
+                        </span>
+                      </div>
+
+                      <h3 className="font-extrabold text-sm z-10 drop-shadow">{listing.propertyAddress}</h3>
+                    </div>
+
+                    {/* Listing Parameters */}
+                    <div className="p-4 space-y-3">
+                      <div className="flex justify-between items-center">
+                        <span className="text-xs font-bold text-brand-text-muted">Asking Price</span>
+                        <span className="text-sm font-extrabold text-brand-navy">{formatCurrency(listing.askingPrice)}</span>
+                      </div>
+
+                      <div className="grid grid-cols-3 gap-1.5 text-center bg-slate-50 p-2.5 rounded-lg border border-slate-100 text-[10px] font-bold text-brand-navy">
+                        <div className="border-r border-slate-200">
+                          <span className="block text-brand-text-muted text-[8px] uppercase">Bedrooms</span>
+                          <span>{listing.property?.bedrooms || 'N/A'} Beds</span>
+                        </div>
+                        <div className="border-r border-slate-200">
+                          <span className="block text-brand-text-muted text-[8px] uppercase">Bathrooms</span>
+                          <span>{listing.property?.bathrooms || 'N/A'} Baths</span>
+                        </div>
+                        <div>
+                          <span className="block text-brand-text-muted text-[8px] uppercase">Area</span>
+                          <span>{listing.property?.squareFootage || 'N/A'} SqFt</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Actions buttons footer */}
+                  <div className="p-4 border-t border-slate-100 flex items-center justify-between bg-slate-50/50">
+                    <button
+                      onClick={() => handleToggleWebDisplay(listing._id, listing.webDisplay)}
+                      className={`flex items-center space-x-1 text-xs font-bold px-3 py-2 rounded-lg transition-colors border ${listing.webDisplay ? 'bg-emerald-50 border-emerald-200 text-emerald-700' : 'bg-slate-100 border-slate-200 text-slate-500'}`}
+                      title={listing.webDisplay ? "Visible on Public Web Site" : "Hidden from Public Web Site"}
+                    >
+                      {listing.webDisplay ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
+                      <span>{listing.webDisplay ? 'Public View' : 'Hidden'}</span>
+                    </button>
+
+                    <button
+                      onClick={() => handleDeleteListing(listing._id, listing.propertyId, listing.images)}
+                      className="bg-rose-50 hover:bg-rose-100 text-rose-600 p-2 rounded-lg transition-colors border border-rose-150 outline-none"
+                      title="Delete Listing"
+                    >
+                      <Trash className="w-4.5 h-4.5" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       ) : (
         /* AGENTS ROSTER VIEW */
@@ -494,7 +805,6 @@ function AdminDashboard() {
       <AnimatePresence>
         {selectedDeal && (
           <>
-            {/* Overlay background */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 0.5 }}
@@ -503,13 +813,12 @@ function AdminDashboard() {
               className="fixed inset-0 bg-black z-40"
             />
 
-            {/* Sidebar drawer content */}
             <motion.div
               initial={{ x: '100%' }}
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="fixed right-0 top-0 bottom-0 w-full sm:max-w-lg bg-white shadow-2xl z-50 flex flex-col border-l border-slate-100 font-sans"
+              className="fixed right-0 top-0 bottom-0 w-full sm:max-w-lg bg-white shadow-2xl z-50 flex flex-col border-l border-slate-100 font-sans text-left"
             >
               {/* Drawer Header */}
               <div className="p-6 border-b border-slate-100 flex items-start justify-between bg-slate-50/50">
@@ -791,6 +1100,355 @@ function AdminDashboard() {
               </div>
             </motion.div>
           </>
+        )}
+      </AnimatePresence>
+
+      {/* 3. ADD DEAL MANUALLY MODAL */}
+      <AnimatePresence>
+        {showAddDealModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowAddDealModal(false)}
+              className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs"
+            />
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="bg-white rounded-2xl overflow-hidden shadow-xl max-w-lg w-full relative z-10 border border-slate-100 flex flex-col text-left font-sans"
+            >
+              <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                <h3 className="font-extrabold text-brand-navy text-base flex items-center space-x-2">
+                  <UserPlus className="w-5 h-5 text-brand-gold" />
+                  <span>Manual Ingestion: New Client Deal</span>
+                </h3>
+                <button
+                  onClick={() => setShowAddDealModal(false)}
+                  className="text-slate-400 hover:text-slate-600 outline-none"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <form onSubmit={handleAddDealSubmit} className="p-6 space-y-4 overflow-y-auto max-h-[75vh]">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold uppercase text-brand-navy">First Name *</label>
+                    <input
+                      type="text"
+                      required
+                      value={dealForm.firstName}
+                      onChange={(e) => setDealForm({ ...dealForm, firstName: e.target.value })}
+                      placeholder="Angad"
+                      className="w-full text-xs p-2.5 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 bg-white font-medium"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold uppercase text-brand-navy">Last Name</label>
+                    <input
+                      type="text"
+                      value={dealForm.lastName}
+                      onChange={(e) => setDealForm({ ...dealForm, lastName: e.target.value })}
+                      placeholder="Parab"
+                      className="w-full text-xs p-2.5 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 bg-white font-medium"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold uppercase text-brand-navy">Mobile Number *</label>
+                    <input
+                      type="tel"
+                      required
+                      placeholder="9876543210"
+                      value={dealForm.phone}
+                      onChange={(e) => setDealForm({ ...dealForm, phone: e.target.value })}
+                      className="w-full text-xs p-2.5 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 bg-white font-medium"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold uppercase text-brand-navy">Email Address</label>
+                    <input
+                      type="email"
+                      placeholder="angad@example.com"
+                      value={dealForm.email}
+                      onChange={(e) => setDealForm({ ...dealForm, email: e.target.value })}
+                      className="w-full text-xs p-2.5 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 bg-white font-medium"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold uppercase text-brand-navy">Pipeline Type</label>
+                    <select
+                      value={dealForm.pipelineType}
+                      onChange={(e) => setDealForm({ ...dealForm, pipelineType: e.target.value })}
+                      className="w-full text-xs p-2.5 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 bg-white font-semibold text-brand-navy"
+                    >
+                      <option value="buyer">Buyer (Inquiry)</option>
+                      <option value="seller">Seller (Listing Property)</option>
+                    </select>
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold uppercase text-brand-navy">Region Interest</label>
+                    <select
+                      value={dealForm.preferredZones}
+                      onChange={(e) => setDealForm({ ...dealForm, preferredZones: e.target.value })}
+                      className="w-full text-xs p-2.5 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 bg-white font-semibold text-brand-navy"
+                    >
+                      {locations.map(l => (
+                        <option key={l} value={l}>{l}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-3 gap-3">
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold uppercase text-brand-navy">Min Budget (INR)</label>
+                    <input
+                      type="number"
+                      placeholder="5000000"
+                      value={dealForm.budgetMin}
+                      onChange={(e) => setDealForm({ ...dealForm, budgetMin: e.target.value })}
+                      className="w-full text-xs p-2.5 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 bg-white font-medium"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold uppercase text-brand-navy">Max Budget (INR)</label>
+                    <input
+                      type="number"
+                      placeholder="10000000"
+                      value={dealForm.budgetMax}
+                      onChange={(e) => setDealForm({ ...dealForm, budgetMax: e.target.value })}
+                      className="w-full text-xs p-2.5 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 bg-white font-medium"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold uppercase text-brand-navy">Bedrooms</label>
+                    <input
+                      type="number"
+                      value={dealForm.preferredBedrooms}
+                      onChange={(e) => setDealForm({ ...dealForm, preferredBedrooms: e.target.value })}
+                      className="w-full text-xs p-2.5 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 bg-white font-medium"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold uppercase text-brand-navy">Lead Route (Agent)</label>
+                  <select
+                    value={dealForm.assignedAgentId}
+                    onChange={(e) => setDealForm({ ...dealForm, assignedAgentId: e.target.value })}
+                    className="w-full text-xs p-2.5 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 bg-white font-semibold text-brand-navy"
+                  >
+                    <option value="">Broker Escalation Queue (Automatic)</option>
+                    {agents.map(a => (
+                      <option key={a._id} value={a._id}>{a.fullName} ({a.role})</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold uppercase text-brand-navy">Notes & Requirements</label>
+                  <textarea
+                    rows="2.5"
+                    value={dealForm.notes}
+                    onChange={(e) => setDealForm({ ...dealForm, notes: e.target.value })}
+                    placeholder="Enter special features and notes client is looking for..."
+                    className="w-full text-xs p-2.5 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 bg-white font-medium"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={isFormSubmitting}
+                  className="w-full bg-brand-navy text-white font-bold py-3 rounded-lg hover:bg-blue-900 transition-colors shadow-sm text-xs disabled:opacity-50"
+                >
+                  {isFormSubmitting ? 'Saving Client Deal...' : 'Log Client & Assign Agent'}
+                </button>
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* 4. MANUAL LIST PROPERTY MODAL */}
+      <AnimatePresence>
+        {showAddListingModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowAddListingModal(false)}
+              className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs"
+            />
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="bg-white rounded-2xl overflow-hidden shadow-xl max-w-xl w-full relative z-10 border border-slate-100 flex flex-col text-left font-sans"
+            >
+              <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                <h3 className="font-extrabold text-brand-navy text-base flex items-center space-x-2">
+                  <Image className="w-5 h-5 text-brand-gold" />
+                  <span>Inventory Ops: List Villa / Plot</span>
+                </h3>
+                <button
+                  onClick={() => setShowAddListingModal(false)}
+                  className="text-slate-400 hover:text-slate-600 outline-none"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <form onSubmit={handleAddListingSubmit} className="p-6 space-y-4 overflow-y-auto max-h-[75vh]">
+                
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold uppercase text-brand-navy">Property Address / Title *</label>
+                  <input
+                    type="text"
+                    required
+                    value={listingForm.address}
+                    onChange={(e) => setListingForm({ ...listingForm, address: e.target.value })}
+                    placeholder="Grace Villas, Phase 2"
+                    className="w-full text-xs p-2.5 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 bg-white font-medium"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold uppercase text-brand-navy">District Region</label>
+                    <select
+                      value={listingForm.city}
+                      onChange={(e) => setListingForm({ ...listingForm, city: e.target.value })}
+                      className="w-full text-xs p-2.5 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 bg-white font-semibold text-brand-navy"
+                    >
+                      {locations.map(l => (
+                        <option key={l} value={l}>{l}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold uppercase text-brand-navy">Asset Class</label>
+                    <select
+                      value={listingForm.assetClass}
+                      onChange={(e) => setListingForm({ ...listingForm, assetClass: e.target.value })}
+                      className="w-full text-xs p-2.5 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 bg-white font-semibold text-brand-navy"
+                    >
+                      {assetClasses.map(c => (
+                        <option key={c} value={c}>{c}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-3 gap-3">
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold uppercase text-brand-navy">Beds count</label>
+                    <input
+                      type="number"
+                      value={listingForm.bedrooms}
+                      onChange={(e) => setListingForm({ ...listingForm, bedrooms: e.target.value })}
+                      className="w-full text-xs p-2.5 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 bg-white font-medium"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold uppercase text-brand-navy">Baths count</label>
+                    <input
+                      type="number"
+                      value={listingForm.bathrooms}
+                      onChange={(e) => setListingForm({ ...listingForm, bathrooms: e.target.value })}
+                      className="w-full text-xs p-2.5 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 bg-white font-medium"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold uppercase text-brand-navy">Area (Sq.Ft)</label>
+                    <input
+                      type="number"
+                      value={listingForm.squareFootage}
+                      onChange={(e) => setListingForm({ ...listingForm, squareFootage: e.target.value })}
+                      className="w-full text-xs p-2.5 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 bg-white font-medium"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold uppercase text-brand-navy">Asking Price (INR) *</label>
+                    <input
+                      type="number"
+                      required
+                      placeholder="9500000"
+                      value={listingForm.askingPrice}
+                      onChange={(e) => setListingForm({ ...listingForm, askingPrice: e.target.value })}
+                      className="w-full text-xs p-2.5 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 bg-white font-medium"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold uppercase text-brand-navy">Amenities (comma-split)</label>
+                    <input
+                      type="text"
+                      value={listingForm.amenities}
+                      onChange={(e) => setListingForm({ ...listingForm, amenities: e.target.value })}
+                      className="w-full text-xs p-2.5 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 bg-white font-medium"
+                    />
+                  </div>
+                </div>
+
+                {/* File Upload Selector */}
+                <div className="bg-slate-50 border border-slate-200 p-4 rounded-xl text-center space-y-2">
+                  <UploadCloud className="w-6 h-6 text-brand-navy mx-auto" />
+                  <span className="block text-xs font-bold text-brand-navy">Select Property Photos</span>
+                  <p className="text-[9px] text-brand-text-muted">Supports multiple files. Uploaded to public storage folder.</p>
+                  <input
+                    type="file"
+                    multiple
+                    accept="image/*"
+                    onChange={(e) => setSelectedPropertyFiles(e.target.files)}
+                    className="mx-auto text-xs"
+                  />
+                  {selectedPropertyFiles.length > 0 && (
+                    <span className="block text-[10px] font-bold text-emerald-600 font-mono">
+                      {selectedPropertyFiles.length} images selected
+                    </span>
+                  )}
+                </div>
+
+                {uploadProgressText && (
+                  <div className="text-[10px] font-bold text-brand-goldDark flex items-center space-x-2 animate-pulse justify-center">
+                    <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                    <span>{uploadProgressText}</span>
+                  </div>
+                )}
+
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold uppercase text-brand-navy">Description Details</label>
+                  <textarea
+                    rows="2.5"
+                    value={listingForm.description}
+                    onChange={(e) => setListingForm({ ...listingForm, description: e.target.value })}
+                    placeholder="Enter property descriptions, special locations, security specifications..."
+                    className="w-full text-xs p-2.5 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 bg-white font-medium"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={isFormSubmitting}
+                  className="w-full bg-brand-navy text-white font-bold py-3 rounded-lg hover:bg-blue-900 transition-colors shadow-sm text-xs disabled:opacity-50"
+                >
+                  {isFormSubmitting ? 'Processing Uploads & Saving...' : 'List Property on Public Directory'}
+                </button>
+              </form>
+            </motion.div>
+          </div>
         )}
       </AnimatePresence>
     </div>

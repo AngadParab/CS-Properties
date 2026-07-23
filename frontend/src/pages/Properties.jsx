@@ -272,7 +272,19 @@ function Properties() {
                   >
                     <div>
                       {/* Fixed aspect ratio visual container to eliminate Cumulative Layout Shift (CLS) */}
-                      <div className={`w-full aspect-[4/3] bg-gradient-to-br ${gradientClass} relative p-5 flex flex-col justify-between text-white overflow-hidden`}>
+                      <div className="w-full aspect-[4/3] relative p-5 flex flex-col justify-between text-white overflow-hidden bg-brand-navy">
+                        {prop?.images && prop.images.length > 0 ? (
+                          <>
+                            <img
+                              src={prop.images[0]}
+                              alt={propertyTitle}
+                              className="absolute inset-0 w-full h-full object-cover z-0 transition-transform duration-500 hover:scale-105"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/30 to-transparent z-0" />
+                          </>
+                        ) : (
+                          <div className={`absolute inset-0 bg-gradient-to-br ${gradientClass} z-0`} />
+                        )}
                         <div className="flex justify-between items-center w-full z-10">
                           <span className="bg-brand-navy/80 text-brand-gold text-[9px] uppercase tracking-wider font-extrabold px-2.5 py-1 rounded-full self-start">
                             {propertyType}
