@@ -68,8 +68,8 @@ exports.onUserCreated = functions.auth.user().onCreate(async (user) => {
         };
         const projectId = process.env.GCLOUD_PROJECT || 'cs-properties-9742d';
         const dataConnectUrl = process.env.FUNCTIONS_EMULATOR === 'true'
-            ? `http://127.0.0.1:9399/v1/projects/${projectId}/locations/us-central1/services/cs-properties-crm/graphql`
-            : `https://us-central1-dataconnect.googleapis.com/v1/projects/${projectId}/locations/us-central1/services/cs-properties-crm/graphql`;
+            ? `http://127.0.0.1:9399/v1/projects/${projectId}/locations/us-central1/services/cs-properties-crm:executeGraphql`
+            : `https://us-central1-dataconnect.googleapis.com/v1/projects/${projectId}/locations/us-central1/services/cs-properties-crm:executeGraphql`;
         const response = await fetch(dataConnectUrl, {
             method: 'POST',
             headers: {

@@ -15,6 +15,7 @@ This README will guide you through the process of using the generated JavaScript
   - [*GetPropertyAgent*](#getpropertyagent)
   - [*GetAdmins*](#getadmins)
   - [*GetLeadsAssignment*](#getleadsassignment)
+  - [*GetPropertyImages*](#getpropertyimages)
 - [**Mutations**](#mutations)
   - [*UpsertUser*](#upsertuser)
   - [*CreateProperty*](#createproperty)
@@ -892,6 +893,103 @@ console.log(data.leads);
 executeQuery(ref).then((response) => {
   const data = response.data;
   console.log(data.leads);
+});
+```
+
+## GetPropertyImages
+You can execute the `GetPropertyImages` query using the following action shortcut function, or by calling `executeQuery()` after calling the following `QueryRef` function, both of which are defined in [js-sdk/index.d.ts](./index.d.ts):
+```typescript
+getPropertyImages(options?: ExecuteQueryOptions): QueryPromise<GetPropertyImagesData, undefined>;
+
+interface GetPropertyImagesRef {
+  ...
+  /* Allow users to create refs without passing in DataConnect */
+  (): QueryRef<GetPropertyImagesData, undefined>;
+}
+export const getPropertyImagesRef: GetPropertyImagesRef;
+```
+You can also pass in a `DataConnect` instance to the action shortcut function or `QueryRef` function.
+```typescript
+getPropertyImages(dc: DataConnect, options?: ExecuteQueryOptions): QueryPromise<GetPropertyImagesData, undefined>;
+
+interface GetPropertyImagesRef {
+  ...
+  (dc: DataConnect): QueryRef<GetPropertyImagesData, undefined>;
+}
+export const getPropertyImagesRef: GetPropertyImagesRef;
+```
+
+If you need the name of the operation without creating a ref, you can retrieve the operation name by calling the `operationName` property on the getPropertyImagesRef:
+```typescript
+const name = getPropertyImagesRef.operationName;
+console.log(name);
+```
+
+### Variables
+The `GetPropertyImages` query has no variables.
+### Return Type
+Recall that executing the `GetPropertyImages` query returns a `QueryPromise` that resolves to an object with a `data` property.
+
+The `data` property is an object of type `GetPropertyImagesData`, which is defined in [js-sdk/index.d.ts](./index.d.ts). It has the following fields:
+```typescript
+export interface GetPropertyImagesData {
+  propertyImages: ({
+    url: string;
+    displayOrder: number;
+    property: {
+      id: UUIDString;
+    } & Property_Key;
+  })[];
+}
+```
+### Using `GetPropertyImages`'s action shortcut function
+
+```typescript
+import { getDataConnect } from 'firebase/data-connect';
+import { connectorConfig, getPropertyImages } from '@firebasegen/default-connector';
+
+
+// Call the `getPropertyImages()` function to execute the query.
+// You can use the `await` keyword to wait for the promise to resolve.
+const { data } = await getPropertyImages();
+
+// You can also pass in a `DataConnect` instance to the action shortcut function.
+const dataConnect = getDataConnect(connectorConfig);
+const { data } = await getPropertyImages(dataConnect);
+
+console.log(data.propertyImages);
+
+// Or, you can use the `Promise` API.
+getPropertyImages().then((response) => {
+  const data = response.data;
+  console.log(data.propertyImages);
+});
+```
+
+### Using `GetPropertyImages`'s `QueryRef` function
+
+```typescript
+import { getDataConnect, executeQuery } from 'firebase/data-connect';
+import { connectorConfig, getPropertyImagesRef } from '@firebasegen/default-connector';
+
+
+// Call the `getPropertyImagesRef()` function to get a reference to the query.
+const ref = getPropertyImagesRef();
+
+// You can also pass in a `DataConnect` instance to the `QueryRef` function.
+const dataConnect = getDataConnect(connectorConfig);
+const ref = getPropertyImagesRef(dataConnect);
+
+// Call `executeQuery()` on the reference to execute the query.
+// You can use the `await` keyword to wait for the promise to resolve.
+const { data } = await executeQuery(ref);
+
+console.log(data.propertyImages);
+
+// Or, you can use the `Promise` API.
+executeQuery(ref).then((response) => {
+  const data = response.data;
+  console.log(data.propertyImages);
 });
 ```
 

@@ -255,6 +255,16 @@ export interface GetPropertyData {
     } & PropertyImage_Key)[];
 }
 
+export interface GetPropertyImagesData {
+  propertyImages: ({
+    url: string;
+    displayOrder: number;
+    property: {
+      id: UUIDString;
+    } & Property_Key;
+  })[];
+}
+
 export interface GetPropertyVariables {
   id: UUIDString;
 }
@@ -530,4 +540,16 @@ export const getLeadsAssignmentRef: GetLeadsAssignmentRef;
 
 export function getLeadsAssignment(options?: ExecuteQueryOptions): QueryPromise<GetLeadsAssignmentData, undefined>;
 export function getLeadsAssignment(dc: DataConnect, options?: ExecuteQueryOptions): QueryPromise<GetLeadsAssignmentData, undefined>;
+
+interface GetPropertyImagesRef {
+  /* Allow users to create refs without passing in DataConnect */
+  (): QueryRef<GetPropertyImagesData, undefined>;
+  /* Allow users to pass in custom DataConnect instances */
+  (dc: DataConnect): QueryRef<GetPropertyImagesData, undefined>;
+  operationName: string;
+}
+export const getPropertyImagesRef: GetPropertyImagesRef;
+
+export function getPropertyImages(options?: ExecuteQueryOptions): QueryPromise<GetPropertyImagesData, undefined>;
+export function getPropertyImages(dc: DataConnect, options?: ExecuteQueryOptions): QueryPromise<GetPropertyImagesData, undefined>;
 

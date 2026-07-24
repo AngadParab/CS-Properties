@@ -240,3 +240,16 @@ export function getLeadsAssignment(dcOrOptions, options) {
   return executeQuery(getLeadsAssignmentRef(dcInstance, inputVars), inputOpts && inputOpts.fetchPolicy);
 }
 
+export const getPropertyImagesRef = (dc) => {
+  const { dc: dcInstance} = validateArgs(connectorConfig, dc, undefined);
+  dcInstance._useGeneratedSdk();
+  return queryRef(dcInstance, 'GetPropertyImages');
+}
+getPropertyImagesRef.operationName = 'GetPropertyImages';
+
+export function getPropertyImages(dcOrOptions, options) {
+  
+  const { dc: dcInstance, vars: inputVars, options: inputOpts } = validateArgsWithOptions(connectorConfig, dcOrOptions, options, undefined,false, false);
+  return executeQuery(getPropertyImagesRef(dcInstance, inputVars), inputOpts && inputOpts.fetchPolicy);
+}
+
