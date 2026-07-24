@@ -52,9 +52,7 @@ export async function createPropertyAction(
           address: $address
           city: $city
           agentId: $agentId
-        }) {
-          id
-        }
+        })
       }
     `;
 
@@ -76,9 +74,7 @@ export async function createPropertyAction(
             propertyId: $propertyId
             url: $url
             displayOrder: $displayOrder
-          }) {
-            id
-          }
+          })
         }
       `;
 

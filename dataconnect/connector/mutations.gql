@@ -8,9 +8,7 @@ mutation UpsertUser($id: UUID!, $email: String!, $name: String!, $role: UserRole
     name: $name
     role: $role
     phone: $phone
-  }) {
-    id
-  }
+  })
 }
 
 # Create a Property
@@ -39,9 +37,7 @@ mutation CreateProperty(
     address: $address
     city: $city
     agentId: $agentId
-  }) {
-    id
-  }
+  })
 }
 
 # Update a Property
@@ -74,9 +70,7 @@ mutation UpdateProperty(
       city: $city
       agentId: $agentId
     }
-  ) {
-    id
-  }
+  )
 }
 
 # Add a Property Image
@@ -85,16 +79,12 @@ mutation AddPropertyImage($propertyId: UUID!, $url: String!, $displayOrder: Int!
     propertyId: $propertyId
     url: $url
     displayOrder: $displayOrder
-  }) {
-    id
-  }
+  })
 }
 
 # Delete a Property Image
 mutation DeletePropertyImage($id: UUID!) {
-  propertyImage_delete(id: $id) {
-    id
-  }
+  propertyImage_delete(id: $id)
 }
 
 # Create a Lead
@@ -119,9 +109,7 @@ mutation CreateLead(
     source: $source
     propertyId: $propertyId
     assignedToId: $assignedToId
-  }) {
-    id
-  }
+  })
 }
 
 # Update a Lead (pipeline state changes & updates)
@@ -150,9 +138,7 @@ mutation UpdateLead(
       propertyId: $propertyId
       assignedToId: $assignedToId
     }
-  ) {
-    id
-  }
+  )
 }
 
 # Create an Activity (append interaction timeline logs)
@@ -167,9 +153,7 @@ mutation CreateActivity(
     actorId: $actorId
     type: $type
     comment: $comment
-  }) {
-    id
-  }
+  })
 }
 
 # Update Lead Status and Append Activity Log atomically
@@ -179,15 +163,11 @@ mutation UpdateLeadAndAddActivity(
   $actorId: UUID!
   $comment: String!
 ) {
-  lead_update(id: $leadId, data: { status: $newStatus }) {
-    id
-  }
+  lead_update(id: $leadId, data: { status: $newStatus })
   activity_insert(data: {
     leadId: $leadId
     actorId: $actorId
     type: STATUS_CHANGE
     comment: $comment
-  }) {
-    id
-  }
+  })
 }

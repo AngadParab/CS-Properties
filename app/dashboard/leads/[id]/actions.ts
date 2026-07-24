@@ -27,9 +27,7 @@ export async function createActivityAction(
           actorId: $actorId
           type: $type
           comment: $comment
-        }) {
-          id
-        }
+        })
       }
     `;
 

@@ -102,9 +102,7 @@ export async function submitInquiryAction(propertyId: string, formData: any) {
           source: $source
           propertyId: $propertyId
           assignedToId: $assignedToId
-        }) {
-          id
-        }
+        })
       }
     `;
 
